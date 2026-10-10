@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ru" prefix="og: https://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme-color" content="#08080F">
+  <meta name="format-detection" content="telephone=no">
+
+  <title>Как мы обучаем ИИ-менеджера под ваш продукт | Radar Group</title>
+  <meta name="description" content="Методология: изучаем ваш ассортимент, аудиторию и возражения, пишем сценарий продаж, обучаем и тестируем ИИ-менеджера. Почему это не «просто бот».">
+  <meta name="keywords" content="обучение ии-менеджера, как работает ии-продавец, gpt-4o для продаж, отработка возражений ии, сценарий продаж для бота">
+  <meta name="author" content="Radar Group">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://radargroup.by/about.html">
+
+  <link rel="alternate" hreflang="ru" href="https://radargroup.by/about.html">
+  <link rel="alternate" hreflang="en" href="https://radargroup.by/en/about.html">
+  <link rel="alternate" hreflang="x-default" href="https://radargroup.by/about.html">
+
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Radar Group">
+  <meta property="og:title" content="Как мы обучаем ИИ-менеджера под ваш продукт">
+  <meta property="og:description" content="Методология: изучаем продукт, аудиторию, возражения. Обучаем бота и запускаем за дни.">
+  <meta property="og:url" content="https://radargroup.by/about.html">
+  <meta property="og:image" content="https://radargroup.by/images/og-image.jpg">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:locale:alternate" content="en_US">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Как мы обучаем ИИ-менеджера под ваш продукт">
+  <meta name="twitter:description" content="Изучаем продукт, аудиторию, возражения. Обучаем бота и запускаем за дни.">
+  <meta name="twitter:image" content="https://radargroup.by/images/og-image.jpg">
+
+  <link rel="icon" type="image/png" href="images/logo.png">
+  <link rel="apple-touch-icon" href="images/logo.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="robot.css">
+</head>
+<body>
+
+<header class="header" id="header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo" aria-label="Radar Group — на главную">
+      <img src="images/logo.png" alt="Логотип Radar Group" width="40" height="40">
+      <span class="logo-text">RADAR GROUP</span>
+    </a>
+
+    <nav aria-label="Основное меню">
+      <ul class="nav">
+        <li><a href="index.html#features">Что умеет</a></li>
+        <li><a href="index.html#training">Как обучаем</a></li>
+        <li><a href="cases.html">Кейсы</a></li>
+        <li><a href="about.html">О технологии</a></li>
+        <li><a href="#lead">Оставить заявку</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-cta">
+      <div class="lang-switch" role="group" aria-label="Language">
+        <a href="about.html" class="active" aria-current="true">RU</a>
+        <a href="en/about.html">EN</a>
+      </div>
+      <a href="https://t.me/my_ai_TGAgency_bot" class="tg-link" target="_blank" rel="noopener" aria-label="Открыть Telegram">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm5.6 8.4l-2 9.4c-.1.6-.5.8-1 .5l-2.8-2.1-1.4 1.3c-.1.1-.3.2-.5.2l.2-2.9 5.3-4.8c.2-.2 0-.3-.4-.1l-6.6 4.1-2.8-.9c-.6-.2-.6-.6.1-.9l11-4.2c.5-.2 1 .1.9.4z"/></svg>
+      </a>
+      <a href="#lead" class="btn btn-primary" target="_self">Обсудить проект</a>
+      <button class="burger" id="burger" aria-label="Открыть меню" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-overlay" id="mobileOverlay"></div>
+<aside class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <ul>
+    <li><a href="index.html#features">Что умеет</a></li>
+    <li><a href="index.html#training">Как обучаем</a></li>
+    <li><a href="cases.html">Кейсы</a></li>
+    <li><a href="about.html">О технологии</a></li>
+    <li><a href="#lead">Оставить заявку</a></li>
+  </ul>
+  <a href="#lead" class="btn btn-primary" target="_self">Обсудить проект</a>
+  <div class="mobile-lang">
+    <a href="about.html" class="active">RU</a>
+    <a href="en/about.html">EN</a>
+  </div>
+</aside>
+
+<main>
+
+<section class="section" style="padding-top: 60px;">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">О технологии</span>
+      <h2>Почему это не «просто бот»</h2>
+      <p class="section-sub">
+        Обычный бот — это меню с кнопками. Он обслуживает, но не продаёт.
+        ИИ-менеджер — это обученный продавец, который знает ваш продукт,
+        понимает клиента и ведёт его к сделке.
+      </p>
+    </div>
+
+    <div class="features-grid">
+      <article class="feature-card">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        </div>
+        <h3>Изучает ваш продукт</h3>
+        <p>Мы загружаем ассортимент, характеристики, цены, УТП, отличия от конкурентов. Бот отвечает как эксперт.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>
+        </div>
+        <h3>Отрабатывает возражения</h3>
+        <p>«Дорого», «подумаю», «у конкурентов дешевле», «не сейчас» — для каждой ниши готовим свои ответы.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <h3>Помнит весь диалог</h3>
+        <p>Не переспрашивает одно и то же. Учитывает всё, что клиент сказал ранее в разговоре.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <h3>4 стадии дожима</h3>
+        <p>Напоминает о себе через 15 минут, час, сутки, двое суток. Мягко, без давления, с учётом тихих часов.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3>Контроль качества</h3>
+        <p>Чистит ответы от лишнего, не придумывает того, чего нет в вашем продукте. Добавляет вопрос, если диалог провис.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2l3 7h7l-5.5 4.5L18.5 21 12 16.5 5.5 21l2-7.5L2 9h7z"/></svg>
+        </div>
+        <h3>Передаёт горячих</h3>
+        <p>Вам приходит лид с контактом, задачей, отработанными возражениями и полным логом диалога.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Честно</span>
+      <h2>Когда ИИ-менеджер не подойдёт</h2>
+      <p class="section-sub">
+        Он не заменяет сложные B2B-продажи с длинным циклом, кастомными условиями и переговорами
+        на высшем уровне. Но он идеален для типовых услуг, первичной квалификации
+        и разгрузки менеджеров. Для сложных сделок — готовит почву, финальное закрытие за человеком.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Что вы получаете</span>
+      <h2>После запуска ИИ-менеджера</h2>
+    </div>
+    <div class="features-grid">
+      <article class="feature-card">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        </div>
+        <h3>Ответы за секунды</h3>
+        <p>Клиент не ждёт. Первый ответ — мгновенный. Даже ночью и в выходные.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        </div>
+        <h3>Готовые лиды</h3>
+        <p>Менеджер получает не «новую заявку», а клиента с задачей, бюджетом и температурой.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <h3>Экономия времени</h3>
+        <p>Менеджеры занимаются сложными сделками. Первую линию держит ИИ.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg>
+        </div>
+        <h3>Прозрачная аналитика</h3>
+        <p>Видно, сколько было диалогов, возражений, конверсий. Реальные цифры, а не ощущения.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ФОРМА ЗАЯВКИ -->
+<section class="section" id="lead">
+  <div class="container">
+    <div class="section-header" style="text-align: center; max-width: 580px; margin-left: auto; margin-right: auto;">
+      <span class="section-label">Заявка</span>
+      <h2>Обсудим ваш продукт</h2>
+      <p class="section-sub">
+        Расскажите, что продаёте — покажу, как ИИ-менеджер будет это делать.
+      </p>
+    </div>
+
+    <div class="lead-form-wrap">
+      <form class="lead-form" id="leadForm" novalidate>
+
+        <div class="form-step">
+          <div class="form-step-head">
+            <span class="form-step-num">1</span>
+            <span class="form-step-title">Контакты</span>
+          </div>
+          <div class="form-row">
+            <label class="form-label" for="leadName">Как вас зовут? *</label>
+            <input class="form-input" type="text" id="leadName" name="name" placeholder="Иван" required autocomplete="name" maxlength="50">
+          </div>
+          <div class="form-row">
+            <label class="form-label" for="leadContact">Telegram или телефон *</label>
+            <input class="form-input" type="text" id="leadContact" name="contact" placeholder="@username или +375..." required autocomplete="tel" maxlength="50">
+          </div>
+        </div>
+
+        <div class="form-step">
+          <div class="form-step-head">
+            <span class="form-step-num">2</span>
+            <span class="form-step-title">Ваша ниша</span>
+          </div>
+          <div class="option-grid" role="radiogroup" aria-label="Выберите нишу">
+            <label class="option-card">
+              <input type="radio" name="niche" value="Автосервис / СТО" required>
+              <span class="option-card-inner">
+                <span class="option-card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 17h14"/>
+                    <circle cx="7" cy="17" r="2"/>
+                    <circle cx="17" cy="17" r="2"/>
+                    <path d="M5 17v-4l2-5h10l2 5v4"/>
+                    <path d="M5 13h14"/>
+                    <path d="M9 8v5"/>
+                  </svg>
+                </span>
+                <span class="option-card-text">Автосервис</span>
+              </span>
+            </label>
+
+            <label class="option-card">
+              <input type="radio" name="niche" value="Онлайн-школа / Курсы">
+              <span class="option-card-inner">
+                <span class="option-card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 10L12 5 2 10l10 5 10-5zM6 12v5c0 1 2.5 3 6 3s6-2 6-3v-5"/></svg>
+                </span>
+                <span class="option-card-text">Онлайн-школа</span>
+              </span>
+            </label>
+
+            <label class="option-card">
+              <input type="radio" name="niche" value="Стоматология / Клиника">
+              <span class="option-card-inner">
+                <span class="option-card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/>
+                    <path d="M12 9v6"/>
+                    <path d="M9 12h6"/>
+                  </svg>
+                </span>
+                <span class="option-card-text">Клиника</span>
+              </span>
+            </label>
+
+            <label class="option-card">
+              <input type="radio" name="niche" value="Юридические услуги">
+              <span class="option-card-inner">
+                <span class="option-card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v18M5 8h14M7 8l-3 6a3 3 0 0 0 6 0L7 8zm10 0l-3 6a3 3 0 0 0 6 0l-3-6z"/></svg>
+                </span>
+                <span class="option-card-text">Юристы</span>
+              </span>
+            </label>
+
+            <label class="option-card">
+              <input type="radio" name="niche" value="Салон красоты / Барбершоп">
+              <span class="option-card-inner">
+                <span class="option-card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4L8.12 15.88M14.47 14.48L20 20M8.12 8.12L12 12"/></svg>
+                </span>
+                <span class="option-card-text">Салон красоты</span>
+              </span>
+            </label>
+
+            <label class="option-card">
+              <input type="radio" name="niche" value="Ремонт квартир / Отделка">
+              <span class="option-card-inner">
+                <span class="option-card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                </span>
+                <span class="option-card-text">Ремонт</span>
+              </span>
+            </label>
+
+            <label class="option-card">
+              <input type="radio" name="niche" value="E-commerce / Магазин">
+              <span class="option-card-inner">
+                <span class="option-card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                </span>
+                <span class="option-card-text">Магазин</span>
+              </span>
+            </label>
+
+            <label class="option-card">
+              <input type="radio" name="niche" value="Услуги / Другое">
+              <span class="option-card-inner">
+                <span class="option-card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+                </span>
+                <span class="option-card-text">Другое</span>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-step">
+          <div class="form-step-head">
+            <span class="form-step-num">3</span>
+            <span class="form-step-title">Что должен делать ИИ-менеджер</span>
+            <span class="form-step-hint">можно несколько</span>
+          </div>
+          <div class="option-grid" role="group" aria-label="Что должен делать бот">
+            <label class="option-card">
+              <input type="checkbox" name="features" value="Приём заявок 24/7">
+              <span class="option-card-inner">
+                <span class="option-card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                </span>
+                <span class="option-card-text">Приём заявок</span>
+              </span>
+            </label>
+
+            <label class="option-card">
+              <input type="checkbox" name="features" value="Знание продукта / каталога">
+              <span class="option-card-inner">
+                <span class="option-card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                </span>
+                <span class="option-card-text">Знание продукта</span>
+              </span>
+            </label>
+
+            <label class="option-card">
+              <input type="checkbox" name="features" value="Отработка возражений">
+              <span class="option-card-inner">
+                <span class="option-card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>
+                </span>
+                <span class="option-card-text">Возражения</span>
+              </span>
+            </label>
+
+            <label class="option-card">
+              <input type="checkbox" name="features" value="Квалификация клиентов">
+              <span class="option-card-inner">
+                <span class="option-card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                </span>
+                <span class="option-card-text">Квалификация</span>
+              </span>
+            </label>
+
+            <label class="option-card">
+              <input type="checkbox" name="features" value="Запись / бронирование">
+              <span class="option-card-inner">
+                <span class="option-card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                </span>
+                <span class="option-card-text">Запись</span>
+              </span>
+            </label>
+
+            <label class="option-card">
+              <input type="checkbox" name="features" value="Дожим тех, кто ушёл думать">
+              <span class="option-card-inner">
+                <span class="option-card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </span>
+                <span class="option-card-text">Дожим</span>
+              </span>
+            </label>
+
+            <label class="option-card">
+              <input type="checkbox" name="features" value="Интеграция с CRM">
+              <span class="option-card-inner">
+                <span class="option-card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                </span>
+                <span class="option-card-text">CRM</span>
+              </span>
+            </label>
+
+            <label class="option-card">
+              <input type="checkbox" name="features" value="Отчёты по лидам">
+              <span class="option-card-inner">
+                <span class="option-card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg>
+                </span>
+                <span class="option-card-text">Отчёты</span>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-step">
+          <div class="form-step-head">
+            <span class="form-step-num">4</span>
+            <span class="form-step-title">Расскажите о продукте</span>
+            <span class="form-step-hint">необязательно</span>
+          </div>
+          <div class="form-row">
+            <textarea class="form-textarea" name="comment" placeholder="Что продаёте, кому, какие возражения чаще всего слышите..." maxlength="500"></textarea>
+            <div class="form-counter" id="commentCounter">0 / 500</div>
+          </div>
+        </div>
+
+        <label class="form-checkbox-row">
+          <input type="checkbox" name="agree" required>
+          <span class="form-checkbox-custom"></span>
+          <span>Согласен на обработку персональных данных</span>
+        </label>
+
+        <button type="submit" class="btn btn-primary form-submit form-submit-hero">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm5.6 8.4l-2 9.4c-.1.6-.5.8-1 .5l-2.8-2.1-1.4 1.3c-.1.1-.3.2-.5.2l.2-2.9 5.3-4.8c.2-.2 0-.3-.4-.1l-6.6 4.1-2.8-.9c-.6-.2-.6-.6.1-.9l11-4.2c.5-.2 1 .1.9.4z"/></svg>
+          Получить демо под мою нишу
+        </button>
+
+        <div class="form-status" id="formStatus" role="status" aria-live="polite"></div>
+        <div class="form-note">🔒 Данные защищены. Отвечу в Telegram в течение 15 минут.</div>
+      </form>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <div class="footer-copy">© 2026 Radar Group. ИИ-менеджер под ваш продукт.</div>
+    <ul class="footer-links">
+      <li><a href="index.html">Главная</a></li>
+      <li><a href="cases.html">Кейсы</a></li>
+      <li><a href="about.html">О технологии</a></li>
+      <li>
+        <a href="https://t.me/my_ai_TGAgency_bot" target="_blank" rel="noopener" aria-label="Telegram" class="footer-tg">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm5.6 8.4l-2 9.4c-.1.6-.5.8-1 .5l-2.8-2.1-1.4 1.3c-.1.1-.3.2-.5.2l.2-2.9 5.3-4.8c.2-.2 0-.3-.4-.1l-6.6 4.1-2.8-.9c-.6-.2-.6-.6.1-.9l11-4.2c.5-.2 1 .1.9.4z"/></svg>
+        </a>
+      </li>
+    </ul>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script src="robot.js"></script>
+</body>
+</html>

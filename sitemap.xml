@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://radargroup.by/</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://radargroup.by/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://radargroup.by/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://radargroup.by/"/>
+    <image:image>
+      <image:loc>https://radargroup.by/images/og-image.jpg</image:loc>
+      <image:title>Radar Group — AI Sales Manager</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://radargroup.by/en/</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://radargroup.by/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://radargroup.by/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://radargroup.by/"/>
+  </url>
+  <url>
+    <loc>https://radargroup.by/cases.html</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://radargroup.by/cases.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://radargroup.by/en/cases.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://radargroup.by/cases.html"/>
+  </url>
+  <url>
+    <loc>https://radargroup.by/en/cases.html</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://radargroup.by/cases.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://radargroup.by/en/cases.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://radargroup.by/cases.html"/>
+  </url>
+  <url>
+    <loc>https://radargroup.by/about.html</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://radargroup.by/about.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://radargroup.by/en/about.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://radargroup.by/about.html"/>
+  </url>
+  <url>
+    <loc>https://radargroup.by/en/about.html</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://radargroup.by/about.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://radargroup.by/en/about.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://radargroup.by/about.html"/>
+  </url>
+</urlset>
