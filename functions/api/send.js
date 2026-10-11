@@ -1,32 +1,3 @@
-export async function onRequestGet(context) {
-  const url = new URL(context.request.url);
-
-  // Отдаём sitemap.xml с правильным Content-Type
-  if (url.pathname === '/sitemap.xml') {
-    const asset = await context.env.ASSETS.fetch(new Request(new URL('/sitemap.xml', url)));
-    return new Response(asset.body, {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/xml; charset=utf-8',
-        'Cache-Control': 'public, max-age=3600'
-      }
-    });
-  }
-
-  // Отдаём robots.txt с правильным Content-Type
-  if (url.pathname === '/robots.txt') {
-    const asset = await context.env.ASSETS.fetch(new Request(new URL('/robots.txt', url)));
-    return new Response(asset.body, {
-      status: 200,
-      headers: {
-        'Content-Type': 'text/plain; charset=utf-8'
-      }
-    });
-  }
-
-  return new Response('Method Not Allowed', { status: 405 });
-}
-
 export async function onRequestPost(context) {
   try {
     const data = await context.request.json();
