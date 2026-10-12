@@ -116,7 +116,42 @@ document.addEventListener('DOMContentLoaded', () => {
     const counterEl = document.getElementById('commentCounter');
 
     if (nameInput) nameInput.setAttribute('maxlength', '50');
-    if (contactInput) contactInput.setAttribute('maxlength', '50');
+
+    if (contactInput) {
+      contactInput.setAttribute('maxlength', '30');
+
+      contactInput.addEventListener('input', function() {
+        let val = this.value;
+
+        if (val.startsWith('@')) {
+          this.value = val.replace(/[^a-zA-Z0-9_@]/g, '').slice(0, 32);
+        } else {
+          this.value = val.replace(/[^\d+\-()\s]/g, '').slice(0, 20);
+        }
+      });
+
+      contactInput.addEventListener('blur', function() {
+        const val = this.value.trim();
+        if (!val) { this.setCustomValidity(''); return; }
+
+        if (val.startsWith('@')) {
+          if (val.length < 4) {
+            this.setCustomValidity('Введите username полностью');
+          } else {
+            this.setCustomValidity('');
+          }
+        } else {
+          const digits = val.replace(/\D/g, '');
+          if (digits.length < 7) {
+            this.setCustomValidity('Введите корректный номер');
+          } else if (digits.length > 15) {
+            this.setCustomValidity('Слишком много цифр');
+          } else {
+            this.setCustomValidity('');
+          }
+        }
+      });
+    }
 
     if (commentInput) {
       commentInput.setAttribute('maxlength', '500');
@@ -138,11 +173,11 @@ document.addEventListener('DOMContentLoaded', () => {
         nameRequired: 'Укажите, как вас зовут',
         nameShort: 'Имя слишком короткое',
         contactRequired: 'Оставьте Telegram или телефон для связи',
-        contactShort: 'Контакт слишком короткий',
+        contactInvalid: 'Проверьте формат телефона или username',
         nicheRequired: 'Выберите вашу нишу',
         agreeRequired: 'Необходимо согласие на обработку данных',
         sending: 'Отправляем...',
-        success: '✅ Заявка отправлена! Свяжусь с вами в течение 15 минут.',
+        success: '✅ Заявка отправлена! Свяжусь с вами удобным способом.',
         errorSend: 'Не удалось отправить. Напишите напрямую в Telegram.',
         errorNet: 'Ошибка сети. Напишите напрямую в Telegram.'
       },
@@ -150,11 +185,11 @@ document.addEventListener('DOMContentLoaded', () => {
         nameRequired: 'Please enter your name',
         nameShort: 'Name is too short',
         contactRequired: 'Please leave your Telegram or phone',
-        contactShort: 'Contact is too short',
+        contactInvalid: 'Please check the phone or username format',
         nicheRequired: 'Please select your niche',
         agreeRequired: 'Please agree to data processing',
         sending: 'Sending...',
-        success: '✅ Request sent! I will contact you within 15 minutes.',
+        success: '✅ Request sent! I will contact you in a convenient way.',
         errorSend: 'Failed to send. Please message us on Telegram.',
         errorNet: 'Network error. Please message us on Telegram.'
       }
@@ -182,7 +217,16 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!name) { showStatus(M.nameRequired, 'error'); nameInput.focus(); return; }
       if (name.length < 2) { showStatus(M.nameShort, 'error'); nameInput.focus(); return; }
       if (!contact) { showStatus(M.contactRequired, 'error'); contactInput.focus(); return; }
-      if (contact.length < 3) { showStatus(M.contactShort, 'error'); contactInput.focus(); return; }
+
+      const isUsername = contact.startsWith('@');
+      const digits = contact.replace(/\D/g, '');
+
+      if (isUsername) {
+        if (contact.length < 4) { showStatus(M.contactInvalid, 'error'); contactInput.focus(); return; }
+      } else {
+        if (digits.length < 7 || digits.length > 15) { showStatus(M.contactInvalid, 'error'); contactInput.focus(); return; }
+      }
+
       if (!niche) { showStatus(M.nicheRequired, 'error'); return; }
       if (!agree) { showStatus(M.agreeRequired, 'error'); return; }
 
@@ -190,8 +234,6 @@ document.addEventListener('DOMContentLoaded', () => {
       submitBtn.innerHTML = M.sending;
 
       try {
-        // Отправка на Cloudflare Function /api/send
-        // Токен бота хранится в Environment Variables Cloudflare — безопасно
         const response = await fetch('/api/send', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -207,15 +249,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const data = await response.json();
 
-               if (data.ok) {
+        if (data.ok) {
           leadForm.reset();
           leadForm.querySelectorAll('.option-card input').forEach(i => i.checked = false);
-          if (counterEl) {
-            counterEl.textContent = '0 / 500';
-            counterEl.classList.remove('warn');
-          }
+          if (counterEl) { counterEl.textContent = '0 / 500'; counterEl.classList.remove('warn'); }
+          if (contactInput) contactInput.setCustomValidity('');
 
-                   // Отправка события в Google Analytics 4 (через Zaraz)
+          // Отправка события в Google Analytics 4 (через Zaraz)
           if (typeof zaraz !== 'undefined' && typeof zaraz.track === 'function') {
             zaraz.track('form_submit', {
               category: 'lead',
@@ -247,5 +287,97 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 7000);
     }
   }
+
+  // ===== ЧАТ-ВИДЖЕТ =====
+  const chatWidget = document.getElementById('chatWidget');
+  const chatClose = document.getElementById('chatClose');
+  const chatBody = document.getElementById('chatBody');
+  const chatForm = document.getElementById('chatForm');
+  const chatInput = document.getElementById('chatInput');
+  const chatSend = document.getElementById('chatSend');
+
+  window.openChatWidget = function() {
+    if (!chatWidget) return;
+    chatWidget.classList.add('active');
+    chatWidget.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => chatInput && chatInput.focus(), 300);
+  };
+
+  window.closeChatWidget = function() {
+    if (!chatWidget) return;
+    chatWidget.classList.remove('active');
+    chatWidget.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  };
+
+  if (chatClose) {
+    chatClose.addEventListener('click', window.closeChatWidget);
+  }
+
+  if (chatInput) {
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        chatForm.dispatchEvent(new Event('submit', { cancelable: true }));
+      }
+    });
+
+    chatInput.addEventListener('input', () => {
+      chatInput.style.height = 'auto';
+      chatInput.style.height = Math.min(chatInput.scrollHeight, 100) + 'px';
+    });
+  }
+
+  if (chatForm) {
+    chatForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const message = chatInput.value.trim();
+      if (!message) return;
+
+      addChatMessage(message, 'user');
+      chatInput.value = '';
+      chatInput.style.height = '44px';
+
+      showChatTyping();
+      setTimeout(() => {
+        hideChatTyping();
+        addChatMessage(
+          'Спасибо за сообщение! Это демо-версия. Полный ИИ-менеджер работает в Telegram — нажмите на ссылку ниже, чтобы попробовать.',
+          'bot'
+        );
+      }, 1200);
+    });
+  }
+
+  function addChatMessage(text, role) {
+    if (!chatBody) return;
+    const msg = document.createElement('div');
+    msg.className = 'chat-message ' + role;
+    msg.textContent = text;
+    chatBody.appendChild(msg);
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+
+  function showChatTyping() {
+    if (!chatBody) return;
+    const typing = document.createElement('div');
+    typing.className = 'chat-typing';
+    typing.id = 'chatTyping';
+    typing.innerHTML = '<span></span><span></span><span></span>';
+    chatBody.appendChild(typing);
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+
+  function hideChatTyping() {
+    const typing = document.getElementById('chatTyping');
+    if (typing) typing.remove();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && chatWidget && chatWidget.classList.contains('active')) {
+      window.closeChatWidget();
+    }
+  });
 
 });

@@ -146,20 +146,28 @@
     const el = document.createElement('div');
     el.id = MASCOT_ID;
     el.setAttribute('role', 'button');
-    el.setAttribute('aria-label', 'Открыть ИИ-менеджера');
+    el.setAttribute('aria-label', 'Открыть чат с ИИ-менеджером');
     el.setAttribute('tabindex', '0');
     el.innerHTML = buildRobotSVG();
 
-    // Клик — открываем Telegram
+    // Клик — открываем чат-виджет
     el.addEventListener('click', () => {
-      window.open(TELEGRAM_URL, '_blank', 'noopener');
+      if (typeof window.openChatWidget === 'function') {
+        window.openChatWidget();
+      } else {
+        window.open(TELEGRAM_URL, '_blank', 'noopener');
+      }
     });
 
     // Клавиатура
     el.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        window.open(TELEGRAM_URL, '_blank', 'noopener');
+        if (typeof window.openChatWidget === 'function') {
+          window.openChatWidget();
+        } else {
+          window.open(TELEGRAM_URL, '_blank', 'noopener');
+        }
       }
     });
 
@@ -179,9 +187,7 @@
     }
 
     mascot.addEventListener('mouseenter', () => {
-      // Моргает сразу при заходе
       blinkOnce();
-      // И повторяет моргание раз в 4 секунды, пока курсор на роботе
       blinkTimer = setInterval(blinkOnce, 4000);
     });
 
@@ -190,7 +196,6 @@
         clearInterval(blinkTimer);
         blinkTimer = null;
       }
-      // Моргает на прощание
       blinkOnce();
     });
   }
@@ -202,7 +207,7 @@
 
     if (!pupilLeft || !pupilRight) return;
 
-    const MAX_SHIFT = 3; // максимум, на сколько пикселей сдвигается зрачок
+    const MAX_SHIFT = 3;
 
     function handleMouseMove(e) {
       const rect = mascot.getBoundingClientRect();
@@ -212,11 +217,8 @@
       const dx = e.clientX - centerX;
       const dy = e.clientY - centerY;
 
-      // Нормализуем — насколько далеко мышь
       const distance = Math.hypot(dx, dy);
 
-      // Смещение зрачка пропорционально направлению мыши
-      // Чем дальше мышь — тем больше сдвиг, но не больше MAX_SHIFT
       const ratio = Math.min(distance / 200, 1);
       const shiftX = (dx / (distance || 1)) * MAX_SHIFT * ratio;
       const shiftY = (dy / (distance || 1)) * MAX_SHIFT * ratio;
@@ -225,10 +227,8 @@
       pupilRight.style.transform = `translate(${shiftX}px, ${shiftY}px)`;
     }
 
-    // Слушаем движение мыши по всему документу
     document.addEventListener('mousemove', handleMouseMove);
 
-    // На мобильных отслеживание не нужно
     if (window.matchMedia('(hover: none)').matches) {
       document.removeEventListener('mousemove', handleMouseMove);
     }
