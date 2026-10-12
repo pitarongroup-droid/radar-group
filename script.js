@@ -329,7 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  if (chatForm) {
+    if (chatForm) {
     chatForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const message = chatInput.value.trim();
@@ -339,9 +339,41 @@ document.addEventListener('DOMContentLoaded', () => {
       chatInput.value = '';
       chatInput.style.height = '44px';
 
-           showChatTyping();
+      // Проверка: похоже ли сообщение на контакт
+      const contactPattern = /^@[a-zA-Z0-9_]{3,32}$|^\+?[\d\s\-()]{7,20}$/;
 
-      // Собираем всю историю диалога для контекста
+      if (contactPattern.test(message.trim())) {
+        // Это контакт — отправляем в Telegram
+        const chatHistory = [];
+        chatBody.querySelectorAll('.chat-message').forEach(msg => {
+          chatHistory.push({
+            role: msg.classList.contains('bot') ? 'assistant' : 'user',
+            content: msg.textContent
+          });
+        });
+
+        showChatTyping();
+        try {
+          await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contact: message.trim(),
+              history: chatHistory.slice(-10)
+            })
+          });
+          hideChatTyping();
+          addChatMessage('Отлично! 👍 Инженер свяжется с вами в ближайшее время.', 'bot');
+        } catch (err) {
+          hideChatTyping();
+          addChatMessage('Записал. Если что-то не так — напишите в Telegram 🙂', 'bot');
+        }
+        return;
+      }
+
+      // Обычное сообщение — отправляем в AI
+      showChatTyping();
+
       const chatHistory = [];
       chatBody.querySelectorAll('.chat-message').forEach(msg => {
         chatHistory.push({
@@ -360,21 +392,63 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = await response.json();
         hideChatTyping();
 
+        if (response.status === 429) {
+          addChatMessage('Слишком много сообщений. Подождите пару минут 🙂', 'bot');
+          return;
+        }
+
         if (data.reply) {
           addChatMessage(data.reply, 'bot');
 
-          // Если клиент готов к передаче — показываем кнопку
-          if (data.contactReady) {
+          // Показываем CTA с полем для контакта
+          if (data.contactReady && !document.getElementById('chatCta')) {
             const ctaBlock = document.createElement('div');
-            ctaBlock.className = 'chat-cta';
+            ctaBlock.id = 'chatCta';
+            ctaBlock.style.cssText = 'margin-top: 8px; padding: 12px; background: var(--cyan-soft); border: 1px solid var(--cyan); border-radius: 12px;';
             ctaBlock.innerHTML = `
-              <a href="https://t.me/my_ai_TGAgency_bot" target="_blank" rel="noopener" class="btn btn-primary" style="width: 100%; margin-top: 8px;">
-                Оставить контакт в Telegram
-              </a>
+              <div style="font-size: 13px; color: var(--cyan); font-weight: 700; margin-bottom: 8px;">Оставьте контакт — инженер свяжется</div>
+              <div style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">Напишите ваш @username или телефон в поле ниже и нажмите отправить</div>
             `;
             chatBody.appendChild(ctaBlock);
             chatBody.scrollTop = chatBody.scrollHeight;
           }
+        } else {
+          addChatMessage('Извините, произошла ошибка. Попробуйте позже.', 'bot');
+        }
+      } catch (err) {
+        console.error('Chat error:', err);
+        hideChatTyping();
+        addChatMessage('Ошибка сети. Попробуйте позже.', 'bot');
+      }
+    });
+  }
+      });
+
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages: chatHistory })
+        });
+
+        const data = await response.json();
+        hideChatTyping();
+
+        if (data.reply) {
+          addChatMessage(data.reply, 'bot');
+
+          // Если клиент готов к передаче — показываем подсказку про контакт
+if (data.contactReady && !document.getElementById('chatCta')) {
+  const ctaBlock = document.createElement('div');
+  ctaBlock.id = 'chatCta';
+  ctaBlock.style.cssText = 'margin-top: 8px; padding: 12px 14px; background: var(--cyan-soft); border: 1px solid var(--cyan); border-radius: 12px;';
+  ctaBlock.innerHTML = `
+    <div style="font-size: 13px; color: var(--cyan); font-weight: 700; margin-bottom: 6px;">🎯 Оставьте контакт — инженер свяжется</div>
+    <div style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">Напишите ваш @username или телефон в поле ниже и нажмите отправить</div>
+  `;
+  chatBody.appendChild(ctaBlock);
+  chatBody.scrollTop = chatBody.scrollHeight;
+}
         } else {
           addChatMessage('Извините, произошла ошибка. Попробуйте позже.', 'bot');
         }
