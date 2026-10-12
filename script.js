@@ -255,7 +255,6 @@ document.addEventListener('DOMContentLoaded', () => {
           if (counterEl) { counterEl.textContent = '0 / 500'; counterEl.classList.remove('warn'); }
           if (contactInput) contactInput.setCustomValidity('');
 
-          // Отправка события в Google Analytics 4 (через Zaraz)
           if (typeof zaraz !== 'undefined' && typeof zaraz.track === 'function') {
             zaraz.track('form_submit', {
               category: 'lead',
@@ -294,7 +293,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const chatBody = document.getElementById('chatBody');
   const chatForm = document.getElementById('chatForm');
   const chatInput = document.getElementById('chatInput');
-  const chatSend = document.getElementById('chatSend');
 
   window.openChatWidget = function() {
     if (!chatWidget) return;
@@ -329,7 +327,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-    if (chatForm) {
+  // ===== ОТПРАВКА СООБЩЕНИЯ В ЧАТЕ =====
+  if (chatForm) {
     chatForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const message = chatInput.value.trim();
@@ -371,7 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // Обычное сообщение — отправляем в AI
+      // Обычное сообщение → AI
       showChatTyping();
 
       const chatHistory = [];
@@ -404,9 +403,9 @@ document.addEventListener('DOMContentLoaded', () => {
           if (data.contactReady && !document.getElementById('chatCta')) {
             const ctaBlock = document.createElement('div');
             ctaBlock.id = 'chatCta';
-            ctaBlock.style.cssText = 'margin-top: 8px; padding: 12px; background: var(--cyan-soft); border: 1px solid var(--cyan); border-radius: 12px;';
+            ctaBlock.style.cssText = 'margin-top: 8px; padding: 12px 14px; background: var(--cyan-soft); border: 1px solid var(--cyan); border-radius: 12px;';
             ctaBlock.innerHTML = `
-              <div style="font-size: 13px; color: var(--cyan); font-weight: 700; margin-bottom: 8px;">Оставьте контакт — инженер свяжется</div>
+              <div style="font-size: 13px; color: var(--cyan); font-weight: 700; margin-bottom: 6px;">🎯 Оставьте контакт — инженер свяжется</div>
               <div style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">Напишите ваш @username или телефон в поле ниже и нажмите отправить</div>
             `;
             chatBody.appendChild(ctaBlock);
@@ -422,44 +421,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-      });
 
-      try {
-        const response = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: chatHistory })
-        });
-
-        const data = await response.json();
-        hideChatTyping();
-
-        if (data.reply) {
-          addChatMessage(data.reply, 'bot');
-
-          // Если клиент готов к передаче — показываем подсказку про контакт
-if (data.contactReady && !document.getElementById('chatCta')) {
-  const ctaBlock = document.createElement('div');
-  ctaBlock.id = 'chatCta';
-  ctaBlock.style.cssText = 'margin-top: 8px; padding: 12px 14px; background: var(--cyan-soft); border: 1px solid var(--cyan); border-radius: 12px;';
-  ctaBlock.innerHTML = `
-    <div style="font-size: 13px; color: var(--cyan); font-weight: 700; margin-bottom: 6px;">🎯 Оставьте контакт — инженер свяжется</div>
-    <div style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">Напишите ваш @username или телефон в поле ниже и нажмите отправить</div>
-  `;
-  chatBody.appendChild(ctaBlock);
-  chatBody.scrollTop = chatBody.scrollHeight;
-}
-        } else {
-          addChatMessage('Извините, произошла ошибка. Попробуйте позже.', 'bot');
-        }
-      } catch (err) {
-        console.error('Chat error:', err);
-        hideChatTyping();
-        addChatMessage('Ошибка сети. Попробуйте позже.', 'bot');
-      }
-    });
-  }
-
+  // ===== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =====
   function addChatMessage(text, role) {
     if (!chatBody) return;
     const msg = document.createElement('div');
@@ -484,6 +447,7 @@ if (data.contactReady && !document.getElementById('chatCta')) {
     if (typing) typing.remove();
   }
 
+  // ===== ЗАКРЫТИЕ ЧАТА ПО ESCAPE =====
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && chatWidget && chatWidget.classList.contains('active')) {
       window.closeChatWidget();
