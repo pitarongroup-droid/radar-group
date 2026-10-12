@@ -215,12 +215,11 @@ document.addEventListener('DOMContentLoaded', () => {
             counterEl.classList.remove('warn');
           }
 
-          // Отправка события в Google Analytics 4 (через Zaraz)
-          if (typeof gtag === 'function') {
-            gtag('event', 'form_submit', {
-              'event_category': 'lead',
-              'event_label': niche,
-              'value': 1
+                   // Отправка события в Google Analytics 4 (через Zaraz)
+          if (typeof zaraz !== 'undefined' && typeof zaraz.track === 'function') {
+            zaraz.track('form_submit', {
+              category: 'lead',
+              niche: niche
             });
           }
 
