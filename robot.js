@@ -7,7 +7,7 @@
   'use strict';
 
   const MASCOT_ID = 'radar-mascot';
-  const SHOW_THRESHOLD = 0.75;
+  const SHOW_THRESHOLD = 0.15;
   const TELEGRAM_URL = 'https://t.me/my_ai_TGAgency_bot';
 
   // ===== SVG РОБОТА =====
