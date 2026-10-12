@@ -339,14 +339,15 @@ document.addEventListener('DOMContentLoaded', () => {
       chatInput.value = '';
       chatInput.style.height = '44px';
 
-      showChatTyping();
-      setTimeout(() => {
-        hideChatTyping();
-        addChatMessage(
-          'Спасибо за сообщение! Это демо-версия. Полный ИИ-менеджер работает в Telegram — нажмите на ссылку ниже, чтобы попробовать.',
-          'bot'
-        );
-      }, 1200);
+     showChatTyping();
+setTimeout(() => {
+  hideChatTyping();
+  const LANG = document.documentElement.lang === 'en' ? 'en' : 'ru';
+  const reply = LANG === 'en'
+    ? 'Thanks for your message! This is a demo version. The full AI Manager works on Telegram — click the link below to try it.'
+    : 'Спасибо за сообщение! Это демо-версия. Полный ИИ-менеджер работает в Telegram — нажмите на ссылку ниже, чтобы попробовать.';
+  addChatMessage(reply, 'bot');
+}, 1200);
     });
   }
 
