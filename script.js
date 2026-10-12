@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.querySelectorAll('[data-count]').forEach(el => counterObserver.observe(el));
 
-  // ===== ПЛАВНЫЙ СКРОЛЛ (только для якорей на текущей странице) =====
+  // ===== ПЛАВНЫЙ СКРОЛЛ =====
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
       const targetId = this.getAttribute('href');
@@ -104,6 +104,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
+  // ===== ОПРЕДЕЛЕНИЕ ЯЗЫКА СТРАНИЦЫ =====
+  const PAGE_LANG = document.documentElement.lang === 'en' ? 'en' : 'ru';
 
   // ===== ФОРМА ЗАЯВКИ =====
   const leadForm = document.getElementById('leadForm');
@@ -167,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
       updateCounter();
     }
 
-    const LANG = document.documentElement.lang === 'en' ? 'en' : 'ru';
+    const LANG = PAGE_LANG;
     const MESSAGES = {
       ru: {
         nameRequired: 'Укажите, как вас зовут',
@@ -358,14 +361,25 @@ document.addEventListener('DOMContentLoaded', () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               contact: message.trim(),
-              history: chatHistory.slice(-10)
+              history: chatHistory.slice(-10),
+              lang: PAGE_LANG
             })
           });
           hideChatTyping();
-          addChatMessage('Отлично! 👍 Инженер свяжется с вами в ближайшее время.', 'bot');
+          addChatMessage(
+            PAGE_LANG === 'en'
+              ? 'Great! 👍 The engineer will contact you shortly.'
+              : 'Отлично! 👍 Инженер свяжется с вами в ближайшее время.',
+            'bot'
+          );
         } catch (err) {
           hideChatTyping();
-          addChatMessage('Записал. Если что-то не так — напишите в Telegram 🙂', 'bot');
+          addChatMessage(
+            PAGE_LANG === 'en'
+              ? 'Got it. If anything goes wrong — message us on Telegram 🙂'
+              : 'Записал. Если что-то не так — напишите в Telegram 🙂',
+            'bot'
+          );
         }
         return;
       }
@@ -385,14 +399,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const response = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: chatHistory })
+          body: JSON.stringify({
+            messages: chatHistory,
+            lang: PAGE_LANG
+          })
         });
 
         const data = await response.json();
         hideChatTyping();
 
         if (response.status === 429) {
-          addChatMessage('Слишком много сообщений. Подождите пару минут 🙂', 'bot');
+          addChatMessage(
+            PAGE_LANG === 'en'
+              ? 'Too many messages. Please wait a couple of minutes 🙂'
+              : 'Слишком много сообщений. Подождите пару минут 🙂',
+            'bot'
+          );
           return;
         }
 
@@ -404,20 +426,35 @@ document.addEventListener('DOMContentLoaded', () => {
             const ctaBlock = document.createElement('div');
             ctaBlock.id = 'chatCta';
             ctaBlock.style.cssText = 'margin-top: 8px; padding: 12px 14px; background: var(--cyan-soft); border: 1px solid var(--cyan); border-radius: 12px;';
-            ctaBlock.innerHTML = `
-              <div style="font-size: 13px; color: var(--cyan); font-weight: 700; margin-bottom: 6px;">🎯 Оставьте контакт — инженер свяжется</div>
-              <div style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">Напишите ваш @username или телефон в поле ниже и нажмите отправить</div>
-            `;
+            ctaBlock.innerHTML = PAGE_LANG === 'en'
+              ? `
+                <div style="font-size: 13px; color: var(--cyan); font-weight: 700; margin-bottom: 6px;">🎯 Leave your contact — the engineer will reach out</div>
+                <div style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">Type your @username or phone below and press send</div>
+              `
+              : `
+                <div style="font-size: 13px; color: var(--cyan); font-weight: 700; margin-bottom: 6px;">🎯 Оставьте контакт — инженер свяжется</div>
+                <div style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">Напишите ваш @username или телефон в поле ниже и нажмите отправить</div>
+              `;
             chatBody.appendChild(ctaBlock);
             chatBody.scrollTop = chatBody.scrollHeight;
           }
         } else {
-          addChatMessage('Извините, произошла ошибка. Попробуйте позже.', 'bot');
+          addChatMessage(
+            PAGE_LANG === 'en'
+              ? 'Sorry, an error occurred. Please try again later.'
+              : 'Извините, произошла ошибка. Попробуйте позже.',
+            'bot'
+          );
         }
       } catch (err) {
         console.error('Chat error:', err);
         hideChatTyping();
-        addChatMessage('Ошибка сети. Попробуйте позже.', 'bot');
+        addChatMessage(
+          PAGE_LANG === 'en'
+            ? 'Network error. Please try again later.'
+            : 'Ошибка сети. Попробуйте позже.',
+          'bot'
+        );
       }
     });
   }
