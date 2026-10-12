@@ -330,7 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (chatForm) {
-    chatForm.addEventListener('submit', (e) => {
+    chatForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const message = chatInput.value.trim();
       if (!message) return;
@@ -339,15 +339,50 @@ document.addEventListener('DOMContentLoaded', () => {
       chatInput.value = '';
       chatInput.style.height = '44px';
 
-     showChatTyping();
-setTimeout(() => {
-  hideChatTyping();
-  const LANG = document.documentElement.lang === 'en' ? 'en' : 'ru';
-  const reply = LANG === 'en'
-    ? 'Thanks for your message! This is a demo version. The full AI Manager works on Telegram — click the link below to try it.'
-    : 'Спасибо за сообщение! Это демо-версия. Полный ИИ-менеджер работает в Telegram — нажмите на ссылку ниже, чтобы попробовать.';
-  addChatMessage(reply, 'bot');
-}, 1200);
+           showChatTyping();
+
+      // Собираем всю историю диалога для контекста
+      const chatHistory = [];
+      chatBody.querySelectorAll('.chat-message').forEach(msg => {
+        chatHistory.push({
+          role: msg.classList.contains('bot') ? 'assistant' : 'user',
+          content: msg.textContent
+        });
+      });
+
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages: chatHistory })
+        });
+
+        const data = await response.json();
+        hideChatTyping();
+
+        if (data.reply) {
+          addChatMessage(data.reply, 'bot');
+
+          // Если клиент готов к передаче — показываем кнопку
+          if (data.contactReady) {
+            const ctaBlock = document.createElement('div');
+            ctaBlock.className = 'chat-cta';
+            ctaBlock.innerHTML = `
+              <a href="https://t.me/my_ai_TGAgency_bot" target="_blank" rel="noopener" class="btn btn-primary" style="width: 100%; margin-top: 8px;">
+                Оставить контакт в Telegram
+              </a>
+            `;
+            chatBody.appendChild(ctaBlock);
+            chatBody.scrollTop = chatBody.scrollHeight;
+          }
+        } else {
+          addChatMessage('Извините, произошла ошибка. Попробуйте позже.', 'bot');
+        }
+      } catch (err) {
+        console.error('Chat error:', err);
+        hideChatTyping();
+        addChatMessage('Ошибка сети. Попробуйте позже.', 'bot');
+      }
     });
   }
 
