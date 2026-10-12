@@ -1913,7 +1913,7 @@ body::before {
   border-radius: 12px;
   color: var(--text);
   font-family: inherit;
-  font-size: 14px;
+  font-size: 16px;
   resize: none;
   max-height: 100px;
   min-height: 44px;
@@ -1982,16 +1982,30 @@ body::before {
 
 @media (max-width: 640px) {
   .chat-widget {
-    bottom: 0;
-    right: 0;
+    top: 0;
     left: 0;
+    right: 0;
+    bottom: 0;
     width: 100%;
     max-width: 100%;
-    height: 100vh;
-    max-height: 100vh;
+    height: 100dvh;
+    max-height: 100dvh;
     border-radius: 0;
-    border-left: none;
-    border-right: none;
-    border-bottom: none;
+    border: none;
+    z-index: 9999;
+  }
+
+  .chat-body {
+    padding: 16px;
+  }
+
+  .chat-message {
+    max-width: 90%;
+    font-size: 15px;
+  }
+
+  .chat-footer {
+    padding: 12px 14px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0));
   }
 }
