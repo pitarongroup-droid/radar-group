@@ -207,13 +207,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const data = await response.json();
 
-        if (data.ok) {
+               if (data.ok) {
           leadForm.reset();
           leadForm.querySelectorAll('.option-card input').forEach(i => i.checked = false);
           if (counterEl) {
             counterEl.textContent = '0 / 500';
             counterEl.classList.remove('warn');
           }
+
+          // Отправка события в Google Analytics 4 (через Zaraz)
+          if (typeof gtag === 'function') {
+            gtag('event', 'form_submit', {
+              'event_category': 'lead',
+              'event_label': niche,
+              'value': 1
+            });
+          }
+
           showStatus(M.success, 'success');
         } else {
           console.error('Send error:', data);
