@@ -370,12 +370,13 @@ body::before {
   50% { background-position: 100% 50%; }
 }
 
+/* ✅ ИЗМЕНЕНО: max-width: 800px — как у .section-header */
 .hero-sub {
-  font-size: clamp(15px, 1.7vw, 18px);
+  font-size: 16px;
   color: var(--text-muted);
-  max-width: 640px;
-  margin-bottom: 36px;
   line-height: 1.6;
+  margin-bottom: 36px;
+  max-width: 800px;
 }
 
 .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
@@ -1642,7 +1643,6 @@ body::before {
   .msg-role { width: 48px; font-size: 12px; }
   .msg { font-size: 13px; }
 
-  /* ===== КАРТОЧКИ-ОПЦИИ В ФОРМЕ: 1 КОЛОНКА, ИКОНКА СЛЕВА ===== */
   .option-grid {
     grid-template-columns: 1fr;
     gap: 10px;
@@ -1705,7 +1705,9 @@ body::before {
     padding: 16px 20px;
     font-size: 14px;
   }
-}/* ============================================
+}
+
+/* ============================================
    ЧАТ-ВИДЖЕТ (демо ИИ-менеджера)
    ============================================ */
 
