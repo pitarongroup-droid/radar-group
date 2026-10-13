@@ -35,15 +35,17 @@
   <meta name="twitter:image" content="https://radar-group.org/images/og-image.jpg">
 
   <!-- Favicon (робот) -->
-<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
-<link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
-<link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
-<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
-<link rel="manifest" href="/site.webmanifest">
-<meta name="theme-color" content="#08080F">
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
+  <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+
+  <!-- Шрифты (async для FCP) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"></noscript>
 
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="robot.css">
@@ -82,7 +84,7 @@
 <header class="header" id="header">
   <div class="container header-inner">
     <a href="index.html" class="logo" aria-label="Radar Group — на главную">
-      <img src="/images/logo.webp"alt="Логотип Radar Group" width="40" height="40">
+      <img src="/images/logo.webp" alt="Логотип Radar Group" width="40" height="40">
       <span class="logo-text">RADAR GROUP</span>
     </a>
 
@@ -685,6 +687,7 @@
     </ul>
   </div>
 </footer>
+
 <!-- ЧАТ-ВИДЖЕТ -->
 <div class="chat-widget" id="chatWidget" aria-hidden="true">
   <div class="chat-header">
@@ -731,7 +734,8 @@
     Демо-версия. Полную версию получите в <a href="https://t.me/my_ai_TGAgency_bot" target="_blank" rel="noopener">Telegram</a>
   </div>
 </div>
-<script src="script.js"></script>
-<script src="robot.js"></script>
+
+<script src="script.js" defer></script>
+<script src="robot.js" defer></script>
 </body>
 </html>

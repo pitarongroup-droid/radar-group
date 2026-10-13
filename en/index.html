@@ -34,17 +34,18 @@
   <meta name="twitter:description" content="Deeply learns your product and sells it on Telegram 24/7.">
   <meta name="twitter:image" content="https://radar-group.org/images/og-image.jpg">
 
-  <!-- Favicon (робот) -->
-<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
-<link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
-<link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
-<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
-<link rel="manifest" href="/site.webmanifest">
-<meta name="theme-color" content="#08080F">
+  <!-- Favicon (robot) -->
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
+  <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
 
+  <!-- Fonts (async for FCP) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"></noscript>
 
   <link rel="stylesheet" href="../style.css">
   <link rel="stylesheet" href="../robot.css">
@@ -687,6 +688,7 @@
     </ul>
   </div>
 </footer>
+
 <!-- CHAT WIDGET -->
 <div class="chat-widget" id="chatWidget" aria-hidden="true">
   <div class="chat-header">
@@ -733,7 +735,8 @@
     Demo version. Get the full version on <a href="https://t.me/my_ai_TGAgency_bot" target="_blank" rel="noopener">Telegram</a>
   </div>
 </div>
-<script src="../script.js"></script>
-<script src="../robot.js"></script>
+
+<script src="../script.js" defer></script>
+<script src="../robot.js" defer></script>
 </body>
 </html>
