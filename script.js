@@ -1,5 +1,40 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+  // ===== КОНСТАНТЫ =====
+  const PAGE_LANG = document.documentElement.lang === 'en' ? 'en' : 'ru';
+  const CONTACT_RE = /^@[a-zA-Z0-9_]{3,32}$|^\+?[\d\s\-()]{7,20}$/;
+  const MAX_COMMENT = 500;
+  const MAX_NAME = 50;
+  const MAX_CONTACT = 30;
+  const COUNTER_DURATION = 1800;
+  const SCROLL_OFFSET = 80;
+  const STATUS_TIMEOUT = 7000;
+
+  // ===== БЕЗОПАСНЫЙ ТРЕКИНГ =====
+  function track(eventName, params = {}) {
+    try {
+      if (typeof zaraz !== 'undefined' && typeof zaraz.track === 'function') {
+        zaraz.track(eventName, params);
+        console.log('[Zaraz] tracked:', eventName, params);
+      } else {
+        console.warn('[Zaraz] not available, skip:', eventName);
+      }
+    } catch (err) {
+      console.error('[Zaraz] track error:', eventName, err);
+    }
+  }
+
+  // ===== БЛОКИРОВКА СКРОЛЛА (счётчик) =====
+  let scrollLocks = 0;
+  function lockScroll() {
+    scrollLocks++;
+    document.body.style.overflow = 'hidden';
+  }
+  function unlockScroll() {
+    scrollLocks = Math.max(0, scrollLocks - 1);
+    if (scrollLocks === 0) document.body.style.overflow = '';
+  }
+
   // ===== ЛОГО: не перезагружаем текущую страницу =====
   document.querySelectorAll('.logo').forEach(logo => {
     logo.addEventListener('click', function(e) {
@@ -19,12 +54,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function toggleMenu(open) {
     if (!burger || !mobileMenu || !mobileOverlay) return;
+    const isOpen = burger.classList.contains('active');
+    if (isOpen === open) return;
+
     burger.classList.toggle('active', open);
     mobileMenu.classList.toggle('active', open);
     mobileOverlay.classList.toggle('active', open);
     burger.setAttribute('aria-expanded', open ? 'true' : 'false');
     mobileMenu.setAttribute('aria-hidden', open ? 'false' : 'true');
-    document.body.style.overflow = open ? 'hidden' : '';
+
+    if (open) lockScroll();
+    else unlockScroll();
   }
 
   if (burger) burger.addEventListener('click', () => toggleMenu(!burger.classList.contains('active')));
@@ -35,101 +75,118 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') toggleMenu(false); });
-
   // ===== ШАПКА ПРИ СКРОЛЛЕ =====
   const header = document.getElementById('header');
-  window.addEventListener('scroll', () => {
-    if (header) header.classList.toggle('scrolled', window.scrollY > 20);
-  }, { passive: true });
+  if (header) {
+    window.addEventListener('scroll', () => {
+      header.classList.toggle('scrolled', window.scrollY > 20);
+    }, { passive: true });
+  }
 
   // ===== ПОЯВЛЕНИЕ СЕКЦИЙ =====
-  const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        revealObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-
-  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+  const revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+    revealEls.forEach(el => revealObserver.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('visible'));
+  }
 
   // ===== СЧЁТЧИКИ =====
   function animateCounter(el) {
-    const target = parseInt(el.dataset.count, 10);
+    const target = parseInt(el.dataset.count, 10) || 0;
     const prefix = el.dataset.prefix || '';
     const suffix = el.dataset.suffix || '';
-    const duration = 1800;
     const start = performance.now();
 
+    function format(value) {
+      return target >= 1000
+        ? prefix + value.toLocaleString('ru-RU') + suffix
+        : prefix + value + suffix;
+    }
+
     function step(now) {
-      const progress = Math.min((now - start) / duration, 1);
+      const progress = Math.min((now - start) / COUNTER_DURATION, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
       const current = Math.floor(eased * target);
-      el.textContent = target >= 1000
-        ? prefix + current.toLocaleString('ru-RU') + suffix
-        : prefix + current + suffix;
+      el.textContent = format(current);
       if (progress < 1) requestAnimationFrame(step);
-      else el.textContent = target >= 1000
-        ? prefix + target.toLocaleString('ru-RU') + suffix
-        : prefix + target + suffix;
+      else el.textContent = format(target);
     }
 
     requestAnimationFrame(step);
   }
 
-  const counterObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        animateCounter(entry.target);
-        counterObserver.unobserve(entry.target);
-      }
+  const counterEls = document.querySelectorAll('[data-count]');
+  if ('IntersectionObserver' in window) {
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateCounter(entry.target);
+          counterObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    counterEls.forEach(el => counterObserver.observe(el));
+  } else {
+    counterEls.forEach(el => {
+      const target = parseInt(el.dataset.count, 10) || 0;
+      const prefix = el.dataset.prefix || '';
+      const suffix = el.dataset.suffix || '';
+      el.textContent = target >= 1000
+        ? prefix + target.toLocaleString('ru-RU') + suffix
+        : prefix + target + suffix;
     });
-  }, { threshold: 0.5 });
-
-  document.querySelectorAll('[data-count]').forEach(el => counterObserver.observe(el));
+  }
 
   // ===== ПЛАВНЫЙ СКРОЛЛ =====
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
       const targetId = this.getAttribute('href');
-      if (targetId === '#' || targetId === '!#') return;
+      if (!targetId || targetId === '#') return;
 
-      const target = document.querySelector(targetId);
+      let target;
+      try {
+        target = document.querySelector(targetId);
+      } catch (err) {
+        return;
+      }
+
       if (target) {
         e.preventDefault();
-        const top = target.getBoundingClientRect().top + window.scrollY - 80;
+        const top = target.getBoundingClientRect().top + window.scrollY - SCROLL_OFFSET;
         window.scrollTo({ top, behavior: 'smooth' });
       }
     });
   });
 
-  // ===== ОПРЕДЕЛЕНИЕ ЯЗЫКА СТРАНИЦЫ =====
-  const PAGE_LANG = document.documentElement.lang === 'en' ? 'en' : 'ru';
-
   // ===== ФОРМА ЗАЯВКИ =====
   const leadForm = document.getElementById('leadForm');
   if (leadForm) {
     const statusEl = document.getElementById('formStatus');
-
     const nameInput = leadForm.querySelector('[name="name"]');
     const contactInput = leadForm.querySelector('[name="contact"]');
     const commentInput = leadForm.querySelector('[name="comment"]');
-    const counterEl = document.getElementById('commentCounter');
+    const commentCounter = document.getElementById('commentCounter');
 
-    if (nameInput) nameInput.setAttribute('maxlength', '50');
+    if (nameInput) nameInput.setAttribute('maxlength', String(MAX_NAME));
 
     if (contactInput) {
-      contactInput.setAttribute('maxlength', '30');
+      contactInput.setAttribute('maxlength', String(MAX_CONTACT));
 
       contactInput.addEventListener('input', function() {
         let val = this.value;
-
         if (val.startsWith('@')) {
-          this.value = val.replace(/[^a-zA-Z0-9_@]/g, '').slice(0, 32);
+          this.value = val.replace(/[^a-zA-Z0-9_@]/g, '').slice(0, MAX_CONTACT);
         } else {
-          this.value = val.replace(/[^\d+\-()\s]/g, '').slice(0, 20);
+          this.value = val.replace(/[^\d+\-()\s]/g, '').slice(0, MAX_CONTACT);
         }
       });
 
@@ -137,40 +194,31 @@ document.addEventListener('DOMContentLoaded', () => {
         const val = this.value.trim();
         if (!val) { this.setCustomValidity(''); return; }
 
-        if (val.startsWith('@')) {
-          if (val.length < 4) {
-            this.setCustomValidity('Введите username полностью');
-          } else {
-            this.setCustomValidity('');
-          }
+        if (!CONTACT_RE.test(val)) {
+          this.setCustomValidity(
+            PAGE_LANG === 'en'
+              ? 'Please check the phone or username format'
+              : 'Проверьте формат телефона или username'
+          );
         } else {
-          const digits = val.replace(/\D/g, '');
-          if (digits.length < 7) {
-            this.setCustomValidity('Введите корректный номер');
-          } else if (digits.length > 15) {
-            this.setCustomValidity('Слишком много цифр');
-          } else {
-            this.setCustomValidity('');
-          }
+          this.setCustomValidity('');
         }
       });
     }
 
     if (commentInput) {
-      commentInput.setAttribute('maxlength', '500');
+      commentInput.setAttribute('maxlength', String(MAX_COMMENT));
 
       function updateCounter() {
-        if (!counterEl) return;
+        if (!commentCounter) return;
         const len = commentInput.value.length;
-        counterEl.textContent = `${len} / 500`;
-        counterEl.classList.toggle('warn', len > 450);
+        commentCounter.textContent = `${len} / ${MAX_COMMENT}`;
+        commentCounter.classList.toggle('warn', len > MAX_COMMENT * 0.9);
       }
-
       commentInput.addEventListener('input', updateCounter);
       updateCounter();
     }
 
-    const LANG = PAGE_LANG;
     const MESSAGES = {
       ru: {
         nameRequired: 'Укажите, как вас зовут',
@@ -197,18 +245,30 @@ document.addEventListener('DOMContentLoaded', () => {
         errorNet: 'Network error. Please message us on Telegram.'
       }
     };
-    const M = MESSAGES[LANG];
+    const M = MESSAGES[PAGE_LANG];
+
+    function showStatus(message, type) {
+      if (!statusEl) return;
+      statusEl.textContent = message;
+      statusEl.className = 'form-status ' + type;
+      clearTimeout(statusEl._t);
+      statusEl._t = setTimeout(() => {
+        statusEl.className = 'form-status';
+      }, STATUS_TIMEOUT);
+    }
 
     leadForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const submitBtn = leadForm.querySelector('.form-submit');
+      if (!submitBtn) return;
       const originalHTML = submitBtn.innerHTML;
 
-      const name = nameInput.value.trim();
-      const contact = contactInput.value.trim();
+      const name = nameInput ? nameInput.value.trim() : '';
+      const contact = contactInput ? contactInput.value.trim() : '';
       const comment = commentInput ? commentInput.value.trim() : '';
-      const agree = leadForm.querySelector('[name="agree"]').checked;
+      const agreeEl = leadForm.querySelector('[name="agree"]');
+      const agree = agreeEl ? agreeEl.checked : false;
 
       const nicheInput = leadForm.querySelector('input[name="niche"]:checked');
       const niche = nicheInput ? nicheInput.value : '';
@@ -217,19 +277,10 @@ document.addEventListener('DOMContentLoaded', () => {
         leadForm.querySelectorAll('input[name="features"]:checked')
       ).map(el => el.value);
 
-      if (!name) { showStatus(M.nameRequired, 'error'); nameInput.focus(); return; }
-      if (name.length < 2) { showStatus(M.nameShort, 'error'); nameInput.focus(); return; }
-      if (!contact) { showStatus(M.contactRequired, 'error'); contactInput.focus(); return; }
-
-      const isUsername = contact.startsWith('@');
-      const digits = contact.replace(/\D/g, '');
-
-      if (isUsername) {
-        if (contact.length < 4) { showStatus(M.contactInvalid, 'error'); contactInput.focus(); return; }
-      } else {
-        if (digits.length < 7 || digits.length > 15) { showStatus(M.contactInvalid, 'error'); contactInput.focus(); return; }
-      }
-
+      if (!name) { showStatus(M.nameRequired, 'error'); nameInput?.focus(); return; }
+      if (name.length < 2) { showStatus(M.nameShort, 'error'); nameInput?.focus(); return; }
+      if (!contact) { showStatus(M.contactRequired, 'error'); contactInput?.focus(); return; }
+      if (!CONTACT_RE.test(contact)) { showStatus(M.contactInvalid, 'error'); contactInput?.focus(); return; }
       if (!niche) { showStatus(M.nicheRequired, 'error'); return; }
       if (!agree) { showStatus(M.agreeRequired, 'error'); return; }
 
@@ -246,28 +297,30 @@ document.addEventListener('DOMContentLoaded', () => {
             niche: niche,
             features: features,
             comment: comment,
-            lang: LANG
+            lang: PAGE_LANG
           })
         });
 
-        const data = await response.json();
+        let data = {};
+        try { data = await response.json(); } catch (_) {}
 
-        if (data.ok) {
+        if (response.ok && data.ok) {
           leadForm.reset();
           leadForm.querySelectorAll('.option-card input').forEach(i => i.checked = false);
-          if (counterEl) { counterEl.textContent = '0 / 500'; counterEl.classList.remove('warn'); }
+          if (commentCounter) {
+            commentCounter.textContent = `0 / ${MAX_COMMENT}`;
+            commentCounter.classList.remove('warn');
+          }
           if (contactInput) contactInput.setCustomValidity('');
 
-          if (typeof zaraz !== 'undefined' && typeof zaraz.track === 'function') {
-            zaraz.track('form_submit', {
-              category: 'lead',
-              niche: niche
-            });
-          }
+          track('form_submit', {
+            category: 'lead',
+            niche: niche
+          });
 
           showStatus(M.success, 'success');
         } else {
-          console.error('Send error:', data);
+          console.error('Send error:', response.status, data);
           showStatus(M.errorSend, 'error');
         }
       } catch (err) {
@@ -278,16 +331,6 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.innerHTML = originalHTML;
       }
     });
-
-    function showStatus(message, type) {
-      if (!statusEl) return;
-      statusEl.textContent = message;
-      statusEl.className = 'form-status ' + type;
-      clearTimeout(statusEl._t);
-      statusEl._t = setTimeout(() => {
-        statusEl.className = 'form-status';
-      }, 7000);
-    }
   }
 
   // ===== ЧАТ-ВИДЖЕТ =====
@@ -297,26 +340,33 @@ document.addEventListener('DOMContentLoaded', () => {
   const chatForm = document.getElementById('chatForm');
   const chatInput = document.getElementById('chatInput');
 
+  let chatOpened = false; // защита от повторного chat_open
+
   window.openChatWidget = function() {
     if (!chatWidget) return;
     chatWidget.classList.add('active');
     chatWidget.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
+    lockScroll();
     setTimeout(() => chatInput && chatInput.focus(), 300);
+
+    if (!chatOpened) {
+      chatOpened = true;
+      track('chat_open');
+    }
   };
 
   window.closeChatWidget = function() {
     if (!chatWidget) return;
     chatWidget.classList.remove('active');
     chatWidget.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
+    unlockScroll();
   };
 
   if (chatClose) {
     chatClose.addEventListener('click', window.closeChatWidget);
   }
 
-  if (chatInput) {
+  if (chatInput && chatForm) {
     chatInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
@@ -334,45 +384,55 @@ document.addEventListener('DOMContentLoaded', () => {
   if (chatForm) {
     chatForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (!chatInput) return;
+
       const message = chatInput.value.trim();
       if (!message) return;
 
       addChatMessage(message, 'user');
       chatInput.value = '';
-      chatInput.style.height = '44px';
+      chatInput.style.height = '';
 
-      // Проверка: похоже ли сообщение на контакт
-      const contactPattern = /^@[a-zA-Z0-9_]{3,32}$|^\+?[\d\s\-()]{7,20}$/;
+      // Убираем старый CTA, если он был
+      const oldCta = document.getElementById('chatCta');
+      if (oldCta) oldCta.remove();
 
-      if (contactPattern.test(message.trim())) {
-        // Это контакт — отправляем в Telegram
-        const chatHistory = [];
-        chatBody.querySelectorAll('.chat-message').forEach(msg => {
-          chatHistory.push({
-            role: msg.classList.contains('bot') ? 'assistant' : 'user',
-            content: msg.textContent
-          });
-        });
+      // --- ВЕТКА 1: это контакт → лид ---
+      if (CONTACT_RE.test(message)) {
+        const chatHistory = getChatHistory();
 
         showChatTyping();
         try {
-          await fetch('/api/chat', {
+          const response = await fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              contact: message.trim(),
+              contact: message,
               history: chatHistory.slice(-10),
               lang: PAGE_LANG
             })
           });
+
           hideChatTyping();
+
+          if (!response.ok) {
+            console.warn('[chat_lead] server status:', response.status);
+          }
+
           addChatMessage(
             PAGE_LANG === 'en'
               ? 'Great! 👍 The engineer will contact you shortly.'
               : 'Отлично! 👍 Инженер свяжется с вами в ближайшее время.',
             'bot'
           );
+
+          track('chat_lead', {
+            category: 'lead',
+            source: 'chat',
+            lang: PAGE_LANG
+          });
         } catch (err) {
+          console.error('[chat_lead] error:', err);
           hideChatTyping();
           addChatMessage(
             PAGE_LANG === 'en'
@@ -384,16 +444,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // Обычное сообщение → AI
+      // --- ВЕТКА 2: обычное сообщение → AI ---
+      track('chat_message');
+
       showChatTyping();
 
-      const chatHistory = [];
-      chatBody.querySelectorAll('.chat-message').forEach(msg => {
-        chatHistory.push({
-          role: msg.classList.contains('bot') ? 'assistant' : 'user',
-          content: msg.textContent
-        });
-      });
+      const chatHistory = getChatHistory();
 
       try {
         const response = await fetch('/api/chat', {
@@ -405,10 +461,9 @@ document.addEventListener('DOMContentLoaded', () => {
           })
         });
 
-        const data = await response.json();
-        hideChatTyping();
-
+        // 429 проверяем ДО json()
         if (response.status === 429) {
+          hideChatTyping();
           addChatMessage(
             PAGE_LANG === 'en'
               ? 'Too many messages. Please wait a couple of minutes 🙂'
@@ -418,25 +473,16 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
 
+        let data = {};
+        try { data = await response.json(); } catch (_) {}
+
+        hideChatTyping();
+
         if (data.reply) {
           addChatMessage(data.reply, 'bot');
 
-          // Показываем CTA с полем для контакта
           if (data.contactReady && !document.getElementById('chatCta')) {
-            const ctaBlock = document.createElement('div');
-            ctaBlock.id = 'chatCta';
-            ctaBlock.style.cssText = 'margin-top: 8px; padding: 12px 14px; background: var(--cyan-soft); border: 1px solid var(--cyan); border-radius: 12px;';
-            ctaBlock.innerHTML = PAGE_LANG === 'en'
-              ? `
-                <div style="font-size: 13px; color: var(--cyan); font-weight: 700; margin-bottom: 6px;">🎯 Leave your contact — the engineer will reach out</div>
-                <div style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">Type your @username or phone below and press send</div>
-              `
-              : `
-                <div style="font-size: 13px; color: var(--cyan); font-weight: 700; margin-bottom: 6px;">🎯 Оставьте контакт — инженер свяжется</div>
-                <div style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">Напишите ваш @username или телефон в поле ниже и нажмите отправить</div>
-              `;
-            chatBody.appendChild(ctaBlock);
-            chatBody.scrollTop = chatBody.scrollHeight;
+            showContactCta();
           }
         } else {
           addChatMessage(
@@ -459,13 +505,49 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ===== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =====
+  // ===== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ЧАТА =====
+  function getChatHistory() {
+    const history = [];
+    if (!chatBody) return history;
+    chatBody.querySelectorAll('.chat-message').forEach(msg => {
+      history.push({
+        role: msg.classList.contains('bot') ? 'assistant' : 'user',
+        content: msg.textContent
+      });
+    });
+    return history;
+  }
+
   function addChatMessage(text, role) {
     if (!chatBody) return;
     const msg = document.createElement('div');
     msg.className = 'chat-message ' + role;
     msg.textContent = text;
     chatBody.appendChild(msg);
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+
+  function showContactCta() {
+    if (!chatBody) return;
+    const ctaBlock = document.createElement('div');
+    ctaBlock.id = 'chatCta';
+    ctaBlock.style.cssText = 'margin-top: 8px; padding: 12px 14px; background: var(--cyan-soft); border: 1px solid var(--cyan); border-radius: 12px;';
+
+    const title = document.createElement('div');
+    title.style.cssText = 'font-size: 13px; color: var(--cyan); font-weight: 700; margin-bottom: 6px;';
+    title.textContent = PAGE_LANG === 'en'
+      ? '🎯 Leave your contact — the engineer will reach out'
+      : '🎯 Оставьте контакт — инженер свяжется';
+
+    const hint = document.createElement('div');
+    hint.style.cssText = 'font-size: 12px; color: var(--text-muted); line-height: 1.4;';
+    hint.textContent = PAGE_LANG === 'en'
+      ? 'Type your @username or phone below and press send'
+      : 'Напишите ваш @username или телефон в поле ниже и нажмите отправить';
+
+    ctaBlock.appendChild(title);
+    ctaBlock.appendChild(hint);
+    chatBody.appendChild(ctaBlock);
     chatBody.scrollTop = chatBody.scrollHeight;
   }
 
@@ -484,10 +566,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typing) typing.remove();
   }
 
-  // ===== ЗАКРЫТИЕ ЧАТА ПО ESCAPE =====
+  // ===== ЕДИНЫЙ ОБРАБОТЧИК ESCAPE =====
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && chatWidget && chatWidget.classList.contains('active')) {
+    if (e.key !== 'Escape') return;
+    if (chatWidget && chatWidget.classList.contains('active')) {
       window.closeChatWidget();
+      return;
+    }
+    if (burger && burger.classList.contains('active')) {
+      toggleMenu(false);
     }
   });
 
