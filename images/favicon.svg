@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512"><metadata><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/"><rdf:Description><dc:creator>RealFaviconGenerator</dc:creator><dc:source>https://realfavicongenerator.net</dc:source></rdf:Description></rdf:RDF></metadata><defs>
+    <!-- Градиент головы -->
+    <radialGradient id="headGrad" cx="50%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#7DD3FC"></stop>
+      <stop offset="50%" stop-color="#22B8E8"></stop>
+      <stop offset="100%" stop-color="#0EA5E9"></stop>
+    </radialGradient>
+
+    <!-- Градиент визора (тёмное лицо) -->
+    <radialGradient id="visorGrad" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#0F172A"></stop>
+      <stop offset="100%" stop-color="#020617"></stop>
+    </radialGradient>
+
+    <!-- Градиент тела -->
+    <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"></stop>
+      <stop offset="50%" stop-color="#3B82F6"></stop>
+      <stop offset="100%" stop-color="#6366F1"></stop>
+    </linearGradient>
+
+    <!-- Градиент крыльев -->
+    <linearGradient id="wingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"></stop>
+      <stop offset="100%" stop-color="#6366F1"></stop>
+    </linearGradient>
+
+    <!-- Градиент ромба на груди -->
+    <linearGradient id="gemGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7DD3FC"></stop>
+      <stop offset="100%" stop-color="#3B82F6"></stop>
+    </linearGradient>
+
+    <!-- Свечение глаза -->
+    <radialGradient id="eyeGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="1"></stop>
+      <stop offset="60%" stop-color="#7DD3FC" stop-opacity="1"></stop>
+      <stop offset="100%" stop-color="#38BDF8" stop-opacity="1"></stop>
+    </radialGradient>
+
+    <!-- Свечение вокруг робота -->
+    <radialGradient id="outerGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00F0FF" stop-opacity="0.35"></stop>
+      <stop offset="60%" stop-color="#00F0FF" stop-opacity="0.1"></stop>
+      <stop offset="100%" stop-color="#00F0FF" stop-opacity="0"></stop>
+    </radialGradient>
+
+    <!-- Фильтр мягкого свечения -->
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="blur"></feGaussianBlur>
+      <feMerge>
+        <feMergeNode in="blur"></feMergeNode>
+        <feMergeNode in="SourceGraphic"></feMergeNode>
+      </feMerge>
+    </filter>
+  </defs><circle cx="256" cy="256" r="240" fill="url(#outerGlow)"></circle><ellipse cx="115" cy="290" rx="55" ry="38" fill="url(#wingGrad)" opacity="0.85" transform="rotate(-25 115 290)"></ellipse><ellipse cx="397" cy="290" rx="55" ry="38" fill="url(#wingGrad)" opacity="0.85" transform="rotate(25 397 290)"></ellipse><path d="M 256 200
+           C 300 200, 320 260, 315 320
+           C 310 380, 285 430, 256 460
+           C 227 430, 202 380, 197 320
+           C 192 260, 212 200, 256 200 Z" fill="url(#bodyGrad)"></path><polygon points="256,320 280,355 256,390 232,355" fill="url(#gemGrad)" opacity="0.9"></polygon><ellipse cx="256" cy="175" rx="130" ry="115" fill="url(#headGrad)"></ellipse><ellipse cx="256" cy="175" rx="98" ry="72" fill="url(#visorGrad)"></ellipse><g filter="url(#softGlow)">
+    <!-- Левый глаз -->
+    <ellipse cx="215" cy="175" rx="16" ry="16" fill="url(#eyeGlow)"></ellipse>
+    <ellipse cx="215" cy="175" rx="7" ry="7" fill="#FFFFFF"></ellipse>
+    <!-- Правый глаз -->
+    <ellipse cx="297" cy="175" rx="16" ry="16" fill="url(#eyeGlow)"></ellipse>
+    <ellipse cx="297" cy="175" rx="7" ry="7" fill="#FFFFFF"></ellipse>
+  </g><ellipse cx="220" cy="125" rx="35" ry="18" fill="#FFFFFF" opacity="0.18" transform="rotate(-20 220 125)"></ellipse></svg>
