@@ -1,112 +1,52 @@
 // ============================================
-// Radar Group — Chat API (RU/EN)
-// ProxyAPI + сбор контакта + защита от спама
+// /api/chat — универсальный чат ИИ
+// Работает и для демо (Radar Group), и для клиентов
 // ============================================
 
 const RATE_LIMIT_MAP = new Map();
 const RATE_LIMIT_WINDOW_MS = 5 * 60 * 1000;
-const RATE_LIMIT_MAX = 10;
+const RATE_LIMIT_MAX = 15;
 
-const SYSTEM_PROMPT_RU = `Ты — опытный ИИ-менеджер компании Radar Group. Живой продавец-консультант. Ты НЕ скрываешь, что ты ИИ.
+// Fallback-промпты (если у клиента не заполнено)
+const FALLBACK_PROMPT_RU = `Ты — опытный ИИ-менеджер. Живой продавец-консультант. Ты НЕ скрываешь, что ты ИИ.
 
 ГЛАВНОЕ ПРАВИЛО:
-Отвечай на то, что клиент сказал сейчас. Не повторяй вопрос. Не задавай два вопроса в одном сообщении.
+Отвечай на то, что клиент сказал сейчас. Не повторяй вопрос.
 
-ФОРМАТ ОТВЕТА:
-— 2–3 коротких блока.
-— Между блоками — пустая строка.
-— Каждый блок — 1–2 предложения.
-— В каждом сообщении 1–2 смайла (🙂 😄 👍 🎯 💡 😊).
-— Без markdown, без списков.
+ФОРМАТ:
+— 2–3 коротких блока, между блоками пустая строка.
+— 1–2 смайла на сообщение.
+— Без markdown и списков.
 
-ТВОЯ РОЛЬ:
-Ты ведёшь живой диалог. Ты эксперт — сам рассказываешь пользу под нишу клиента.
+ТОН: живой, дружелюбный, на «Вы».`;
 
-ЧТО УЗНАТЬ О КЛИЕНТЕ (постепенно, не списком):
-— Ниша (чем занимается)
-— Какие сценарии нужны
-— Канал (Telegram, WhatsApp, Instagram, VK, Avito, сайт)
-— Есть ли CRM
-— Сколько заявок в день
-
-ОТРАБОТКА ВОЗРАЖЕНИЙ:
-— «Дорого» → «Понимаю 🙂 Разработка от 100$, точная цена зависит от задачи. Давайте разберёмся, что нужно.»
-— «Подумаю» → «Конечно 🙂 Если появятся вопросы — я здесь.»
-— «Позже» → «Понял, не давлю 👍 Когда будете готовы — продолжим.»
-
-ПРО ЦЕНУ:
-Разработка от 100$. Точную цифру называешь после 2–3 уточнений.
-
-КОГДА ВСЁ СОБРАНО:
-Когда знаешь минимум 3 параметра (ниша, канал, заявки) — задай финальный вопрос, упомянув инженера:
-«Давайте передам вашу задачу инженеру — он свяжется с Вами и обсудит детали. Хорошо? 🙂»
-
-ВАЖНО: не пиши просто «Хорошо?» без упоминания инженера.
-
-ЗАПРЕЩЕНО:
-— «Как Вам такая идея?», «Интересно?», «Нравится?», «Подходит?»
-— «До свидания», «Всего доброго», «Удачи»
-— «Какой удобный способ связи»
-
-ТОН:
-Живой, дружелюбный, на «Вы». Как опытный менеджер, а не робот.`;
-
-const SYSTEM_PROMPT_EN = `You are an experienced AI Manager at Radar Group. A live sales consultant. You don't hide that you are AI.
+const FALLBACK_PROMPT_EN = `You are an experienced AI Manager. A live sales consultant. You don't hide that you are AI.
 
 MAIN RULE:
-Answer what the client just said. Don't repeat questions. Don't ask two questions in one message.
+Answer what the client just said. Don't repeat questions.
 
-RESPONSE FORMAT:
-— 2–3 short blocks.
-— Empty line between blocks.
-— Each block — 1–2 sentences.
-— 1–2 emojis per message (🙂 😄 👍 🎯 💡 😊).
+FORMAT:
+— 2–3 short blocks, empty line between.
+— 1–2 emojis per message.
 — No markdown, no lists.
 
-YOUR ROLE:
-You lead a live conversation. You're an expert — you tell the client how it helps in their niche.
-
-WHAT TO LEARN ABOUT THE CLIENT (gradually, not as a list):
-— Niche (what they do)
-— Which scenarios they need
-— Channel (Telegram, WhatsApp, Instagram, VK, Avito, website)
-— Do they have a CRM
-— How many leads per day
-
-HANDLING OBJECTIONS:
-— "Expensive" → "I understand 🙂 Development starts from $100, the exact price depends on the task. Let's figure out what you need."
-— "Let me think" → "Of course 🙂 If you have questions — I'm here."
-— "Later" → "Got it, no pressure 👍 When you're ready — we'll continue."
-
-ABOUT PRICE:
-Development from $100. Give the exact number after 2–3 clarifications.
-
-WHEN EVERYTHING IS COLLECTED:
-When you know at least 3 parameters (niche, channel, leads) — ask the final question, mentioning the engineer:
-"Let me pass your task to our engineer — he will contact you and discuss the details. Okay? 🙂"
-
-IMPORTANT: don't write just "Okay?" without mentioning the engineer.
-
-FORBIDDEN:
-— "How do you like this idea?", "Interesting?", "Do you like it?", "Suitable?"
-— "Goodbye", "All the best", "Good luck"
-— "What's the most convenient way to contact you?"
-
-TONE:
-Live, friendly, polite. Like an experienced manager, not a robot.`;
+TONE: live, friendly, polite.`;
 
 export async function onRequestPost(context) {
-  const BOT_TOKEN = context.env.BOT_TOKEN;
-  const CHAT_ID = context.env.CHAT_ID;
-  const PROXYAPI_KEY = context.env.OPENAI_API_KEY;
+  const { request, env } = context;
+  const BOT_TOKEN = env.BOT_TOKEN;
+  const CHAT_ID = env.CHAT_ID;
+  const FALLBACK_OPENAI_KEY = env.OPENAI_API_KEY;
 
   try {
-    const { messages, contact, history, lang } = await context.request.json();
+    const body = await request.json();
+    const { messages, contact, history, lang, api_key, dialog_id } = body;
+    const langSafe = lang === 'en' ? 'en' : 'ru';
 
     // ============================================
-    // ЗАЩИТА ОТ СПАМА
+    // 1. RATE LIMIT
     // ============================================
-    const ip = context.request.headers.get('cf-connecting-ip') || 'unknown';
+    const ip = request.headers.get('cf-connecting-ip') || 'unknown';
     const now = Date.now();
     const record = RATE_LIMIT_MAP.get(ip) || { count: 0, resetAt: now + RATE_LIMIT_WINDOW_MS };
 
@@ -114,73 +54,172 @@ export async function onRequestPost(context) {
       record.count = 0;
       record.resetAt = now + RATE_LIMIT_WINDOW_MS;
     }
-
     record.count++;
     RATE_LIMIT_MAP.set(ip, record);
 
     if (record.count > RATE_LIMIT_MAX) {
-      return new Response(JSON.stringify({
-        error: 'Слишком много сообщений. Подождите пару минут 🙂'
-      }), {
-        status: 429,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return Response.json(
+        { error: langSafe === 'en'
+          ? 'Too many messages. Please wait a couple of minutes 🙂'
+          : 'Слишком много сообщений. Подождите пару минут 🙂' },
+        { status: 429 }
+      );
     }
 
     // ============================================
-    // ОТПРАВКА КОНТАКТА В TELEGRAM
+    // 2. НАЙТИ КЛИЕНТА (если api_key передан)
+    // ============================================
+    let client = null;
+    let settings = null;
+    const isDemo = !api_key;
+
+    if (api_key) {
+      client = await env.radar_group_db.prepare(
+        `SELECT id, name, status, language FROM clients WHERE api_key = ?`
+      ).bind(api_key).first();
+
+      if (!client) {
+        return Response.json(
+          { error: langSafe === 'en' ? 'Invalid API key' : 'Неверный API-ключ' },
+          { status: 401 }
+        );
+      }
+
+      if (client.status === 'suspended') {
+        return Response.json(
+          { error: langSafe === 'en' ? 'Widget disabled' : 'Виджет отключён' },
+          { status: 403 }
+        );
+      }
+
+      settings = await env.radar_group_db.prepare(
+        `SELECT * FROM settings WHERE client_id = ?`
+      ).bind(client.id).first();
+    }
+
+    // ============================================
+    // 3. ОБРАБОТКА КОНТАКТА (ЛИД)
     // ============================================
     if (contact) {
+      // Обновить диалог — это лид
+      if (dialog_id && !isDemo) {
+        await env.radar_group_db.prepare(
+          `UPDATE dialogs SET is_lead = 1, user_contact = ?, lead_data = ? WHERE id = ?`
+        ).bind(
+          contact,
+          JSON.stringify({ contact, lang: langSafe, timestamp: new Date().toISOString() }),
+          dialog_id
+        ).run();
+
+        // Событие
+        await env.radar_group_db.prepare(
+          `INSERT INTO events (id, client_id, event_name, dialog_id, language, metadata)
+           VALUES (?, ?, 'lead.created', ?, ?, ?)`
+        ).bind(
+          'evt_' + crypto.randomUUID().slice(0, 8),
+          client.id,
+          dialog_id,
+          langSafe,
+          JSON.stringify({ contact })
+        ).run();
+      }
+
+      // Отправить уведомление
       const dialogLog = (history || [])
-        .map(m => `• *${m.role === 'user' ? 'Клиент' : 'Бот'}:* ${String(m.content).slice(0, 200)}`)
+        .map(m => `• ${m.role === 'user' ? 'Клиент' : 'Бот'}: ${String(m.content).slice(0, 200)}`)
         .join('\n');
 
-      const text = `🔥 *НОВЫЙ ЛИД С ЧАТА*\n\n` +
+      const text = `🔥 *НОВЫЙ ЛИД С ВИДЖЕТА*\n\n` +
         `📞 *Контакт:* ${contact}\n` +
-        `🌐 *Язык:* ${lang === 'en' ? 'EN' : 'RU'}\n` +
+        `🌐 *Язык:* ${langSafe.toUpperCase()}\n` +
+        `🏢 *Клиент:* ${client?.name || 'Radar Group (демо)'}\n` +
         `🕐 ${new Date().toLocaleString('ru-RU')}\n\n` +
         `📝 *Диалог:*\n${dialogLog.slice(0, 3000)}`;
 
-      await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: CHAT_ID,
-          text: text,
-          parse_mode: 'Markdown'
-        })
-      });
+      // Клиенту (если настроено) — иначе вам
+      const targetToken = settings?.telegram_token || BOT_TOKEN;
+      const targetChat = settings?.telegram_admin_id || CHAT_ID;
 
-      return new Response(JSON.stringify({ ok: true }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      if (targetToken && targetChat) {
+        try {
+          await fetch(`https://api.telegram.org/bot${targetToken}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: targetChat,
+              text: text,
+              parse_mode: 'Markdown'
+            })
+          });
+        } catch (e) {
+          console.error('TG notify error:', e);
+        }
+      }
+
+      // Webhook в CRM клиента
+      if (settings?.webhook_url) {
+        try {
+          const payload = JSON.stringify({
+            event: 'lead.created',
+            lang: langSafe,
+            timestamp: new Date().toISOString(),
+            client_id: client.id,
+            dialog_id: dialog_id,
+            source: 'widget',
+            lead: { contact, message: history?.slice(-1)[0]?.content || '' }
+          });
+          await fetch(settings.webhook_url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: payload
+          });
+        } catch (e) {
+          console.error('Webhook error:', e);
+        }
+      }
+
+      return Response.json({ ok: true });
     }
 
     // ============================================
-    // ОБЫЧНЫЙ ЗАПРОС К AI
+    // 4. ОБЫЧНЫЙ ЗАПРОС К AI
     // ============================================
-    if (!PROXYAPI_KEY) {
-      return new Response(JSON.stringify({ error: 'API key not configured' }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      });
+    const OPENAI_KEY = settings?.openai_api_key || FALLBACK_OPENAI_KEY;
+
+    if (!OPENAI_KEY) {
+      return Response.json(
+        { error: 'OpenAI key not configured' },
+        { status: 500 }
+      );
     }
 
-    // Выбираем промпт по языку страницы
-    const SYSTEM_PROMPT = lang === 'en' ? SYSTEM_PROMPT_EN : SYSTEM_PROMPT_RU;
+    // Выбор промпта
+    const SYSTEM_PROMPT = langSafe === 'en'
+      ? (settings?.prompt_en || FALLBACK_PROMPT_EN)
+      : (settings?.prompt_ru || FALLBACK_PROMPT_RU);
 
+    // Создать диалог, если его нет
+    let activeDialogId = dialog_id;
+    if (!activeDialogId && !isDemo) {
+      activeDialogId = 'dlg_' + crypto.randomUUID().slice(0, 8);
+      await env.radar_group_db.prepare(
+        `INSERT INTO dialogs (id, client_id, channel, status)
+         VALUES (?, ?, 'widget', 'active')`
+      ).bind(activeDialogId, client.id).run();
+    }
+
+    // Запрос в ProxyAPI
     const response = await fetch('https://api.proxyapi.ru/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${PROXYAPI_KEY}`
+        'Authorization': `Bearer ${OPENAI_KEY}`
       },
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
-          ...messages
+          ...(messages || [])
         ],
         temperature: 0.9,
         max_tokens: 400,
@@ -192,39 +231,61 @@ export async function onRequestPost(context) {
     const data = await response.json();
 
     if (!response.ok) {
-      await notifyTelegram(BOT_TOKEN, CHAT_ID, `❌ ProxyAPI ${response.status}: ${JSON.stringify(data).slice(0, 300)}`);
+      // Уведомить админа об ошибке
+      const errText = `❌ ProxyAPI ${response.status}: ${JSON.stringify(data).slice(0, 300)}`;
+      if (BOT_TOKEN && CHAT_ID) {
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: CHAT_ID, text: errText })
+        }).catch(() => {});
+      }
       throw new Error(data.error?.message || 'ProxyAPI error');
     }
 
     const reply = data.choices[0].message.content;
-    const contactReady = reply.toLowerCase().includes('инженер') || reply.toLowerCase().includes('engineer');
+    const tokens = data.usage?.total_tokens || 0;
+    const cost = tokens * 0.0000002;
 
-    return new Response(JSON.stringify({
+    // ============================================
+    // 5. ЗАПИСЬ В БД
+    // ============================================
+    if (activeDialogId && !isDemo) {
+      const lastUserMsg = messages?.[messages.length - 1];
+
+      if (lastUserMsg?.content) {
+        await env.radar_group_db.prepare(
+          `INSERT INTO messages (id, dialog_id, role, content)
+           VALUES (?, ?, 'user', ?)`
+        ).bind('msg_' + crypto.randomUUID().slice(0, 8), activeDialogId, lastUserMsg.content).run();
+      }
+
+      await env.radar_group_db.prepare(
+        `INSERT INTO messages (id, dialog_id, role, content, tokens_used, cost_usd)
+         VALUES (?, ?, 'assistant', ?, ?, ?)`
+      ).bind(
+        'msg_' + crypto.randomUUID().slice(0, 8),
+        activeDialogId,
+        reply,
+        tokens,
+        cost
+      ).run();
+    }
+
+    const contactReady = reply.toLowerCase().includes('инженер')
+                      || reply.toLowerCase().includes('engineer');
+
+    return Response.json({
       reply: reply.trim(),
-      contactReady: contactReady
-    }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      contactReady: contactReady,
+      dialog_id: activeDialogId
     });
 
   } catch (err) {
-    await notifyTelegram(BOT_TOKEN, CHAT_ID, `🚨 Ошибка в chat.js: ${err.message}`);
-    return new Response(JSON.stringify({ error: err.message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
-}
-
-async function notifyTelegram(token, chatId, text) {
-  if (!token || !chatId) return;
-  try {
-    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: chatId, text: text })
-    });
-  } catch (e) {
-    // молча
+    console.error('Chat error:', err);
+    return Response.json(
+      { error: err.message },
+      { status: 500 }
+    );
   }
 }
