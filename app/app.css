@@ -1,0 +1,199 @@
+/* ============================================
+   RADAR GROUP — Кабинет клиента
+   Расширение style.css
+   ============================================ */
+
+/* ===== БАЗОВЫЕ СТРАНИЦЫ ===== */
+
+.app-body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--bg);
+  position: relative;
+}
+
+.app-body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 800px 500px at 15% 0%, rgba(0, 240, 255, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 700px 500px at 85% 100%, rgba(255, 0, 128, 0.06) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app-container {
+  width: 100%;
+  max-width: 440px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== КАРТОЧКА ===== */
+
+.app-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: 40px 32px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.app-card::before {
+  content: '';
+  position: absolute;
+  top: -150px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ===== ЛОГОТИП ===== */
+
+.app-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 1;
+}
+
+.app-logo img {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: block;
+}
+
+.app-logo .logo-text {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: 0.5px;
+}
+
+/* ===== ЗАГОЛОВКИ ===== */
+
+.app-title {
+  font-size: 26px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+  position: relative;
+  z-index: 1;
+}
+
+.app-subtitle {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== ФОРМА ===== */
+
+.app-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  position: relative;
+  z-index: 1;
+}
+
+.app-form .form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.app-form .form-input {
+  /* Наследуем из style.css, немного увеличим padding */
+  padding: 13px 16px;
+  font-size: 15px;
+}
+
+.app-form .form-submit {
+  margin-top: 8px;
+  padding: 15px 24px;
+  font-size: 15px;
+}
+
+/* ===== ПОДВАЛ ===== */
+
+.app-footer {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-muted);
+  position: relative;
+  z-index: 1;
+}
+
+.app-footer a {
+  color: var(--cyan);
+  text-decoration: none;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.app-footer a:hover {
+  color: var(--cyan-bright);
+}
+
+.app-footer-secondary {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 13px;
+  position: relative;
+  z-index: 1;
+}
+
+.app-footer-secondary a {
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.app-footer-secondary a:hover {
+  color: var(--text-muted);
+}
+
+/* ===== АДАПТИВ ===== */
+
+@media (max-width: 640px) {
+  .app-body {
+    padding: 16px;
+  }
+  
+  .app-card {
+    padding: 32px 24px;
+  }
+  
+  .app-title {
+    font-size: 22px;
+  }
+  
+  .app-logo img {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .app-logo .logo-text {
+    font-size: 16px;
+  }
+}
