@@ -1,0 +1,121 @@
+// ============================================
+// POST /api/auth/register — регистрация клиента
+// ============================================
+
+export async function onRequestPost(context) {
+  const { request, env } = context;
+
+  try {
+    const { name, company, email, password } = await request.json();
+
+    // Валидация
+    if (!name || name.length < 2) {
+      return error('Укажите ваше имя', 'Please enter your name');
+    }
+    if (!email || !email.includes('@')) {
+      return error('Неверный email', 'Invalid email');
+    }
+    if (!password || password.length < 8) {
+      return error('Пароль минимум 8 символов', 'Password must be at least 8 characters');
+    }
+
+    // Проверка существования
+    const existing = await env.radar_group_db.prepare(
+      'SELECT id FROM users WHERE email = ?'
+    ).bind(email.toLowerCase()).first();
+
+    if (existing) {
+      return error('Email уже зарегистрирован', 'Email already registered');
+    }
+
+    // Генерация ID и API-ключа
+    const clientId = 'cli_' + crypto.randomUUID().slice(0, 8);
+    const userId = 'usr_' + crypto.randomUUID().slice(0, 8);
+    const apiKey = 'rg_live_' + generateKey(32);
+
+    // Хеширование пароля
+    const passwordHash = await hashPassword(password);
+
+    // Создание клиента, пользователя и настроек
+    await env.radar_group_db.batch([
+      env.radar_group_db.prepare(
+        'INSERT INTO clients (id, name, email, company, api_key) VALUES (?, ?, ?, ?, ?)'
+      ).bind(clientId, name, email.toLowerCase(), company || null, apiKey),
+
+      env.radar_group_db.prepare(
+        'INSERT INTO users (id, client_id, email, password_hash, role) VALUES (?, ?, ?, ?, ?)'
+      ).bind(userId, clientId, email.toLowerCase(), passwordHash, 'client'),
+
+      env.radar_group_db.prepare(
+        'INSERT INTO settings (client_id) VALUES (?)'
+      ).bind(clientId)
+    ]);
+
+    // JWT токен
+    const token = await createJWT({
+      userId,
+      clientId,
+      role: 'client',
+      name
+    }, env.JWT_SECRET);
+
+    return Response.json({
+      ok: true,
+      token,
+      user: { id: userId, clientId, email, name, role: 'client' },
+      apiKey
+    });
+
+  } catch (err) {
+    console.error('Register error:', err);
+    return error('Ошибка регистрации', 'Registration error', 500);
+  }
+}
+
+// --- Утилиты ---
+
+function error(ru, en, status = 400) {
+  return Response.json({ ok: false, error: { ru, en } }, { status });
+}
+
+function generateKey(length) {
+  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let key = '';
+  const arr = crypto.getRandomValues(new Uint8Array(length));
+  for (let i = 0; i < length; i++) {
+    key += chars[arr[i] % chars.length];
+  }
+  return key;
+}
+
+async function hashPassword(password) {
+  const encoder = new TextEncoder();
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits']
+  );
+  const hash = await crypto.subtle.deriveBits(
+    { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
+    keyMaterial, 256
+  );
+  const saltHex = Array.from(salt).map(b => b.toString(16).padStart(2, '0')).join('');
+  const hashHex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+  return `${saltHex}:${hashHex}`;
+}
+
+async function createJWT(payload, secret) {
+  const header = { alg: 'HS256', typ: 'JWT' };
+  const encodedHeader = btoa(JSON.stringify(header));
+  const encodedPayload = btoa(JSON.stringify({
+    ...payload,
+    exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30 // 30 дней
+  }));
+  const data = `${encodedHeader}.${encodedPayload}`;
+  const key = await crypto.subtle.importKey(
+    'raw', new TextEncoder().encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+  );
+  const signature = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(data));
+  const encodedSignature = btoa(String.fromCharCode(...new Uint8Array(signature)));
+  return `${data}.${encodedSignature}`;
+}
