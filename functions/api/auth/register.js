@@ -59,6 +59,19 @@ export async function onRequestPost(context) {
       name
     }, env.JWT_SECRET);
 
+    // Логируем успешную регистрацию
+    try {
+      await env.radar_group_db.prepare(
+        'INSERT INTO logs (id, client_id, level, source, message) VALUES (?, ?, ?, ?, ?)'
+      ).bind(
+        crypto.randomUUID(),
+        clientId,
+        'info',
+        'register',
+        `New client registered: ${email}`
+      ).run();
+    } catch (_) {}
+
     return Response.json({
       ok: true,
       token,
@@ -67,14 +80,30 @@ export async function onRequestPost(context) {
     });
 
   } catch (err) {
+    // Логируем ошибку — для тебя
     console.error('Register error:', err);
+
+    // Записываем в БД для админки
+    try {
+      await env.radar_group_db.prepare(
+        'INSERT INTO logs (id, level, source, message, metadata) VALUES (?, ?, ?, ?, ?)'
+      ).bind(
+        crypto.randomUUID(),
+        'error',
+        'register',
+        err.message || 'Unknown error',
+        JSON.stringify({ stack: err.stack?.slice(0, 500) })
+      ).run();
+    } catch (logErr) {
+      console.error('Failed to log error:', logErr);
+    }
+
+    // Отвечаем пользователю — только понятное
     return Response.json({
       ok: false,
-      error: { ru: 'Ошибка регистрации', en: 'Registration error' },
-      debug: {
-        message: err.message,
-        stack: err.stack ? err.stack.split('\n').slice(0, 5).join(' | ') : null,
-        type: err.constructor ? err.constructor.name : 'Unknown'
+      error: {
+        ru: 'Ошибка регистрации. Попробуйте позже.',
+        en: 'Registration error. Please try again later.'
       }
     }, { status: 500 });
   }
