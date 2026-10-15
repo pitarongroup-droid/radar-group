@@ -1,11 +1,28 @@
 // ============================================
-// /api/chat — универсальный чат ИИ
+// /api/chat — универсальный чат ИИ (RU/EN)
 // Работает и для демо (Radar Group), и для клиентов
+// С CORS для использования виджетом с любого сайта
 // ============================================
 
 const RATE_LIMIT_MAP = new Map();
 const RATE_LIMIT_WINDOW_MS = 5 * 60 * 1000;
 const RATE_LIMIT_MAX = 15;
+
+// CORS-заголовки для всех ответов
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Max-Age': '86400'
+};
+
+// Универсальный JSON-ответ с CORS
+function jsonResponse(data, status = 200) {
+  return Response.json(data, {
+    status,
+    headers: CORS_HEADERS
+  });
+}
 
 // Fallback-промпты (если у клиента не заполнено)
 const FALLBACK_PROMPT_RU = `Ты — опытный ИИ-менеджер. Живой продавец-консультант. Ты НЕ скрываешь, что ты ИИ.
@@ -32,6 +49,19 @@ FORMAT:
 
 TONE: live, friendly, polite.`;
 
+// ============================================
+// CORS preflight — OPTIONS
+// ============================================
+export async function onRequestOptions() {
+  return new Response(null, {
+    status: 204,
+    headers: CORS_HEADERS
+  });
+}
+
+// ============================================
+// POST — основной обработчик
+// ============================================
 export async function onRequestPost(context) {
   const { request, env } = context;
   const BOT_TOKEN = env.BOT_TOKEN;
@@ -58,11 +88,13 @@ export async function onRequestPost(context) {
     RATE_LIMIT_MAP.set(ip, record);
 
     if (record.count > RATE_LIMIT_MAX) {
-      return Response.json(
-        { error: langSafe === 'en'
-          ? 'Too many messages. Please wait a couple of minutes 🙂'
-          : 'Слишком много сообщений. Подождите пару минут 🙂' },
-        { status: 429 }
+      return jsonResponse(
+        {
+          error: langSafe === 'en'
+            ? 'Too many messages. Please wait a couple of minutes 🙂'
+            : 'Слишком много сообщений. Подождите пару минут 🙂'
+        },
+        429
       );
     }
 
@@ -79,16 +111,16 @@ export async function onRequestPost(context) {
       ).bind(api_key).first();
 
       if (!client) {
-        return Response.json(
+        return jsonResponse(
           { error: langSafe === 'en' ? 'Invalid API key' : 'Неверный API-ключ' },
-          { status: 401 }
+          401
         );
       }
 
       if (client.status === 'suspended') {
-        return Response.json(
+        return jsonResponse(
           { error: langSafe === 'en' ? 'Widget disabled' : 'Виджет отключён' },
-          { status: 403 }
+          403
         );
       }
 
@@ -101,7 +133,6 @@ export async function onRequestPost(context) {
     // 3. ОБРАБОТКА КОНТАКТА (ЛИД)
     // ============================================
     if (contact) {
-      // Обновить диалог — это лид
       if (dialog_id && !isDemo) {
         await env.radar_group_db.prepare(
           `UPDATE dialogs SET is_lead = 1, user_contact = ?, lead_data = ? WHERE id = ?`
@@ -111,7 +142,6 @@ export async function onRequestPost(context) {
           dialog_id
         ).run();
 
-        // Событие
         await env.radar_group_db.prepare(
           `INSERT INTO events (id, client_id, event_name, dialog_id, language, metadata)
            VALUES (?, ?, 'lead.created', ?, ?, ?)`
@@ -124,7 +154,6 @@ export async function onRequestPost(context) {
         ).run();
       }
 
-      // Отправить уведомление
       const dialogLog = (history || [])
         .map(m => `• ${m.role === 'user' ? 'Клиент' : 'Бот'}: ${String(m.content).slice(0, 200)}`)
         .join('\n');
@@ -136,7 +165,6 @@ export async function onRequestPost(context) {
         `🕐 ${new Date().toLocaleString('ru-RU')}\n\n` +
         `📝 *Диалог:*\n${dialogLog.slice(0, 3000)}`;
 
-      // Клиенту (если настроено) — иначе вам
       const targetToken = settings?.telegram_token || BOT_TOKEN;
       const targetChat = settings?.telegram_admin_id || CHAT_ID;
 
@@ -156,7 +184,6 @@ export async function onRequestPost(context) {
         }
       }
 
-      // Webhook в CRM клиента
       if (settings?.webhook_url) {
         try {
           const payload = JSON.stringify({
@@ -178,7 +205,7 @@ export async function onRequestPost(context) {
         }
       }
 
-      return Response.json({ ok: true });
+      return jsonResponse({ ok: true });
     }
 
     // ============================================
@@ -187,13 +214,12 @@ export async function onRequestPost(context) {
     const OPENAI_KEY = settings?.openai_api_key || FALLBACK_OPENAI_KEY;
 
     if (!OPENAI_KEY) {
-      return Response.json(
+      return jsonResponse(
         { error: 'OpenAI key not configured' },
-        { status: 500 }
+        500
       );
     }
 
-    // Выбор промпта
     const SYSTEM_PROMPT = langSafe === 'en'
       ? (settings?.prompt_en || FALLBACK_PROMPT_EN)
       : (settings?.prompt_ru || FALLBACK_PROMPT_RU);
@@ -231,7 +257,6 @@ export async function onRequestPost(context) {
     const data = await response.json();
 
     if (!response.ok) {
-      // Уведомить админа об ошибке
       const errText = `❌ ProxyAPI ${response.status}: ${JSON.stringify(data).slice(0, 300)}`;
       if (BOT_TOKEN && CHAT_ID) {
         await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -275,7 +300,7 @@ export async function onRequestPost(context) {
     const contactReady = reply.toLowerCase().includes('инженер')
                       || reply.toLowerCase().includes('engineer');
 
-    return Response.json({
+    return jsonResponse({
       reply: reply.trim(),
       contactReady: contactReady,
       dialog_id: activeDialogId
@@ -283,9 +308,9 @@ export async function onRequestPost(context) {
 
   } catch (err) {
     console.error('Chat error:', err);
-    return Response.json(
+    return jsonResponse(
       { error: err.message },
-      { status: 500 }
+      500
     );
   }
 }
