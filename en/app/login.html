@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#08080F">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Sign in — Radar Group</title>
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"></noscript>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/app/app.css">
+</head>
+<body class="app-body">
+
+  <div class="app-container">
+    <div class="app-card">
+
+      <a href="/en/" class="app-logo">
+        <img src="/images/logo.webp" alt="Radar Group" width="40" height="40">
+        <span class="logo-text">RADAR GROUP</span>
+      </a>
+
+      <h1 class="app-title">Sign in</h1>
+      <p class="app-subtitle">Manage your AI Manager</p>
+
+      <form id="loginForm" class="app-form" novalidate>
+
+        <div class="form-row">
+          <label class="form-label" for="email">Email</label>
+          <input class="form-input" type="email" id="email" name="email" placeholder="your@email.com" required autocomplete="email">
+        </div>
+
+        <div class="form-row">
+          <label class="form-label" for="password">Password</label>
+          <input class="form-input" type="password" id="password" name="password" placeholder="••••••••" required autocomplete="current-password" minlength="8">
+        </div>
+
+        <button type="submit" class="btn btn-primary form-submit">
+          Sign in
+        </button>
+
+        <div class="form-status" id="formStatus" role="status" aria-live="polite"></div>
+      </form>
+
+      <div class="app-footer">
+        No account? <a href="/en/app/register.html">Sign up</a>
+      </div>
+
+      <div class="app-footer-secondary">
+        <a href="/en/">← Home</a>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const status = document.getElementById('formStatus');
+      const btn = e.target.querySelector('button[type="submit"]');
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      if (!email || !password) {
+        status.className = 'form-status error';
+        status.textContent = 'Fill all fields';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Signing in...';
+      status.className = 'form-status';
+      status.textContent = '';
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+
+        if (data.ok && data.token) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          document.cookie = `token=${data.token}; path=/; max-age=${60*60*24*30}; SameSite=Lax`;
+
+          const role = data.user?.role || 'client';
+          let redirectUrl;
+
+          if (role === 'admin') {
+            redirectUrl = '/admin/dashboard.html';
+          } else {
+            redirectUrl = '/en/app/dashboard.html';
+          }
+
+          status.className = 'form-status success';
+          status.textContent = 'Success! Redirecting...';
+
+          setTimeout(() => {
+            window.location.href = redirectUrl;
+          }, 700);
+        } else {
+          status.className = 'form-status error';
+          status.textContent = data.error?.en || 'Login error';
+        }
+      } catch (err) {
+        status.className = 'form-status error';
+        status.textContent = 'Network error. Try again later.';
+        console.error('Login error:', err);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Sign in';
+      }
+    });
+  </script>
+
+</body>
+</html>
