@@ -14,11 +14,159 @@
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/app/dashboard.css">
   <link rel="stylesheet" href="/admin/admin.css">
+
+  <style>
+    /* Стили для списка клиентов */
+    .clients-toolbar {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .clients-toolbar input {
+      flex: 1;
+      min-width: 200px;
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--border, rgba(255,255,255,.1));
+      border-radius: 10px;
+      padding: 11px 14px;
+      color: var(--text, #fff);
+      font-size: 14px;
+      font-family: inherit;
+      transition: .2s;
+    }
+    .clients-toolbar input:focus {
+      outline: none;
+      border-color: var(--cyan, #00F0FF);
+      background: rgba(0, 240, 255, .04);
+    }
+    .clients-count {
+      font-size: 13px;
+      color: var(--text-muted, #8a8aa0);
+      padding: 0 4px;
+      white-space: nowrap;
+    }
+    .client-row {
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .client-row:hover td {
+      background: var(--bg-hover, rgba(255,255,255,.03));
+    }
+    .client-cell-name {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .client-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00F0FF, #FF0080);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 14px;
+      flex-shrink: 0;
+      text-transform: uppercase;
+    }
+    .client-name-text {
+      font-weight: 600;
+      color: var(--text, #fff);
+    }
+    .client-email-text {
+      font-size: 12px;
+      color: var(--text-dim, #5a5a70);
+      margin-top: 2px;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .status-active { background: rgba(0, 240, 255, .12); color: #00F0FF; }
+    .status-trial { background: rgba(255, 200, 0, .12); color: #FFC800; }
+    .status-suspended { background: rgba(255, 59, 107, .12); color: #FF3B6B; }
+    .plan-badge {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted, #8a8aa0);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .row-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    .icon-btn {
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--border, rgba(255,255,255,.1));
+      color: var(--text-muted, #8a8aa0);
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: .2s;
+    }
+    .icon-btn:hover {
+      background: rgba(0, 240, 255, .1);
+      border-color: rgba(0, 240, 255, .3);
+      color: #00F0FF;
+    }
+    .icon-btn.danger:hover {
+      background: rgba(255, 59, 107, .1);
+      border-color: rgba(255, 59, 107, .3);
+      color: #FF3B6B;
+    }
+    .loading-row td {
+      text-align: center;
+      padding: 40px 12px;
+      color: var(--text-dim, #5a5a70);
+      font-size: 14px;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted, #8a8aa0);
+    }
+    .empty-state svg {
+      color: var(--text-dim, #5a5a70);
+      margin-bottom: 12px;
+    }
+    .empty-state > div:first-of-type {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text, #fff);
+      margin-bottom: 6px;
+    }
+    .spinner {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      border: 2px solid rgba(0, 240, 255, .2);
+      border-top-color: #00F0FF;
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
 </head>
 <body>
 
 <div class="admin-layout">
 
+  <!-- ============ SIDEBAR ============ -->
   <aside class="admin-sidebar">
     <a href="/admin/dashboard.html" class="admin-sidebar-logo">
       <img src="/images/logo.webp" alt="Radar" width="32" height="32">
@@ -30,11 +178,11 @@
         <span>Обзор</span>
       </a>
       <a href="/admin/clients.html" class="admin-sidebar-link active">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         <span>Клиенты</span>
       </a>
       <a href="/admin/logs.html" class="admin-sidebar-link">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         <span>Логи</span>
       </a>
       <a href="/admin/billing.html" class="admin-sidebar-link">
@@ -50,14 +198,20 @@
     </div>
   </aside>
 
+  <!-- ============ MAIN ============ -->
   <main class="admin-main">
 
     <header class="admin-header">
       <h1 class="admin-header-title">Клиенты</h1>
       <div class="admin-header-actions">
-        <button class="btn btn-primary" onclick="openCreateDialog()">+ Добавить</button>
+        <a href="/admin/client.html" class="btn btn-primary">+ Новый клиент</a>
       </div>
     </header>
+
+    <div class="clients-toolbar">
+      <input type="search" id="searchInput" placeholder="🔍 Поиск по имени, email или компании...">
+      <span class="clients-count" id="clientsCount">—</span>
+    </div>
 
     <section class="dash-section">
       <table class="clients-table">
@@ -72,11 +226,8 @@
           </tr>
         </thead>
         <tbody id="clientsBody">
-          <tr>
-            <td colspan="6" class="empty-state">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="48" height="48"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-              <div>Пока нет клиентов</div>
-            </td>
+          <tr class="loading-row">
+            <td colspan="6"><span class="spinner"></span></td>
           </tr>
         </tbody>
       </table>
@@ -87,22 +238,181 @@
 </div>
 
 <script>
-  const token = localStorage.getItem('token');
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
-  if (!token || user.role !== 'admin') window.location.href = '/app/login.html';
+// ============================================
+// Проверка админа
+// ============================================
+const token = localStorage.getItem('token');
+const user = JSON.parse(localStorage.getItem('user') || '{}');
+if (!token || user.role !== 'admin') {
+  window.location.href = '/app/login.html';
+}
 
-  // TODO: загрузка клиентов из /api/admin/clients
+// ============================================
+// Элементы
+// ============================================
+const tbody = document.getElementById('clientsBody');
+const searchInput = document.getElementById('searchInput');
+const clientsCount = document.getElementById('clientsCount');
 
-  function openCreateDialog() {
-    alert('Форма создания клиента (демо)');
+let allClients = [];
+
+// ============================================
+// Загрузка клиентов из API
+// ============================================
+async function loadClients() {
+  try {
+    const res = await fetch('/api/admin/clients');
+    const data = await res.json();
+
+    if (!data.ok) {
+      throw new Error(data.error?.ru || 'Ошибка загрузки');
+    }
+
+    allClients = data.clients || [];
+    renderClients(allClients);
+    clientsCount.textContent = allClients.length + ' всего';
+  } catch (err) {
+    console.error('Load clients error:', err);
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" class="empty-state">
+          <div>Ошибка загрузки</div>
+          <div style="font-size:13px;">${escapeHtml(err.message)}</div>
+        </td>
+      </tr>
+    `;
+  }
+}
+
+// ============================================
+// Отрисовка таблицы
+// ============================================
+function renderClients(clients) {
+  if (!clients.length) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="48" height="48"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          <div>Пока нет клиентов</div>
+          <div style="font-size:13px; margin-top:6px;">
+            <a href="/admin/client.html" style="color:#00F0FF;">+ Создайте первого клиента</a>
+          </div>
+        </td>
+      </tr>
+    `;
+    return;
   }
 
-  function logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    document.cookie = 'token=; path=/; max-age=0';
-    window.location.href = '/app/login.html';
+  tbody.innerHTML = clients.map(c => {
+    const initial = (c.name || '?').trim().charAt(0);
+    const statusClass = 'status-' + (c.status || 'active');
+    const statusLabel = {
+      active: '🟢 Активен',
+      trial: '🟡 Trial',
+      suspended: '🔴 Заблокирован'
+    }[c.status] || c.status;
+
+    return `
+      <tr class="client-row" onclick="openClient('${c.id}')">
+        <td>
+          <div class="client-cell-name">
+            <div class="client-avatar">${escapeHtml(initial)}</div>
+            <div>
+              <div class="client-name-text">${escapeHtml(c.name || '—')}</div>
+              <div class="client-email-text">${escapeHtml(c.email || '')}</div>
+            </div>
+          </div>
+        </td>
+        <td>${escapeHtml(c.company || '—')}</td>
+        <td><span class="plan-badge">${escapeHtml(c.plan || 'basic')}</span></td>
+        <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
+        <td>${formatDate(c.created_at)}</td>
+        <td onclick="event.stopPropagation()">
+          <div class="row-actions">
+            <button class="icon-btn" onclick="openClient('${c.id}')" title="Открыть">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+            <button class="icon-btn danger" onclick="deleteClient('${c.id}', '${escapeJs(c.name)}')" title="Удалить">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// ============================================
+// Действия
+// ============================================
+function openClient(id) {
+  window.location.href = '/admin/client.html?id=' + id;
+}
+
+async function deleteClient(id, name) {
+  if (!confirm(`Удалить клиента "${name}"?\n\nЭто действие нельзя отменить.`)) return;
+
+  try {
+    const res = await fetch('/api/admin/clients/' + id, { method: 'DELETE' });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error?.ru || 'Ошибка удаления');
+
+    // Перезагрузка
+    loadClients();
+  } catch (err) {
+    alert('Ошибка: ' + err.message);
   }
+}
+
+// ============================================
+// Поиск
+// ============================================
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.trim().toLowerCase();
+  if (!q) {
+    renderClients(allClients);
+    clientsCount.textContent = allClients.length + ' всего';
+    return;
+  }
+  const filtered = allClients.filter(c =>
+    (c.name || '').toLowerCase().includes(q) ||
+    (c.email || '').toLowerCase().includes(q) ||
+    (c.company || '').toLowerCase().includes(q)
+  );
+  renderClients(filtered);
+  clientsCount.textContent = filtered.length + ' из ' + allClients.length;
+});
+
+// ============================================
+// Утилиты
+// ============================================
+function formatDate(ts) {
+  if (!ts) return '—';
+  const d = new Date(ts * 1000);
+  return d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[ch]));
+}
+
+function escapeJs(s) {
+  return String(s || '').replace(/'/g, "\\'").replace(/"/g, '\\"');
+}
+
+function logout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  document.cookie = 'token=; path=/; max-age=0';
+  window.location.href = '/app/login.html';
+}
+
+// ============================================
+// Запуск
+// ============================================
+loadClients();
 </script>
 
 </body>

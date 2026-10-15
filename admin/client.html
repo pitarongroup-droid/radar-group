@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#08080F">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Админ — Карточка клиента</title>
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"></noscript>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/app/dashboard.css">
+  <link rel="stylesheet" href="/admin/admin.css">
+
+  <style>
+    /* Форма карточки клиента */
+    .client-form { max-width: 900px; }
+    .form-section {
+      background: var(--bg-elevated, #0F0F18);
+      border: 1px solid var(--border, rgba(255,255,255,.08));
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .form-section-title {
+      font-size: 16px;
+      font-weight: 800;
+      margin: 0 0 18px;
+      letter-spacing: -.01em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .form-section-title svg { width: 20px; height: 20px; color: var(--cyan, #00F0FF); }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+    .form-row.single { grid-template-columns: 1fr; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted, #8a8aa0);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .form-input, .form-select, .form-textarea {
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--border, rgba(255,255,255,.1));
+      border-radius: 10px;
+      padding: 11px 14px;
+      color: var(--text, #fff);
+      font-size: 14px;
+      font-family: inherit;
+      transition: .2s;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--cyan, #00F0FF);
+      background: rgba(0, 240, 255, .04);
+    }
+    .form-textarea { min-height: 100px; resize: vertical; font-family: 'SF Mono', Consolas, monospace; font-size: 13px; line-height: 1.5; }
+    .form-hint { font-size: 11px; color: var(--text-dim, #5a5a70); margin-top: 2px; }
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+    .btn-secondary {
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--border, rgba(255,255,255,.1));
+      color: var(--text, #fff);
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      transition: .2s;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,.1); }
+    .api-key-box {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      background: rgba(0, 240, 255, .05);
+      border: 1px solid rgba(0, 240, 255, .2);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-family: 'SF Mono', Consolas, monospace;
+      font-size: 13px;
+      color: var(--cyan, #00F0FF);
+      word-break: break-all;
+    }
+    .api-key-box button {
+      background: rgba(0, 240, 255, .1);
+      border: 1px solid rgba(0, 240, 255, .3);
+      color: var(--cyan, #00F0FF);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: .2s;
+    }
+    .api-key-box button:hover { background: rgba(0, 240, 255, .2); }
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--bg-elevated, #0F0F18);
+      border: 1px solid var(--cyan, #00F0FF);
+      color: var(--text, #fff);
+      padding: 14px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(0, 240, 255, .2);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: .3s;
+      z-index: 1000;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.error { border-color: #FF3B6B; box-shadow: 0 8px 24px rgba(255, 59, 107, .2); }
+
+    @media (max-width: 640px) {
+      .form-row { grid-template-columns: 1fr; }
+      .form-actions { flex-direction: column-reverse; }
+      .form-actions > * { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="admin-layout">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="admin-sidebar">
+    <a href="/admin/dashboard.html" class="admin-sidebar-logo">
+      <img src="/images/logo.webp" alt="Radar" width="32" height="32">
+      <span class="admin-sidebar-logo-text">ADMIN</span>
+    </a>
+    <nav class="admin-sidebar-nav">
+      <a href="/admin/dashboard.html" class="admin-sidebar-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+        <span>Обзор</span>
+      </a>
+      <a href="/admin/clients.html" class="admin-sidebar-link active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Клиенты</span>
+      </a>
+      <a href="/admin/logs.html" class="admin-sidebar-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <span>Логи</span>
+      </a>
+      <a href="/admin/billing.html" class="admin-sidebar-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        <span>Финансы</span>
+      </a>
+    </nav>
+    <div class="admin-sidebar-bottom">
+      <button class="sidebar-logout" onclick="logout()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Выйти</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="admin-main">
+
+    <header class="admin-header">
+      <h1 class="admin-header-title" id="pageTitle">Новый клиент</h1>
+      <div class="admin-header-actions">
+        <a href="/admin/clients.html" class="btn btn-secondary">← К списку</a>
+      </div>
+    </header>
+
+    <form class="client-form" id="clientForm">
+
+      <!-- ===== ОСНОВНОЕ ===== -->
+      <section class="form-section">
+        <h2 class="form-section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Основное
+        </h2>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Имя клиента *</label>
+            <input class="form-input" name="name" required placeholder="СТО Иванов">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email *</label>
+            <input class="form-input" name="email" type="email" required placeholder="client@example.com">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Компания</label>
+            <input class="form-input" name="company" placeholder="ИП Иванов">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Сайт</label>
+            <input class="form-input" name="site_url" placeholder="https://example.com">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Язык</label>
+            <select class="form-select" name="language">
+              <option value="ru">🇷🇺 RU</option>
+              <option value="en">🇬🇧 EN</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Валюта</label>
+            <select class="form-select" name="currency">
+              <option value="USD">$ USD</option>
+              <option value="RUB">₽ RUB</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">План</label>
+            <select class="form-select" name="plan">
+              <option value="basic">Basic</option>
+              <option value="standard">Standard</option>
+              <option value="turnkey">Turnkey</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Статус</label>
+            <select class="form-select" name="status">
+              <option value="active">🟢 Активен</option>
+              <option value="trial">🟡 Trial</option>
+              <option value="suspended">🔴 Заблокирован</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== API KEY (только для существующего клиента) ===== -->
+      <section class="form-section" id="apiKeySection" style="display:none;">
+        <h2 class="form-section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+          API-ключ для виджета
+        </h2>
+        <div class="api-key-box">
+          <span id="apiKeyText">—</span>
+          <button type="button" onclick="copyApiKey()">📋 Копировать</button>
+        </div>
+        <div class="form-hint" style="margin-top:8px;">
+          Вставьте этот код на сайт клиента:
+        </div>
+        <div class="api-key-box" style="margin-top:6px;">
+          <span id="embedCode">&lt;script src="https://radar-group.org/widget.js" data-key="..." async&gt;&lt;/script&gt;</span>
+          <button type="button" onclick="copyEmbed()">📋 Копировать</button>
+        </div>
+      </section>
+
+      <!-- ===== ПРОМПТЫ ===== -->
+      <section class="form-section">
+        <h2 class="form-section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Промпт ИИ-менеджера
+        </h2>
+
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label">Промпт RU</label>
+          <textarea class="form-textarea" name="prompt_ru" placeholder="Ты — менеджер по продажам компании...&#10;&#10;Твоя задача:&#10;1. Приветствовать клиента&#10;2. Узнать потребность&#10;3. Собрать контакт"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Prompt EN</label>
+          <textarea class="form-textarea" name="prompt_en" placeholder="You are a sales manager at..."></textarea>
+        </div>
+      </section>
+
+      <!-- ===== ТОКЕНЫ ===== -->
+      <section class="form-section">
+        <h2 class="form-section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Токены и интеграции
+        </h2>
+
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label">OpenAI API Key *</label>
+          <input class="form-input" name="openai_api_key" placeholder="sk-proj-..." autocomplete="off">
+          <div class="form-hint">Ключ клиента. Если пусто — используется общий ключ платформы.</div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Telegram Bot Token</label>
+            <input class="form-input" name="telegram_token" placeholder="123456:ABC-DEF..." autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Telegram Admin ID</label>
+            <input class="form-input" name="telegram_admin_id" placeholder="123456789" autocomplete="off">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label">Notification Email</label>
+          <input class="form-input" name="notification_email" type="email" placeholder="owner@example.com">
+          <div class="form-hint">Куда отправлять уведомления о новых лидах.</div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Webhook URL</label>
+            <input class="form-input" name="webhook_url" placeholder="https://..." autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Webhook Secret</label>
+            <input class="form-input" name="webhook_secret" placeholder="shared secret" autocomplete="off">
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== ВИДЖЕТ ===== -->
+      <section class="form-section">
+        <h2 class="form-section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          Виджет
+        </h2>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Заголовок RU</label>
+            <input class="form-input" name="widget_title_ru" value="ИИ-менеджер">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Заголовок EN</label>
+            <input class="form-input" name="widget_title_en" value="AI Manager">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Приветствие RU</label>
+            <input class="form-input" name="widget_welcome_ru" value="Здравствуйте! Чем помочь?">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Приветствие EN</label>
+            <input class="form-input" name="widget_welcome_en" value="Hello! How can I help?">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Цвет виджета</label>
+            <input class="form-input" name="widget_color" type="color" value="#00F0FF" style="height:44px; padding:6px;">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Лимит запросов/день</label>
+            <input class="form-input" name="max_daily_requests" type="number" value="1000">
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== КНОПКИ ===== -->
+      <div class="form-actions">
+        <a href="/admin/clients.html" class="btn btn-secondary">Отмена</a>
+        <button type="submit" class="btn btn-primary" id="submitBtn">💾 Сохранить</button>
+      </div>
+
+    </form>
+
+  </main>
+
+</div>
+
+<div class="toast" id="toast">Сохранено!</div>
+
+<script>
+// ============================================
+// Проверка авторизации
+// ============================================
+const token = localStorage.getItem('token');
+const user = JSON.parse(localStorage.getItem('user') || '{}');
+if (!token || user.role !== 'admin') {
+  window.location.href = '/app/login.html';
+}
+
+// ============================================
+// URL параметр ?id=cli_xxx
+// ============================================
+const urlParams = new URLSearchParams(window.location.search);
+const clientId = urlParams.get('id');
+const isEdit = !!clientId;
+
+// ============================================
+// Форма
+// ============================================
+const form = document.getElementById('clientForm');
+const pageTitle = document.getElementById('pageTitle');
+const submitBtn = document.getElementById('submitBtn');
+
+// ============================================
+// Загрузка данных (если редактирование)
+// ============================================
+async function loadClient() {
+  if (!isEdit) return;
+
+  pageTitle.textContent = 'Карточка клиента';
+  submitBtn.textContent = '💾 Сохранить изменения';
+
+  try {
+    // Загружаем основное
+    const cRes = await fetch('/api/admin/clients/' + clientId);
+    const cData = await cRes.json();
+    if (!cData.ok) throw new Error('Клиент не найден');
+
+    const c = cData.client;
+    form.name.value = c.name || '';
+    form.email.value = c.email || '';
+    form.company.value = c.company || '';
+    form.site_url.value = c.site_url || '';
+    form.language.value = c.language || 'ru';
+    form.currency.value = c.currency || 'USD';
+    form.plan.value = c.plan || 'basic';
+    form.status.value = c.status || 'active';
+
+    // Загружаем настройки
+    const sRes = await fetch('/api/admin/settings?client_id=' + clientId);
+    const sData = await sRes.json();
+    if (sData.ok && sData.settings) {
+      const s = sData.settings;
+      form.prompt_ru.value = s.prompt_ru || '';
+      form.prompt_en.value = s.prompt_en || '';
+      form.openai_api_key.value = s.openai_api_key || '';
+      form.telegram_token.value = s.telegram_token || '';
+      form.telegram_admin_id.value = s.telegram_admin_id || '';
+      form.notification_email.value = s.notification_email || '';
+      form.webhook_url.value = s.webhook_url || '';
+      form.webhook_secret.value = s.webhook_secret || '';
+      form.widget_title_ru.value = s.widget_title_ru || 'ИИ-менеджер';
+      form.widget_title_en.value = s.widget_title_en || 'AI Manager';
+      form.widget_welcome_ru.value = s.widget_welcome_ru || 'Здравствуйте! Чем помочь?';
+      form.widget_welcome_en.value = s.widget_welcome_en || 'Hello! How can I help?';
+      form.widget_color.value = s.widget_color || '#00F0FF';
+      form.max_daily_requests.value = s.max_daily_requests || 1000;
+    }
+
+    // Показываем API-key
+    if (c.api_key) {
+      document.getElementById('apiKeySection').style.display = 'block';
+      document.getElementById('apiKeyText').textContent = c.api_key;
+      document.getElementById('embedCode').textContent =
+        '<script src="https://radar-group.org/widget.js" data-key="' + c.api_key + '" async><\/script>';
+    }
+  } catch (err) {
+    console.error(err);
+    showToast('Ошибка загрузки: ' + err.message, true);
+  }
+}
+
+// ============================================
+// Сохранение
+// ============================================
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  submitBtn.disabled = true;
+  submitBtn.textContent = '⏳ Сохранение...';
+
+  try {
+    const data = Object.fromEntries(new FormData(form));
+
+    if (isEdit) {
+      // PUT клиент
+      const cRes = await fetch('/api/admin/clients/' + clientId, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const cData = await cRes.json();
+      if (!cData.ok) throw new Error(cData.error?.ru || 'Ошибка клиента');
+
+      // PUT настройки
+      data.client_id = clientId;
+      const sRes = await fetch('/api/admin/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const sData = await sRes.json();
+      if (!sData.ok) throw new Error(sData.error?.ru || 'Ошибка настроек');
+
+      showToast('✅ Сохранено!');
+    } else {
+      // POST — создать нового клиента
+      const cRes = await fetch('/api/admin/clients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const cData = await cRes.json();
+      if (!cData.ok) throw new Error(cData.error?.ru || 'Ошибка создания');
+
+      // Показываем ключ
+      document.getElementById('apiKeySection').style.display = 'block';
+      document.getElementById('apiKeyText').textContent = cData.api_key;
+      document.getElementById('embedCode').textContent =
+        '<script src="https://radar-group.org/widget.js" data-key="' + cData.api_key + '" async><\/script>';
+
+      // Переключаем в режим редактирования
+      window.history.replaceState(null, '', '?id=' + cData.id);
+
+      showToast('✅ Клиент создан! Скопируйте API-ключ.');
+      submitBtn.textContent = '💾 Сохранить изменения';
+      pageTitle.textContent = 'Карточка клиента';
+    }
+  } catch (err) {
+    console.error(err);
+    showToast('❌ ' + err.message, true);
+  } finally {
+    submitBtn.disabled = false;
+    if (isEdit || document.getElementById('apiKeySection').style.display === 'block') {
+      submitBtn.textContent = '💾 Сохранить изменения';
+    } else {
+      submitBtn.textContent = '💾 Создать';
+    }
+  }
+});
+
+// ============================================
+// Копирование
+// ============================================
+function copyApiKey() {
+  navigator.clipboard.writeText(document.getElementById('apiKeyText').textContent);
+  showToast('📋 API-ключ скопирован');
+}
+
+function copyEmbed() {
+  navigator.clipboard.writeText(document.getElementById('embedCode').textContent);
+  showToast('📋 Код виджета скопирован');
+}
+
+// ============================================
+// Toast уведомления
+// ============================================
+function showToast(msg, isError = false) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ============================================
+// Logout
+// ============================================
+function logout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  document.cookie = 'token=; path=/; max-age=0';
+  window.location.href = '/app/login.html';
+}
+
+// ============================================
+// Запуск
+// ============================================
+loadClient();
+</script>
+
+</body>
+</html>
