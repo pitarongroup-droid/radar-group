@@ -86,7 +86,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td colspan="4" class="empty-state">Пока нет платежей</td></tr>
+          <tr><td colspan="4" class="empty-state">Загрузка...</td></tr>
         </tbody>
       </table>
     </section>
@@ -104,6 +104,59 @@
     document.cookie = 'token=; path=/; max-age=0';
     window.location.href = '/app/login.html';
   }
+
+  async function loadBilling() {
+    try {
+      const res = await fetch('/api/admin/billing');
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error?.ru || 'Ошибка');
+
+      document.querySelector('.stat-card:nth-child(1) .stat-card-value').textContent =
+        '$' + Math.round(data.stats.revenue);
+      document.querySelector('.stat-card:nth-child(2) .stat-card-value').textContent =
+        data.stats.active_subs;
+      document.querySelector('.stat-card:nth-child(3) .stat-card-value').textContent =
+        '$' + data.stats.avg_check;
+
+      const tbody = document.querySelector('.clients-table tbody');
+      if (!data.payments.length) {
+        tbody.innerHTML = `<tr><td colspan="4" class="empty-state">Пока нет платежей</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = data.payments.map(p => {
+        const date = new Date(p.created_at * 1000)
+          .toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+        const statusClass = p.status === 'paid' ? 'status-active' :
+                            p.status === 'pending' ? 'status-trial' : 'status-suspended';
+        const statusLabel = {
+          paid: '✅ Оплачен',
+          pending: '⏳ Ожидает',
+          failed: '❌ Ошибка'
+        }[p.status] || p.status;
+
+        return `
+          <tr>
+            <td>${date}</td>
+            <td>${escapeHtml(p.client_name || '—')}</td>
+            <td>$${p.amount || 0}</td>
+            <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
+          </tr>
+        `;
+      }).join('');
+    } catch (err) {
+      console.error('Billing error:', err);
+    }
+  }
+
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, ch => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[ch]));
+  }
+
+  loadBilling();
 </script>
 
 </body>

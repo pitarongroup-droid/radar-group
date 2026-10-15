@@ -66,7 +66,7 @@
         </thead>
         <tbody id="logsBody">
           <tr>
-            <td colspan="4" class="empty-state">Пока нет логов</td>
+            <td colspan="4" class="empty-state">Загрузка...</td>
           </tr>
         </tbody>
       </table>
@@ -85,6 +85,67 @@
     document.cookie = 'token=; path=/; max-age=0';
     window.location.href = '/app/login.html';
   }
+
+  async function loadLogs() {
+    const tbody = document.getElementById('logsBody');
+    try {
+      const res = await fetch('/api/admin/logs?limit=100');
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error?.ru || 'Ошибка');
+
+      if (!data.logs.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" class="empty-state">
+              <div>Пока нет логов</div>
+              <div style="font-size:12px; margin-top:6px; color:var(--text-dim);">
+                Логи появятся, когда начнут работать виджет или бот
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = data.logs.map(log => {
+        const time = new Date(log.created_at * 1000)
+          .toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+
+        const levelClass = {
+          error: 'status-suspended',
+          warn: 'status-trial',
+          info: 'status-active'
+        }[log.level] || 'status-active';
+
+        return `
+          <tr>
+            <td>${time}</td>
+            <td><span class="status-badge ${levelClass}">${log.level || 'info'}</span></td>
+            <td>${log.source || '—'}</td>
+            <td style="font-family:monospace; font-size:12px;">${escapeHtml(log.message || '')}</td>
+          </tr>
+        `;
+      }).join('');
+    } catch (err) {
+      console.error('Logs error:', err);
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="4" class="empty-state">
+            <div>Ошибка загрузки</div>
+            <div style="font-size:12px;">${escapeHtml(err.message)}</div>
+          </td>
+        </tr>
+      `;
+    }
+  }
+
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, ch => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[ch]));
+  }
+
+  loadLogs();
 </script>
 
 </body>
