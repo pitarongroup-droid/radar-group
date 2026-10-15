@@ -1,169 +1,139 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#08080F">
-  <meta name="robots" content="noindex, nofollow">
-  
-  <title>Регистрация — Radar Group</title>
-  
-  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
-  <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"></noscript>
-  
-  <link rel="stylesheet" href="/style.css">
-  <link rel="stylesheet" href="/app/app.css">
-</head>
-<body class="app-body">
+// ============================================
+// POST /api/auth/register — регистрация клиента
+// ============================================
 
-  <div class="app-container">
-    <div class="app-card">
-      
-      <a href="/" class="app-logo">
-        <img src="/images/logo.webp" alt="Radar Group" width="40" height="40">
-        <span class="logo-text">RADAR GROUP</span>
-      </a>
-      
-      <h1 class="app-title">Регистрация</h1>
-      <p class="app-subtitle">Создайте аккаунт для управления ИИ-менеджером</p>
-      
-      <form id="registerForm" class="app-form" novalidate>
-        
-        <div class="form-row">
-          <label class="form-label" for="name">Как вас зовут? *</label>
-          <input class="form-input" type="text" id="name" name="name" placeholder="Иван" required autocomplete="name" maxlength="50">
-        </div>
-        
-        <div class="form-row">
-          <label class="form-label" for="company">Компания</label>
-          <input class="form-input" type="text" id="company" name="company" placeholder="ООО Ромашка" autocomplete="organization" maxlength="100">
-        </div>
-        
-        <div class="form-row">
-          <label class="form-label" for="email">Email *</label>
-          <input class="form-input" type="email" id="email" name="email" placeholder="your@email.com" required autocomplete="email">
-        </div>
-        
-        <div class="form-row">
-          <label class="form-label" for="password">Пароль *</label>
-          <input class="form-input" type="password" id="password" name="password" placeholder="Минимум 8 символов" required autocomplete="new-password" minlength="8">
-        </div>
-        
-        <label class="form-checkbox-row">
-          <input type="checkbox" name="agree" required>
-          <span class="form-checkbox-custom"></span>
-          <span>Согласен на обработку персональных данных</span>
-        </label>
-        
-        <button type="submit" class="btn btn-primary form-submit">
-          Создать аккаунт
-        </button>
-        
-        <div class="form-status" id="formStatus" role="status" aria-live="polite"></div>
-      </form>
-      
-      <div class="app-footer">
-        Уже есть аккаунт? <a href="/app/login.html">Войти</a>
-      </div>
-      
-      <div class="app-footer-secondary">
-        <a href="/">← На главную</a>
-      </div>
-      
-    </div>
-  </div>
+export async function onRequestPost(context) {
+  const { request, env } = context;
 
-  <script>
-    document.getElementById('registerForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const status = document.getElementById('formStatus');
-      const btn = e.target.querySelector('button[type="submit"]');
-      
-      const name = document.getElementById('name').value.trim();
-      const company = document.getElementById('company').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      const agree = e.target.querySelector('[name="agree"]').checked;
-      
-      // Валидация
-      if (!name || name.length < 2) {
-        status.className = 'form-status error';
-        status.textContent = 'Укажите ваше имя';
-        return;
-      }
-      if (!email || !email.includes('@')) {
-        status.className = 'form-status error';
-        status.textContent = 'Введите корректный email';
-        return;
-      }
-      if (!password || password.length < 8) {
-        status.className = 'form-status error';
-        status.textContent = 'Пароль минимум 8 символов';
-        return;
-      }
-      if (!agree) {
-        status.className = 'form-status error';
-        status.textContent = 'Необходимо согласие на обработку данных';
-        return;
-      }
-      
-      btn.disabled = true;
-      btn.textContent = 'Создаём...';
-      status.className = 'form-status';
-      status.textContent = '';
-      
-      try {
-        const res = await fetch('/api/auth/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, company, email, password })
-        });
-        
-        const data = await res.json();
-        
-        if (data.ok && data.token) {
-          // ✅ Сохраняем токен и данные пользователя
-          localStorage.setItem('token', data.token);
-          localStorage.setItem('user', JSON.stringify(data.user));
-          document.cookie = `token=${data.token}; path=/; max-age=${60*60*24*30}; SameSite=Lax`;
-          
-          // ✅ Определяем язык по URL (RU или EN)
-          const lang = window.location.pathname.startsWith('/en/') ? 'en' : 'ru';
-          const appRoot = lang === 'en' ? '/en/app' : '/app';
-          
-          status.className = 'form-status success';
-          status.textContent = lang === 'en'
-            ? 'Account created! Redirecting...'
-            : 'Аккаунт создан! Перенаправляем...';
-          
-          setTimeout(() => {
-            window.location.href = `${appRoot}/dashboard.html`;
-          }, 800);
-        } else {
-          status.className = 'form-status error';
-          // ✅ Берём текст ошибки на нужном языке
-          const lang = window.location.pathname.startsWith('/en/') ? 'en' : 'ru';
-          status.textContent = data.error?.[lang] || 'Ошибка регистрации';
-        }
-      } catch (err) {
-        status.className = 'form-status error';
-        const lang = window.location.pathname.startsWith('/en/') ? 'en' : 'ru';
-        status.textContent = lang === 'en'
-          ? 'Network error. Please try again later.'
-          : 'Ошибка сети. Попробуйте позже.';
-        console.error('Register error:', err);
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Создать аккаунт';
-      }
+  try {
+    const { name, company, email, password } = await request.json();
+
+    if (!name || name.length < 2) {
+      return error('Укажите ваше имя', 'Please enter your name');
+    }
+    if (!email || !email.includes('@')) {
+      return error('Неверный email', 'Invalid email');
+    }
+    if (!password || password.length < 8) {
+      return error('Пароль минимум 8 символов', 'Password must be at least 8 characters');
+    }
+
+    const existing = await env.radar_group_db.prepare(
+      'SELECT id FROM users WHERE email = ?'
+    ).bind(email.toLowerCase()).first();
+
+    if (existing) {
+      return error('Email уже зарегистрирован', 'Email already registered');
+    }
+
+    const clientId = 'cli_' + crypto.randomUUID().slice(0, 8);
+    const userId = 'usr_' + crypto.randomUUID().slice(0, 8);
+    const apiKey = 'rg_live_' + generateKey(32);
+
+    const passwordHash = await hashPassword(password);
+
+    await env.radar_group_db.batch([
+      env.radar_group_db.prepare(
+        'INSERT INTO clients (id, name, email, company, api_key) VALUES (?, ?, ?, ?, ?)'
+      ).bind(clientId, name, email.toLowerCase(), company || null, apiKey),
+
+      env.radar_group_db.prepare(
+        'INSERT INTO users (id, client_id, email, password_hash, role) VALUES (?, ?, ?, ?, ?)'
+      ).bind(userId, clientId, email.toLowerCase(), passwordHash, 'client'),
+
+      env.radar_group_db.prepare(
+        'INSERT INTO settings (client_id) VALUES (?)'
+      ).bind(clientId)
+    ]);
+
+    const token = await createJWT({
+      userId,
+      clientId,
+      role: 'client',
+      name
+    }, env.JWT_SECRET);
+
+    return Response.json({
+      ok: true,
+      token,
+      user: { id: userId, clientId, email, name, role: 'client' },
+      apiKey
     });
-  </script>
 
-</body>
-</html>
+  } catch (err) {
+    console.error('Register error:', err);
+    return Response.json({
+      ok: false,
+      error: {
+        ru: 'Ошибка регистрации. Попробуйте позже.',
+        en: 'Registration error. Please try again later.'
+      }
+    }, { status: 500 });
+  }
+}
+
+function error(ru, en, status = 400) {
+  return Response.json({ ok: false, error: { ru, en } }, { status });
+}
+
+function generateKey(length) {
+  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let key = '';
+  const arr = crypto.getRandomValues(new Uint8Array(length));
+  for (let i = 0; i < length; i++) {
+    key += chars[arr[i] % chars.length];
+  }
+  return key;
+}
+
+function base64UrlEncode(str) {
+  const utf8Bytes = new TextEncoder().encode(str);
+  let binary = '';
+  for (let i = 0; i < utf8Bytes.length; i++) {
+    binary += String.fromCharCode(utf8Bytes[i]);
+  }
+  return btoa(binary)
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+}
+
+async function hashPassword(password) {
+  const encoder = new TextEncoder();
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits']
+  );
+  const hash = await crypto.subtle.deriveBits(
+    { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
+    keyMaterial, 256
+  );
+  const saltHex = Array.from(salt).map(b => b.toString(16).padStart(2, '0')).join('');
+  const hashHex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+  return `${saltHex}:${hashHex}`;
+}
+
+async function createJWT(payload, secret) {
+  const header = { alg: 'HS256', typ: 'JWT' };
+  const encodedHeader = base64UrlEncode(JSON.stringify(header));
+  const encodedPayload = base64UrlEncode(JSON.stringify({
+    ...payload,
+    exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30
+  }));
+  const data = `${encodedHeader}.${encodedPayload}`;
+  const key = await crypto.subtle.importKey(
+    'raw', new TextEncoder().encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+  );
+  const signature = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(data));
+  const signatureBytes = new Uint8Array(signature);
+  let binary = '';
+  for (let i = 0; i < signatureBytes.length; i++) {
+    binary += String.fromCharCode(signatureBytes[i]);
+  }
+  const encodedSignature = btoa(binary)
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+  return `${data}.${encodedSignature}`;
+}
