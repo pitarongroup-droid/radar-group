@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#08080F">
+  <meta name="robots" content="noindex, nofollow">
+  
+  <title>Регистрация — Radar Group</title>
+  
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+  
+  <!-- Шрифт -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"></noscript>
+  
+  <!-- Стили -->
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/app/app.css">
+</head>
+<body class="app-body">
+
+  <div class="app-container">
+    <div class="app-card">
+      
+      <!-- Логотип -->
+      <a href="/" class="app-logo">
+        <img src="/images/logo.webp" alt="Radar Group" width="40" height="40">
+        <span class="logo-text">RADAR GROUP</span>
+      </a>
+      
+      <!-- Заголовок -->
+      <h1 class="app-title">Регистрация</h1>
+      <p class="app-subtitle">Создайте аккаунт для управления ИИ-менеджером</p>
+      
+      <!-- Форма -->
+      <form id="registerForm" class="app-form" novalidate>
+        
+        <div class="form-row">
+          <label class="form-label" for="name">Как вас зовут? *</label>
+          <input 
+            class="form-input" 
+            type="text" 
+            id="name" 
+            name="name" 
+            placeholder="Иван"
+            required 
+            autocomplete="name"
+            maxlength="50"
+          >
+        </div>
+        
+        <div class="form-row">
+          <label class="form-label" for="company">Компания</label>
+          <input 
+            class="form-input" 
+            type="text" 
+            id="company" 
+            name="company" 
+            placeholder="ООО Ромашка"
+            autocomplete="organization"
+            maxlength="100"
+          >
+        </div>
+        
+        <div class="form-row">
+          <label class="form-label" for="email">Email *</label>
+          <input 
+            class="form-input" 
+            type="email" 
+            id="email" 
+            name="email" 
+            placeholder="your@email.com"
+            required 
+            autocomplete="email"
+          >
+        </div>
+        
+        <div class="form-row">
+          <label class="form-label" for="password">Пароль *</label>
+          <input 
+            class="form-input" 
+            type="password" 
+            id="password" 
+            name="password" 
+            placeholder="Минимум 8 символов"
+            required 
+            autocomplete="new-password"
+            minlength="8"
+          >
+        </div>
+        
+        <label class="form-checkbox-row">
+          <input type="checkbox" name="agree" required>
+          <span class="form-checkbox-custom"></span>
+          <span>Согласен на обработку персональных данных</span>
+        </label>
+        
+        <button type="submit" class="btn btn-primary form-submit">
+          Создать аккаунт
+        </button>
+        
+        <div class="form-status" id="formStatus" role="status" aria-live="polite"></div>
+      </form>
+      
+      <!-- Ссылки -->
+      <div class="app-footer">
+        Уже есть аккаунт? <a href="/app/login.html">Войти</a>
+      </div>
+      
+      <div class="app-footer-secondary">
+        <a href="/">← На главную</a>
+      </div>
+      
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const status = document.getElementById('formStatus');
+      const btn = e.target.querySelector('button[type="submit"]');
+      
+      const name = document.getElementById('name').value.trim();
+      const company = document.getElementById('company').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const agree = e.target.querySelector('[name="agree"]').checked;
+      
+      // Валидация
+      if (!name || name.length < 2) {
+        status.className = 'form-status error';
+        status.textContent = 'Укажите ваше имя';
+        return;
+      }
+      if (!email || !email.includes('@')) {
+        status.className = 'form-status error';
+        status.textContent = 'Введите корректный email';
+        return;
+      }
+      if (!password || password.length < 8) {
+        status.className = 'form-status error';
+        status.textContent = 'Пароль минимум 8 символов';
+        return;
+      }
+      if (!agree) {
+        status.className = 'form-status error';
+        status.textContent = 'Необходимо согласие на обработку данных';
+        return;
+      }
+      
+      btn.disabled = true;
+      btn.textContent = 'Создаём...';
+      status.className = 'form-status';
+      status.textContent = '';
+      
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, company, email, password })
+        });
+        
+        const data = await res.json();
+        
+        if (data.ok && data.token) {
+          localStorage.setItem('token', data.token);
+          document.cookie = `token=${data.token}; path=/; max-age=${60*60*24*30}; SameSite=Lax`;
+          
+          status.className = 'form-status success';
+          status.textContent = 'Аккаунт создан! Перенаправляем...';
+          
+          setTimeout(() => {
+            window.location.href = '/app/dashboard.html';
+          }, 800);
+        } else {
+          status.className = 'form-status error';
+          status.textContent = data.error?.ru || 'Ошибка регистрации';
+        }
+      } catch (err) {
+        status.className = 'form-status error';
+        status.textContent = 'Ошибка сети. Попробуйте позже.';
+        console.error('Register error:', err);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Создать аккаунт';
+      }
+    });
+  </script>
+
+</body>
+</html>
