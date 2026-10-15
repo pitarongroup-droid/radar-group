@@ -11,13 +11,11 @@
   <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
   
-  <!-- Шрифт -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"></noscript>
   
-  <!-- Стили сайта + кабинета -->
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/app/app.css">
 </head>
@@ -26,44 +24,24 @@
   <div class="app-container">
     <div class="app-card">
       
-      <!-- Логотип -->
       <a href="/" class="app-logo">
         <img src="/images/logo.webp" alt="Radar Group" width="40" height="40">
         <span class="logo-text">RADAR GROUP</span>
       </a>
       
-      <!-- Заголовок -->
       <h1 class="app-title">Вход в кабинет</h1>
       <p class="app-subtitle">Управление ИИ-менеджером</p>
       
-      <!-- Форма -->
       <form id="loginForm" class="app-form" novalidate>
         
         <div class="form-row">
           <label class="form-label" for="email">Email</label>
-          <input 
-            class="form-input" 
-            type="email" 
-            id="email" 
-            name="email" 
-            placeholder="your@email.com"
-            required 
-            autocomplete="email"
-          >
+          <input class="form-input" type="email" id="email" name="email" placeholder="your@email.com" required autocomplete="email">
         </div>
         
         <div class="form-row">
           <label class="form-label" for="password">Пароль</label>
-          <input 
-            class="form-input" 
-            type="password" 
-            id="password" 
-            name="password" 
-            placeholder="••••••••"
-            required 
-            autocomplete="current-password"
-            minlength="8"
-          >
+          <input class="form-input" type="password" id="password" name="password" placeholder="••••••••" required autocomplete="current-password" minlength="8">
         </div>
         
         <button type="submit" class="btn btn-primary form-submit">
@@ -73,7 +51,6 @@
         <div class="form-status" id="formStatus" role="status" aria-live="polite"></div>
       </form>
       
-      <!-- Ссылки -->
       <div class="app-footer">
         Нет аккаунта? <a href="/app/register.html">Зарегистрироваться</a>
       </div>
@@ -94,15 +71,16 @@
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
       
-      // Простая валидация
+      const lang = window.location.pathname.startsWith('/en/') ? 'en' : 'ru';
+      
       if (!email || !password) {
         status.className = 'form-status error';
-        status.textContent = 'Заполните все поля';
+        status.textContent = lang === 'en' ? 'Fill all fields' : 'Заполните все поля';
         return;
       }
       
       btn.disabled = true;
-      btn.textContent = 'Входим...';
+      btn.textContent = lang === 'en' ? 'Signing in...' : 'Входим...';
       status.className = 'form-status';
       status.textContent = '';
       
@@ -116,28 +94,35 @@
         const data = await res.json();
         
         if (data.ok && data.token) {
-          // Сохраняем токен
+          // ✅ Сохраняем токен И данные пользователя
           localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
           document.cookie = `token=${data.token}; path=/; max-age=${60*60*24*30}; SameSite=Lax`;
           
-          status.className = 'form-status success';
-          status.textContent = 'Вход выполнен! Перенаправляем...';
+          // ✅ Языко-зависимый редирект
+          const appRoot = lang === 'en' ? '/en/app' : '/app';
           
-          // Редирект в дашборд
+          status.className = 'form-status success';
+          status.textContent = lang === 'en'
+            ? 'Success! Redirecting...'
+            : 'Успешно! Перенаправляем...';
+          
           setTimeout(() => {
-            window.location.href = '/app/dashboard.html';
+            window.location.href = `${appRoot}/dashboard.html`;
           }, 700);
         } else {
           status.className = 'form-status error';
-          status.textContent = data.error?.ru || 'Неверный email или пароль';
+          status.textContent = data.error?.[lang] || (lang === 'en' ? 'Login error' : 'Ошибка входа');
         }
       } catch (err) {
         status.className = 'form-status error';
-        status.textContent = 'Ошибка сети. Попробуйте позже.';
+        status.textContent = lang === 'en'
+          ? 'Network error. Try again later.'
+          : 'Ошибка сети. Попробуйте позже.';
         console.error('Login error:', err);
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Войти';
+        btn.textContent = lang === 'en' ? 'Sign in' : 'Войти';
       }
     });
   </script>

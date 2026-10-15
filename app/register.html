@@ -11,13 +11,11 @@
   <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
   
-  <!-- Шрифт -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"></noscript>
   
-  <!-- Стили -->
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/app/app.css">
 </head>
@@ -26,71 +24,34 @@
   <div class="app-container">
     <div class="app-card">
       
-      <!-- Логотип -->
       <a href="/" class="app-logo">
         <img src="/images/logo.webp" alt="Radar Group" width="40" height="40">
         <span class="logo-text">RADAR GROUP</span>
       </a>
       
-      <!-- Заголовок -->
       <h1 class="app-title">Регистрация</h1>
       <p class="app-subtitle">Создайте аккаунт для управления ИИ-менеджером</p>
       
-      <!-- Форма -->
       <form id="registerForm" class="app-form" novalidate>
         
         <div class="form-row">
           <label class="form-label" for="name">Как вас зовут? *</label>
-          <input 
-            class="form-input" 
-            type="text" 
-            id="name" 
-            name="name" 
-            placeholder="Иван"
-            required 
-            autocomplete="name"
-            maxlength="50"
-          >
+          <input class="form-input" type="text" id="name" name="name" placeholder="Иван" required autocomplete="name" maxlength="50">
         </div>
         
         <div class="form-row">
           <label class="form-label" for="company">Компания</label>
-          <input 
-            class="form-input" 
-            type="text" 
-            id="company" 
-            name="company" 
-            placeholder="ООО Ромашка"
-            autocomplete="organization"
-            maxlength="100"
-          >
+          <input class="form-input" type="text" id="company" name="company" placeholder="ООО Ромашка" autocomplete="organization" maxlength="100">
         </div>
         
         <div class="form-row">
           <label class="form-label" for="email">Email *</label>
-          <input 
-            class="form-input" 
-            type="email" 
-            id="email" 
-            name="email" 
-            placeholder="your@email.com"
-            required 
-            autocomplete="email"
-          >
+          <input class="form-input" type="email" id="email" name="email" placeholder="your@email.com" required autocomplete="email">
         </div>
         
         <div class="form-row">
           <label class="form-label" for="password">Пароль *</label>
-          <input 
-            class="form-input" 
-            type="password" 
-            id="password" 
-            name="password" 
-            placeholder="Минимум 8 символов"
-            required 
-            autocomplete="new-password"
-            minlength="8"
-          >
+          <input class="form-input" type="password" id="password" name="password" placeholder="Минимум 8 символов" required autocomplete="new-password" minlength="8">
         </div>
         
         <label class="form-checkbox-row">
@@ -106,7 +67,6 @@
         <div class="form-status" id="formStatus" role="status" aria-live="polite"></div>
       </form>
       
-      <!-- Ссылки -->
       <div class="app-footer">
         Уже есть аккаунт? <a href="/app/login.html">Войти</a>
       </div>
@@ -131,30 +91,32 @@
       const password = document.getElementById('password').value;
       const agree = e.target.querySelector('[name="agree"]').checked;
       
+      const lang = window.location.pathname.startsWith('/en/') ? 'en' : 'ru';
+      
       // Валидация
       if (!name || name.length < 2) {
         status.className = 'form-status error';
-        status.textContent = 'Укажите ваше имя';
+        status.textContent = lang === 'en' ? 'Enter your name' : 'Укажите ваше имя';
         return;
       }
       if (!email || !email.includes('@')) {
         status.className = 'form-status error';
-        status.textContent = 'Введите корректный email';
+        status.textContent = lang === 'en' ? 'Enter a valid email' : 'Введите корректный email';
         return;
       }
       if (!password || password.length < 8) {
         status.className = 'form-status error';
-        status.textContent = 'Пароль минимум 8 символов';
+        status.textContent = lang === 'en' ? 'Password minimum 8 characters' : 'Пароль минимум 8 символов';
         return;
       }
       if (!agree) {
         status.className = 'form-status error';
-        status.textContent = 'Необходимо согласие на обработку данных';
+        status.textContent = lang === 'en' ? 'You must agree to data processing' : 'Необходимо согласие на обработку данных';
         return;
       }
       
       btn.disabled = true;
-      btn.textContent = 'Создаём...';
+      btn.textContent = lang === 'en' ? 'Creating...' : 'Создаём...';
       status.className = 'form-status';
       status.textContent = '';
       
@@ -168,26 +130,35 @@
         const data = await res.json();
         
         if (data.ok && data.token) {
+          // ✅ Сохраняем токен И данные пользователя
           localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
           document.cookie = `token=${data.token}; path=/; max-age=${60*60*24*30}; SameSite=Lax`;
           
+          // ✅ Языко-зависимый редирект
+          const appRoot = lang === 'en' ? '/en/app' : '/app';
+          
           status.className = 'form-status success';
-          status.textContent = 'Аккаунт создан! Перенаправляем...';
+          status.textContent = lang === 'en'
+            ? 'Account created! Redirecting...'
+            : 'Аккаунт создан! Перенаправляем...';
           
           setTimeout(() => {
-            window.location.href = '/app/dashboard.html';
+            window.location.href = `${appRoot}/dashboard.html`;
           }, 800);
         } else {
           status.className = 'form-status error';
-          status.textContent = data.error?.ru || 'Ошибка регистрации';
+          status.textContent = data.error?.[lang] || (lang === 'en' ? 'Registration error' : 'Ошибка регистрации');
         }
       } catch (err) {
         status.className = 'form-status error';
-        status.textContent = 'Ошибка сети. Попробуйте позже.';
+        status.textContent = lang === 'en'
+          ? 'Network error. Try again later.'
+          : 'Ошибка сети. Попробуйте позже.';
         console.error('Register error:', err);
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Создать аккаунт';
+        btn.textContent = lang === 'en' ? 'Create account' : 'Создать аккаунт';
       }
     });
   </script>
