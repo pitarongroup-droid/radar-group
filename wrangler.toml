@@ -1,0 +1,8 @@
+name = "radar-group"
+compatibility_date = "2024-10-01"
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "radar_group_db"
+database_name = "radar-group-db"
+database_id = "6cc76889-a4f0-4517-956a-67fc4c2627e9"

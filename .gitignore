@@ -1,0 +1,11 @@
+# Cloudflare Wrangler
+.wrangler/
+.dev.vars
+
+# Node.js
+node_modules/
+npm-debug.log*
+
+# Прочее
+*.log
+.DS_Store
