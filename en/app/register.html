@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#08080F">
+  <meta name="robots" content="noindex, nofollow">
+
+  <title>Sign up — Radar Group</title>
+
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"></noscript>
+
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/app/app.css">
+</head>
+<body class="app-body">
+
+  <div class="app-container">
+    <div class="app-card">
+
+      <a href="/en/" class="app-logo">
+        <img src="/images/logo.webp" alt="Radar Group" width="40" height="40">
+        <span class="logo-text">RADAR GROUP</span>
+      </a>
+
+      <h1 class="app-title">Sign up</h1>
+      <p class="app-subtitle">Create an account to manage your AI Manager</p>
+
+      <form id="registerForm" class="app-form" novalidate>
+
+        <div class="form-row">
+          <label class="form-label" for="name">Your name *</label>
+          <input class="form-input" type="text" id="name" name="name" placeholder="John" required autocomplete="name" maxlength="50">
+        </div>
+
+        <div class="form-row">
+          <label class="form-label" for="company">Company</label>
+          <input class="form-input" type="text" id="company" name="company" placeholder="Acme Inc." autocomplete="organization" maxlength="100">
+        </div>
+
+        <div class="form-row">
+          <label class="form-label" for="email">Email *</label>
+          <input class="form-input" type="email" id="email" name="email" placeholder="your@email.com" required autocomplete="email">
+        </div>
+
+        <div class="form-row">
+          <label class="form-label" for="password">Password *</label>
+          <input class="form-input" type="password" id="password" name="password" placeholder="Minimum 8 characters" required autocomplete="new-password" minlength="8">
+        </div>
+
+        <label class="form-checkbox-row">
+          <input type="checkbox" name="agree" required>
+          <span class="form-checkbox-custom"></span>
+          <span>I agree to personal data processing</span>
+        </label>
+
+        <button type="submit" class="btn btn-primary form-submit">
+          Create account
+        </button>
+
+        <div class="form-status" id="formStatus" role="status" aria-live="polite"></div>
+      </form>
+
+      <div class="app-footer">
+        Already have an account? <a href="/en/app/login.html">Sign in</a>
+      </div>
+
+      <div class="app-footer-secondary">
+        <a href="/en/">← Home</a>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const status = document.getElementById('formStatus');
+      const btn = e.target.querySelector('button[type="submit"]');
+
+      const name = document.getElementById('name').value.trim();
+      const company = document.getElementById('company').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const agree = e.target.querySelector('[name="agree"]').checked;
+
+      if (!name || name.length < 2) {
+        status.className = 'form-status error';
+        status.textContent = 'Please enter your name';
+        return;
+      }
+      if (!email || !email.includes('@')) {
+        status.className = 'form-status error';
+        status.textContent = 'Please enter a valid email';
+        return;
+      }
+      if (!password || password.length < 8) {
+        status.className = 'form-status error';
+        status.textContent = 'Password must be at least 8 characters';
+        return;
+      }
+      if (!agree) {
+        status.className = 'form-status error';
+        status.textContent = 'You must agree to data processing';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Creating...';
+      status.className = 'form-status';
+      status.textContent = '';
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, company, email, password })
+        });
+
+        const data = await res.json();
+
+        if (data.ok && data.token) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          document.cookie = `token=${data.token}; path=/; max-age=${60*60*24*30}; SameSite=Lax`;
+
+          status.className = 'form-status success';
+          status.textContent = 'Account created! Redirecting...';
+
+          setTimeout(() => {
+            window.location.href = '/en/app/dashboard.html';
+          }, 800);
+        } else {
+          status.className = 'form-status error';
+          status.textContent = data.error?.en || 'Registration error';
+        }
+      } catch (err) {
+        status.className = 'form-status error';
+        status.textContent = 'Network error. Try again later.';
+        console.error('Register error:', err);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Create account';
+      }
+    });
+  </script>
+
+</body>
+</html>
