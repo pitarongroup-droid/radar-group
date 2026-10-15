@@ -68,7 +68,15 @@ export async function onRequestPost(context) {
 
   } catch (err) {
     console.error('Register error:', err);
-    return error('Ошибка регистрации', 'Registration error', 500);
+    return Response.json({
+      ok: false,
+      error: { ru: 'Ошибка регистрации', en: 'Registration error' },
+      debug: {
+        message: err.message,
+        stack: err.stack ? err.stack.split('\n').slice(0, 5).join(' | ') : null,
+        type: err.constructor ? err.constructor.name : 'Unknown'
+      }
+    }, { status: 500 });
   }
 }
 
@@ -108,7 +116,7 @@ async function createJWT(payload, secret) {
   const encodedHeader = btoa(JSON.stringify(header));
   const encodedPayload = btoa(JSON.stringify({
     ...payload,
-    exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30 // 30 дней
+    exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30
   }));
   const data = `${encodedHeader}.${encodedPayload}`;
   const key = await crypto.subtle.importKey(
