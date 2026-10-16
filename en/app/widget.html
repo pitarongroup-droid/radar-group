@@ -56,7 +56,7 @@
     <div class="sidebar-bottom">
       <button class="sidebar-logout" onclick="logout()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        <span>Logout</span>
+        <span>Log out</span>
       </button>
     </div>
   </aside>
@@ -64,19 +64,22 @@
   <main class="app-main">
     <header class="app-header">
       <h1 class="app-header-title">🌐 Widget Settings</h1>
-      <div class="app-header-user">
-        <div class="app-header-user-avatar" id="userAvatar">?</div>
-        <span id="userName">Client</span>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <a href="/en/app/help.html" class="app-help-btn" title="Knowledge Base">?</a>
+        <div class="app-header-user">
+          <div class="app-header-user-avatar" id="userAvatar">?</div>
+          <span id="userName">Client</span>
+        </div>
       </div>
     </header>
 
     <div id="accessBlocked" style="display:none;">
       <div class="dash-section" style="text-align:center; padding:40px 20px;">
         <div style="font-size:48px; margin-bottom:12px;">⏳</div>
-        <div style="font-size:18px; font-weight:700; color:#FFC800; margin-bottom:8px;">Account pending approval</div>
+        <div style="font-size:18px; font-weight:700; color:#FFC800; margin-bottom:8px;">Account under review</div>
         <div style="color:var(--text-muted); line-height:1.6;">
-          Widget settings will become available after approval.<br>
-          📧 Contact: <a href="mailto:info@radar-group.org" style="color:var(--cyan);">info@radar-group.org</a>
+          Widget settings will be available after approval.<br>
+          📧 Contact us: <a href="mailto:info@radar-group.org" style="color:var(--cyan);">info@radar-group.org</a>
         </div>
       </div>
     </div>
@@ -84,10 +87,10 @@
     <div id="serviceDisabled" style="display:none;">
       <div class="dash-section" style="text-align:center; padding:40px 20px;">
         <div style="font-size:48px; margin-bottom:12px;">🔒</div>
-        <div style="font-size:18px; font-weight:700; margin-bottom:8px;">Service not activated</div>
+        <div style="font-size:18px; font-weight:700; margin-bottom:8px;">Service not connected</div>
         <div style="color:var(--text-muted); line-height:1.6;">
-          The website widget is not activated.<br>
-          📧 Contact: <a href="mailto:info@radar-group.org" style="color:var(--cyan);">info@radar-group.org</a>
+          Website widget is not activated.<br>
+          📧 Contact us: <a href="mailto:info@radar-group.org" style="color:var(--cyan);">info@radar-group.org</a>
         </div>
       </div>
     </div>
@@ -98,35 +101,48 @@
         <div class="dash-section-header">
           <h2 class="dash-section-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/></svg>
-            AI & Prompt
+            AI &amp; Prompt
           </h2>
         </div>
 
         <div class="settings-form">
 
           <div class="form-row">
-            <label class="form-label">Prompt (EN)</label>
-            <textarea class="form-textarea" id="promptEn" style="min-height:200px;" maxlength="4000"
-              placeholder="You are a manager at...&#10;&#10;Your task — ..."></textarea>
+            <label class="form-label">Prompt RU</label>
+            <textarea class="form-textarea" id="promptRu" style="min-height:200px;" maxlength="4000"
+              placeholder="You are a manager of the company...&#10;&#10;Your task is to..."></textarea>
             <div class="form-hint">
-              💡 <strong>What is it:</strong> instructions for the AI — how to communicate with clients.
-              <div class="counter-row"><span id="counterEn">0</span> / 4000</div>
+              💡 <strong>What is this:</strong> instructions for the AI — how to communicate with clients.
+              <details class="hint-details">
+                <summary>📖 What to include</summary>
+                <ol>
+                  <li>Company name</li>
+                  <li>Services and prices</li>
+                  <li>Working hours, address</li>
+                  <li>What the AI should do</li>
+                </ol>
+                <p style="padding: 0 12px 10px; font-size:11px; color:var(--text-dim);">
+                  📏 Length: 200–4000 characters.
+                </p>
+              </details>
+              <div class="counter-row"><span id="counterRu">0</span> / 4000</div>
             </div>
           </div>
 
           <div class="form-row">
             <label class="form-label">Industry</label>
             <input class="form-input" type="text" id="industry" maxlength="100" placeholder="Auto service / Salon / Clinic">
+            <div class="form-hint">💡 Used for auto-prompt if your own is not filled in.</div>
           </div>
 
           <div class="form-row">
-            <label class="form-label">Services & Prices</label>
+            <label class="form-label">Services and prices</label>
             <textarea class="form-textarea" id="services" style="min-height:100px;" maxlength="2000"
               placeholder="Oil change — from $40&#10;Haircut — $25&#10;..."></textarea>
           </div>
 
           <div class="form-row">
-            <label class="form-label">AI Provider</label>
+            <label class="form-label">AI provider</label>
             <select class="form-select" id="aiProvider" style="width:100%; padding:11px 14px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font-family:inherit; font-size:14px; outline:none;">
               <option value="proxyapi">ProxyAPI</option>
               <option value="openai">OpenAI</option>
@@ -139,7 +155,9 @@
           <div class="form-row">
             <label class="form-label">AI API Key</label>
             <input class="form-input" type="text" id="aiApiKey" placeholder="sk-...">
-            <div class="form-hint">💡 If empty — Radar Group's shared key is used.</div>
+            <div class="form-hint">
+              💡 Enter your own AI key or ask the manager to connect the shared Radar Group key.
+            </div>
           </div>
 
           <div class="form-row">
@@ -159,14 +177,15 @@
         </div>
 
         <div class="settings-form">
+
           <div class="form-row">
-            <label class="form-label">Widget Title</label>
-            <input class="form-input" type="text" id="widgetTitleEn" placeholder="AI Manager" maxlength="50">
+            <label class="form-label">Widget title</label>
+            <input class="form-input" type="text" id="widgetTitleRu" placeholder="AI Manager" maxlength="50">
           </div>
 
           <div class="form-row">
-            <label class="form-label">Greeting</label>
-            <textarea class="form-textarea" id="widgetWelcomeEn" maxlength="300" style="min-height:80px;" placeholder="Hello! How can I help?"></textarea>
+            <label class="form-label">Welcome message</label>
+            <textarea class="form-textarea" id="widgetWelcomeRu" maxlength="300" style="min-height:80px;" placeholder="Hello! How can I help?"></textarea>
           </div>
 
           <div class="form-row">
@@ -176,6 +195,7 @@
               <input class="form-input" type="text" id="widgetColorText" value="#00F0FF" maxlength="7" style="flex:1;">
             </div>
           </div>
+
         </div>
       </section>
 
@@ -204,7 +224,9 @@
               <div class="form-row">
                 <label class="form-label">Admin ID (your chat_id)</label>
                 <input class="form-input" type="text" id="telegramAdminId" placeholder="123456789">
-                <div class="form-hint">💡 Get it from <a href="https://t.me/userinfobot" target="_blank">@userinfobot</a></div>
+                <div class="form-hint">
+                  💡 Find out via <a href="https://t.me/userinfobot" target="_blank">@userinfobot</a>
+                </div>
               </div>
             </div>
           </div>
@@ -218,7 +240,7 @@
             </div>
             <div class="channel-body">
               <div class="form-row">
-                <label class="form-label">Web App URL</label>
+                <label class="form-label">Web app URL</label>
                 <input class="form-input" type="text" id="sheetsUrl" placeholder="https://script.google.com/macros/s/.../exec">
               </div>
             </div>
@@ -252,7 +274,7 @@
             </div>
             <div class="channel-body">
               <div class="form-row">
-                <label class="form-label">Notification Email</label>
+                <label class="form-label">Notification email</label>
                 <input class="form-input" type="email" id="notificationEmail" placeholder="owner@example.com">
               </div>
             </div>
@@ -263,7 +285,7 @@
 
       <section class="dash-section" style="text-align:center;">
         <button class="btn btn-primary btn-large" onclick="saveWidget()" style="padding:16px 40px;">
-          💾 Save Widget
+          💾 Save widget
         </button>
         <div class="form-status" id="saveStatus" style="margin-top:16px;"></div>
       </section>
@@ -327,12 +349,12 @@ function logout() {
   window.location.href = '/en/app/login.html';
 }
 
-const promptEn = document.getElementById('promptEn');
-const counterEn = document.getElementById('counterEn');
-promptEn.addEventListener('input', () => {
-  const len = promptEn.value.length;
-  counterEn.textContent = len;
-  counterEn.parentElement.classList.toggle('warn', len > 3600);
+const promptRu = document.getElementById('promptRu');
+const counterRu = document.getElementById('counterRu');
+promptRu.addEventListener('input', () => {
+  const len = promptRu.value.length;
+  counterRu.textContent = len;
+  counterRu.parentElement.classList.toggle('warn', len > 3600);
 });
 
 const colorInput = document.getElementById('widgetColor');
@@ -369,25 +391,21 @@ async function loadSettings() {
 
     if (s.widget_enabled !== 1) {
       document.getElementById('serviceDisabled').style.display = 'block';
-      document.querySelectorAll('a[href*="widget"]').forEach(el => {
-        el.style.opacity = '0.4';
-        el.style.pointerEvents = 'none';
-      });
       return;
     }
 
     document.getElementById('widgetContent').style.display = 'block';
 
-    promptEn.value = s.prompt_en || '';
-    counterEn.textContent = (s.prompt_en || '').length;
+    promptRu.value = s.prompt_ru || '';
+    counterRu.textContent = (s.prompt_ru || '').length;
     document.getElementById('industry').value = s.industry || '';
     document.getElementById('services').value = s.services || '';
     document.getElementById('aiProvider').value = s.ai_provider || 'proxyapi';
     document.getElementById('aiApiKey').value = s.ai_api_key || '';
     document.getElementById('aiBaseUrl').value = s.ai_base_url || '';
 
-    document.getElementById('widgetTitleEn').value = s.widget_title_en || 'AI Manager';
-    document.getElementById('widgetWelcomeEn').value = s.widget_welcome_en || 'Hello! How can I help?';
+    document.getElementById('widgetTitleRu').value = s.widget_title_ru || 'AI Manager';
+    document.getElementById('widgetWelcomeRu').value = s.widget_welcome_ru || 'Hello! How can I help?';
     document.getElementById('widgetColor').value = s.widget_color || '#00F0FF';
     document.getElementById('widgetColorText').value = s.widget_color || '#00F0FF';
 
@@ -412,23 +430,23 @@ async function saveWidget() {
   status.className = 'form-status';
   status.textContent = 'Saving...';
 
-  const promptLen = promptEn.value.length;
+  const promptLen = promptRu.value.length;
   if (promptLen > 0 && promptLen < 200) {
     status.className = 'form-status error';
-    status.textContent = '⚠️ Minimum 200 characters. Current: ' + promptLen;
+    status.textContent = '⚠️ Minimum 200 characters. Currently: ' + promptLen;
     return;
   }
 
   try {
     const payload = {
-      prompt_en: promptEn.value,
+      prompt_ru: promptRu.value,
       industry: document.getElementById('industry').value.trim(),
       services: document.getElementById('services').value.trim(),
       ai_provider: document.getElementById('aiProvider').value,
       ai_api_key: document.getElementById('aiApiKey').value.trim(),
       ai_base_url: document.getElementById('aiBaseUrl').value.trim(),
-      widget_title_en: document.getElementById('widgetTitleEn').value.trim(),
-      widget_welcome_en: document.getElementById('widgetWelcomeEn').value.trim(),
+      widget_title_ru: document.getElementById('widgetTitleRu').value.trim(),
+      widget_welcome_ru: document.getElementById('widgetWelcomeRu').value.trim(),
       widget_color: document.getElementById('widgetColor').value,
       channel_telegram_enabled: document.getElementById('chTelegram').checked ? 1 : 0,
       channel_sheets_enabled: document.getElementById('chSheets').checked ? 1 : 0,
@@ -449,7 +467,7 @@ async function saveWidget() {
       body: JSON.stringify(payload)
     });
     const data = await res.json();
-    if (!data.ok) throw new Error(data.error?.en || 'Error');
+    if (!data.ok) throw new Error(data.error?.en || data.error?.ru || 'Error');
 
     status.className = 'form-status success';
     status.textContent = '✅ Widget saved!';
