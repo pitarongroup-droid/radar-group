@@ -1,11 +1,18 @@
 // ============================================
 // /api/admin/clients/:id — один клиент
-// GET / PUT / DELETE
+// ⚠️ Проверяет role = admin
 // ============================================
 
-// GET /api/admin/clients/cli_xxx — получить клиента
-export async function onRequestGet({ params, env }) {
+export async function onRequestGet({ params, request, env }) {
   try {
+    const payload = getPayload(request);
+    if (!payload || payload.role !== 'admin') {
+      return Response.json(
+        { ok: false, error: { ru: 'Доступ запрещён', en: 'Forbidden' } },
+        { status: 403 }
+      );
+    }
+
     const client = await env.radar_group_db.prepare(
       'SELECT * FROM clients WHERE id = ?'
     ).bind(params.id).first();
@@ -16,9 +23,9 @@ export async function onRequestGet({ params, env }) {
         { status: 404 }
       );
     }
+
     return Response.json({ ok: true, client });
   } catch (err) {
-    console.error('Client GET error:', err);
     return Response.json(
       { ok: false, error: { ru: err.message, en: err.message } },
       { status: 500 }
@@ -26,9 +33,16 @@ export async function onRequestGet({ params, env }) {
   }
 }
 
-// PUT /api/admin/clients/cli_xxx — обновить клиента
 export async function onRequestPut({ params, request, env }) {
   try {
+    const payload = getPayload(request);
+    if (!payload || payload.role !== 'admin') {
+      return Response.json(
+        { ok: false, error: { ru: 'Доступ запрещён', en: 'Forbidden' } },
+        { status: 403 }
+      );
+    }
+
     const b = await request.json();
 
     await env.radar_group_db.prepare(
@@ -59,7 +73,6 @@ export async function onRequestPut({ params, request, env }) {
 
     return Response.json({ ok: true });
   } catch (err) {
-    console.error('Client PUT error:', err);
     return Response.json(
       { ok: false, error: { ru: err.message, en: err.message } },
       { status: 500 }
@@ -67,20 +80,41 @@ export async function onRequestPut({ params, request, env }) {
   }
 }
 
-// DELETE /api/admin/clients/cli_xxx — удалить клиента
-export async function onRequestDelete({ params, env }) {
+export async function onRequestDelete({ params, request, env }) {
   try {
+    const payload = getPayload(request);
+    if (!payload || payload.role !== 'admin') {
+      return Response.json(
+        { ok: false, error: { ru: 'Доступ запрещён', en: 'Forbidden' } },
+        { status: 403 }
+      );
+    }
+
     await env.radar_group_db.batch([
       env.radar_group_db.prepare('DELETE FROM settings WHERE client_id = ?').bind(params.id),
       env.radar_group_db.prepare('DELETE FROM users WHERE client_id = ?').bind(params.id),
       env.radar_group_db.prepare('DELETE FROM clients WHERE id = ?').bind(params.id)
     ]);
+
     return Response.json({ ok: true });
   } catch (err) {
-    console.error('Client DELETE error:', err);
     return Response.json(
       { ok: false, error: { ru: err.message, en: err.message } },
       { status: 500 }
     );
+  }
+}
+
+function getPayload(request) {
+  const auth = request.headers.get('Authorization') || '';
+  const token = auth.replace('Bearer ', '');
+  if (!token) return null;
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const p = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(atob(p));
+  } catch (e) {
+    return null;
   }
 }

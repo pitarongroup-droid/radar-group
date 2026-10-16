@@ -66,6 +66,7 @@
       </div>
     </header>
 
+    <!-- ВОРОНКА -->
     <section class="dash-section">
       <div class="dash-section-header">
         <h2 class="dash-section-title">
@@ -76,42 +77,37 @@
 
       <div class="funnel">
         <div class="funnel-step">
-          <div class="funnel-label">Открыли сайт</div>
-          <div class="funnel-bar" style="width: 100%;">
-            <span>0</span>
-          </div>
-        </div>
-        <div class="funnel-step">
           <div class="funnel-label">Открыли чат</div>
-          <div class="funnel-bar" style="width: 50%;">
-            <span>0</span>
+          <div class="funnel-bar" id="barChat" style="width: 100%;">
+            <span id="funnelChat">0</span>
           </div>
         </div>
         <div class="funnel-step">
           <div class="funnel-label">Написали боту</div>
-          <div class="funnel-bar" style="width: 30%;">
-            <span>0</span>
+          <div class="funnel-bar" id="barDialogs" style="width: 60%;">
+            <span id="funnelDialogs">0</span>
           </div>
         </div>
         <div class="funnel-step">
           <div class="funnel-label">Оставили контакт</div>
-          <div class="funnel-bar" style="width: 10%;">
-            <span>0</span>
+          <div class="funnel-bar" id="barLeads" style="width: 25%;">
+            <span id="funnelLeads">0</span>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="dash-section">
-      <div class="dash-section-header">
-        <h2 class="dash-section-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg>
-          Конверсия
-        </h2>
+    <!-- КЛЮЧЕВЫЕ МЕТРИКИ -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-label">Лидов сегодня</div>
+        <div class="stat-card-value" id="metricLeadsToday">0</div>
+        <div class="stat-card-meta">за сегодня</div>
       </div>
-      <div class="empty-state">
-        <div>Данных пока недостаточно</div>
-        <div style="font-size: 12px; margin-top: 6px;">Как только наберётся статистика — появится график</div>
+      <div class="stat-card">
+        <div class="stat-card-label">Конверсия</div>
+        <div class="stat-card-value" id="metricConversion">0%</div>
+        <div class="stat-card-meta">диалог → лид</div>
       </div>
     </section>
   </main>
@@ -137,25 +133,36 @@
   }
   .funnel-bar {
     flex: 1;
-    height: 36px;
-    background: var(--gradient-soft);
+    height: 44px;
+    background: linear-gradient(90deg, rgba(0, 240, 255, 0.15), rgba(168, 85, 247, 0.1));
     border-left: 3px solid var(--cyan);
-    border-radius: 6px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
-    padding: 0 14px;
+    padding: 0 18px;
     color: var(--text);
-    font-weight: 700;
-    font-size: 14px;
+    font-weight: 800;
+    font-size: 18px;
     transition: var(--transition);
-    min-width: 60px;
+    min-width: 80px;
   }
   .funnel-bar:hover {
-    background: var(--cyan-soft);
+    background: linear-gradient(90deg, rgba(0, 240, 255, 0.25), rgba(168, 85, 247, 0.15));
   }
   @media (max-width: 640px) {
-    .funnel-label { width: 100px; font-size: 11px; }
-    .funnel-bar { height: 30px; font-size: 12px; }
+    .funnel-step {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 6px;
+    }
+    .funnel-label {
+      width: 100%;
+      font-size: 12px;
+    }
+    .funnel-bar {
+      height: 40px;
+      font-size: 16px;
+    }
   }
 </style>
 
@@ -177,6 +184,37 @@
     document.cookie = 'token=; path=/; max-age=0';
     window.location.href = '/app/login.html';
   }
+
+  async function loadFunnel() {
+    try {
+      const res = await fetch('/api/dashboard/funnel', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error?.ru || 'Ошибка');
+
+      document.getElementById('funnelChat').textContent = data.funnel.chat_opened;
+      document.getElementById('funnelDialogs').textContent = data.funnel.dialogs;
+      document.getElementById('funnelLeads').textContent = data.funnel.leads;
+
+      // Динамическая ширина баров по данным
+      const max = Math.max(data.funnel.chat_opened, 1);
+      const widthChat = Math.max((data.funnel.chat_opened / max) * 100, 10);
+      const widthDialogs = Math.max((data.funnel.dialogs / max) * 100, 10);
+      const widthLeads = Math.max((data.funnel.leads / max) * 100, 10);
+
+      document.getElementById('barChat').style.width = widthChat + '%';
+      document.getElementById('barDialogs').style.width = widthDialogs + '%';
+      document.getElementById('barLeads').style.width = widthLeads + '%';
+
+      document.getElementById('metricLeadsToday').textContent = data.metrics.leads_today;
+      document.getElementById('metricConversion').textContent = data.metrics.conversion + '%';
+    } catch (err) {
+      console.error('Funnel load error:', err);
+    }
+  }
+
+  loadFunnel();
 </script>
 
 </body>

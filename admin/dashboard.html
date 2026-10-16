@@ -55,7 +55,7 @@
     <header class="admin-header">
       <h1 class="admin-header-title">Обзор</h1>
       <div class="admin-header-actions">
-        <a href="/admin/clients.html" class="btn btn-primary">+ Новый клиент</a>
+        <a href="/admin/client.html" class="btn btn-primary">+ Новый клиент</a>
       </div>
     </header>
 
@@ -133,7 +133,9 @@
 
   async function loadDashboard() {
     try {
-      const res = await fetch('/api/admin/dashboard');
+      const res = await fetch('/api/admin/dashboard', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
       const data = await res.json();
       if (!data.ok) throw new Error(data.error?.ru || 'Ошибка');
 

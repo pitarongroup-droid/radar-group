@@ -1,6 +1,6 @@
 // ============================================
-// Radar Group — Widget v1.0
-// Вставь на сайт:
+// Radar Group — Widget v1.1
+// Установка:
 // <script src="https://radar-group.org/widget.js"
 //         data-key="rg_live_xxx"
 //         data-lang="ru"
@@ -10,7 +10,6 @@
 (function () {
   'use strict';
 
-  // === 1. Параметры из script ===
   const currentScript = document.currentScript;
   const API_KEY = currentScript?.getAttribute('data-key');
   const LANG = currentScript?.getAttribute('data-lang')
@@ -24,15 +23,17 @@
 
   const API_BASE = 'https://radar-group.org';
   const DIALOG_KEY = 'radar_dialog_' + API_KEY;
+  const CHAT_OPEN_KEY = 'radar_chat_opened_' + API_KEY;
 
-  // === 2. Состояние ===
   let config = null;
   let dialogId = localStorage.getItem(DIALOG_KEY) || null;
   let messages = [];
   let isOpen = false;
   let isSending = false;
 
-  // === 3. Загрузка конфига ===
+  // ============================================
+  // 1. Загрузка конфига
+  // ============================================
   async function loadConfig() {
     try {
       const res = await fetch(`${API_BASE}/api/widget-config?key=${API_KEY}&lang=${LANG}`);
@@ -46,7 +47,28 @@
     }
   }
 
-  // === 4. Создание HTML ===
+  // ============================================
+  // 2. Отправка события chat_open (1 раз за сессию)
+  // ============================================
+  function trackChatOpen() {
+    if (sessionStorage.getItem(CHAT_OPEN_KEY)) return;
+    sessionStorage.setItem(CHAT_OPEN_KEY, '1');
+
+    fetch(`${API_BASE}/api/events`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        api_key: API_KEY,
+        event_name: 'chat_open',
+        dialog_id: dialogId,
+        lang: LANG
+      })
+    }).catch(() => {});
+  }
+
+  // ============================================
+  // 3. Создание HTML виджета
+  // ============================================
   function createWidget() {
     const root = document.createElement('div');
     root.id = 'radar-widget-root';
@@ -244,14 +266,12 @@
         }
       </style>
 
-      <!-- Кнопка -->
       <button id="radar-widget-btn" aria-label="Открыть чат">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
         </svg>
       </button>
 
-      <!-- Окно -->
       <div id="radar-widget-window">
         <div class="rw-header">
           <div class="rw-avatar">AI</div>
@@ -289,7 +309,9 @@
     document.body.appendChild(root);
   }
 
-  // === 5. Логика отправки ===
+  // ============================================
+  // 4. Отправка сообщения
+  // ============================================
   async function sendMessage(text) {
     if (!text.trim() || isSending) return;
 
@@ -302,7 +324,6 @@
     input.value = '';
     input.style.height = 'auto';
 
-    // Проверка на контакт (простая)
     const CONTACT_RE = /^@[a-zA-Z0-9_]{3,32}$|^\+?[\d\s\-()]{7,20}$/;
     const isContact = CONTACT_RE.test(text.trim());
 
@@ -354,6 +375,10 @@
           bodyEl.appendChild(cta);
           bodyEl.scrollTop = bodyEl.scrollHeight;
         }
+      } else if (data.error) {
+        addMessage(LANG === 'en'
+          ? 'Sorry, an error occurred: ' + data.error
+          : 'Извините, ошибка: ' + data.error, 'bot');
       } else {
         addMessage(LANG === 'en'
           ? 'Sorry, an error occurred. Please try again.'
@@ -371,7 +396,9 @@
     }
   }
 
-  // === 6. Вспомогательные ===
+  // ============================================
+  // 5. Вспомогательные
+  // ============================================
   function addMessage(text, role) {
     const body = document.getElementById('radar-widget-body');
     const msg = document.createElement('div');
@@ -395,7 +422,9 @@
     document.getElementById('radar-widget-typing')?.remove();
   }
 
-  // === 7. Инициализация ===
+  // ============================================
+  // 6. Инициализация
+  // ============================================
   async function init() {
     const cfg = await loadConfig();
     if (!cfg) return;
@@ -412,6 +441,7 @@
       isOpen = true;
       win.classList.add('open');
       btn.classList.add('hidden');
+      trackChatOpen();
       setTimeout(() => input.focus(), 200);
     });
 
@@ -436,7 +466,9 @@
     });
   }
 
-  // === 8. Запуск ===
+  // ============================================
+  // 7. Запуск
+  // ============================================
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {

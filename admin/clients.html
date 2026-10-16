@@ -16,7 +16,6 @@
   <link rel="stylesheet" href="/admin/admin.css">
 
   <style>
-    /* Стили для списка клиентов */
     .clients-toolbar {
       display: flex;
       gap: 12px;
@@ -166,7 +165,6 @@
 
 <div class="admin-layout">
 
-  <!-- ============ SIDEBAR ============ -->
   <aside class="admin-sidebar">
     <a href="/admin/dashboard.html" class="admin-sidebar-logo">
       <img src="/images/logo.webp" alt="Radar" width="32" height="32">
@@ -198,7 +196,6 @@
     </div>
   </aside>
 
-  <!-- ============ MAIN ============ -->
   <main class="admin-main">
 
     <header class="admin-header">
@@ -238,30 +235,23 @@
 </div>
 
 <script>
-// ============================================
-// Проверка админа
-// ============================================
 const token = localStorage.getItem('token');
 const user = JSON.parse(localStorage.getItem('user') || '{}');
 if (!token || user.role !== 'admin') {
   window.location.href = '/app/login.html';
 }
 
-// ============================================
-// Элементы
-// ============================================
 const tbody = document.getElementById('clientsBody');
 const searchInput = document.getElementById('searchInput');
 const clientsCount = document.getElementById('clientsCount');
 
 let allClients = [];
 
-// ============================================
-// Загрузка клиентов из API
-// ============================================
 async function loadClients() {
   try {
-    const res = await fetch('/api/admin/clients');
+    const res = await fetch('/api/admin/clients', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
     const data = await res.json();
 
     if (!data.ok) {
@@ -284,9 +274,6 @@ async function loadClients() {
   }
 }
 
-// ============================================
-// Отрисовка таблицы
-// ============================================
 function renderClients(clients) {
   if (!clients.length) {
     tbody.innerHTML = `
@@ -342,9 +329,6 @@ function renderClients(clients) {
   }).join('');
 }
 
-// ============================================
-// Действия
-// ============================================
 function openClient(id) {
   window.location.href = '/admin/client.html?id=' + id;
 }
@@ -353,20 +337,19 @@ async function deleteClient(id, name) {
   if (!confirm(`Удалить клиента "${name}"?\n\nЭто действие нельзя отменить.`)) return;
 
   try {
-    const res = await fetch('/api/admin/clients/' + id, { method: 'DELETE' });
+    const res = await fetch('/api/admin/clients/' + id, {
+      method: 'DELETE',
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
     const data = await res.json();
     if (!data.ok) throw new Error(data.error?.ru || 'Ошибка удаления');
 
-    // Перезагрузка
     loadClients();
   } catch (err) {
     alert('Ошибка: ' + err.message);
   }
 }
 
-// ============================================
-// Поиск
-// ============================================
 searchInput.addEventListener('input', () => {
   const q = searchInput.value.trim().toLowerCase();
   if (!q) {
@@ -383,9 +366,6 @@ searchInput.addEventListener('input', () => {
   clientsCount.textContent = filtered.length + ' из ' + allClients.length;
 });
 
-// ============================================
-// Утилиты
-// ============================================
 function formatDate(ts) {
   if (!ts) return '—';
   const d = new Date(ts * 1000);
@@ -409,9 +389,6 @@ function logout() {
   window.location.href = '/app/login.html';
 }
 
-// ============================================
-// Запуск
-// ============================================
 loadClients();
 </script>
 

@@ -216,7 +216,7 @@
 
 .chart-bar:hover { opacity: 0.8; }
 
-/* ===== ПУСТОЕ СОСТОЯНИЕ (десктоп) ===== */
+/* ===== ПУСТОЕ СОСТОЯНИЕ ===== */
 .empty-state {
   padding: 40px 20px;
   text-align: center;
@@ -232,6 +232,129 @@
   opacity: 0.5;
 }
 
+/* ============================================
+   ПОДСКАЗКИ У ПОЛЕЙ (для app/settings.html)
+   ============================================ */
+.form-hint {
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin-top: 6px;
+}
+
+.form-hint strong {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.hint-details {
+  margin-top: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(0, 240, 255, 0.03);
+  overflow: hidden;
+}
+
+.hint-details summary {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--cyan);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  list-style: none;
+}
+
+.hint-details summary::-webkit-details-marker { display: none; }
+
+.hint-details summary::before {
+  content: '▸ ';
+  display: inline-block;
+  transition: transform 0.2s;
+}
+
+.hint-details[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.hint-details summary:hover {
+  background: rgba(0, 240, 255, 0.05);
+}
+
+.hint-details[open] summary {
+  border-bottom: 1px solid var(--border);
+}
+
+.hint-details ol,
+.hint-details ul {
+  padding: 10px 12px 10px 28px;
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.hint-details li { margin-bottom: 4px; }
+
+.hint-details a {
+  color: var(--cyan);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.hint-details a:hover { text-decoration: underline; }
+
+.hint-details code {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'SF Mono', Consolas, monospace;
+  font-size: 11px;
+  color: var(--cyan);
+}
+
+.hint-details pre {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  margin: 6px 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.hint-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 8px 12px;
+  padding: 6px 12px;
+  background: rgba(0, 240, 255, 0.08);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  border-radius: 8px;
+  color: var(--cyan);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.hint-link:hover { background: rgba(0, 240, 255, 0.15); }
+
+.counter-row {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 6px;
+}
+
+.counter-row.warn {
+  color: var(--magenta);
+  font-weight: 700;
+}
+
 /* ===== ПЛАНШЕТ ===== */
 @media (max-width: 960px) {
   .app-main { padding: 24px 20px; }
@@ -243,7 +366,7 @@
    ============================================ */
 @media (max-width: 640px) {
   .app-main {
-    padding: 20px 14px calc(100px + env(safe-area-inset-bottom, 0px));
+    padding: 20px 14px calc(140px + env(safe-area-inset-bottom, 0px));
     overflow-x: hidden;
   }
 
@@ -261,7 +384,6 @@
 
   .dash-section { padding: 18px 16px; }
 
-  /* === ФИКС АВТОЗУМА === */
   input,
   textarea,
   select,
@@ -272,7 +394,6 @@
     touch-action: manipulation;
   }
 
-  /* === КАРТОЧКИ === */
   .data-table thead { display: none; }
 
   .data-table {
@@ -334,7 +455,6 @@
 
   .data-table td .badge { margin-left: auto; }
 
-  /* === ПУСТОЕ СОСТОЯНИЕ === */
   .data-table td.empty-state,
   .data-table td[colspan] {
     display: block !important;
@@ -361,7 +481,6 @@
 
   .data-table td.empty-state > div { text-align: center; }
 
-  /* Убираем hover */
   .data-table tr:hover td {
     background: transparent;
     color: inherit;

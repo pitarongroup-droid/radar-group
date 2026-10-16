@@ -304,6 +304,174 @@
   margin-bottom: 6px;
 }
 
+/* ============================================
+   ПОДСКАЗКИ У ПОЛЕЙ
+   ============================================ */
+.form-hint {
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin-top: 6px;
+}
+
+.form-hint strong {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.hint-details {
+  margin-top: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(0, 240, 255, 0.03);
+  overflow: hidden;
+}
+
+.hint-details summary {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--cyan);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  list-style: none;
+}
+
+.hint-details summary::-webkit-details-marker { display: none; }
+
+.hint-details summary::before {
+  content: '▸ ';
+  display: inline-block;
+  transition: transform 0.2s;
+}
+
+.hint-details[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.hint-details summary:hover {
+  background: rgba(0, 240, 255, 0.05);
+}
+
+.hint-details[open] summary {
+  border-bottom: 1px solid var(--border);
+}
+
+.hint-details ol,
+.hint-details ul {
+  padding: 10px 12px 10px 28px;
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.hint-details li { margin-bottom: 4px; }
+
+.hint-details a {
+  color: var(--cyan);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.hint-details a:hover { text-decoration: underline; }
+
+.hint-details code {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'SF Mono', Consolas, monospace;
+  font-size: 11px;
+  color: var(--cyan);
+}
+
+.hint-details pre {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  margin: 6px 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.hint-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 8px 12px;
+  padding: 6px 12px;
+  background: rgba(0, 240, 255, 0.08);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  border-radius: 8px;
+  color: var(--cyan);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.hint-link:hover { background: rgba(0, 240, 255, 0.15); }
+
+/* Счётчик промпта */
+.counter-row {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 6px;
+}
+
+.counter-row.warn {
+  color: var(--magenta);
+  font-weight: 700;
+}
+
+/* Админ-контроль каналов */
+.admin-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(255, 0, 128, 0.03);
+  border: 1px solid rgba(255, 0, 128, 0.2);
+  border-radius: 10px;
+}
+
+.admin-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.admin-toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--magenta);
+}
+
+.label-hint {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(0, 240, 255, 0.1);
+  color: var(--cyan);
+  font-size: 10px;
+  font-weight: 700;
+  margin-left: 6px;
+  cursor: help;
+  vertical-align: middle;
+}
+
 /* ===== ПЛАНШЕТ ===== */
 @media (max-width: 960px) {
   .admin-sidebar { width: 72px; padding: 16px 8px; }
@@ -324,7 +492,6 @@
     max-width: 100vw;
   }
 
-  /* === SIDEBAR === */
   .admin-sidebar {
     width: 100%;
     height: auto;
@@ -387,7 +554,6 @@
   .admin-sidebar-bottom .sidebar-logout span { display: none; }
   .admin-sidebar-bottom .sidebar-logout svg { width: 22px; height: 22px; }
 
-  /* === MAIN === */
   .admin-main {
     padding: 20px 14px calc(140px + env(safe-area-inset-bottom, 0px));
     overflow-x: hidden;
@@ -402,7 +568,6 @@
     touch-action: manipulation;
   }
 
-  /* === АВТОЗУМ === */
   input,
   textarea,
   select,
@@ -414,18 +579,14 @@
     touch-action: manipulation;
   }
 
-  /* === PILL — крупнее на мобиле === */
   .pill span {
     padding: 12px 20px;
     font-size: 15px;
     flex: 1;
     justify-content: center;
   }
-  .pill-group {
-    width: 100%;
-  }
+  .pill-group { width: 100%; }
 
-  /* === ТУЛБАР ПОИСКА === */
   .clients-toolbar {
     flex-wrap: wrap;
     gap: 8px;
@@ -441,7 +602,6 @@
     font-size: 12px;
   }
 
-  /* === КАРТОЧКИ === */
   .clients-table thead,
   .data-table thead { display: none; }
 
@@ -539,7 +699,6 @@
     margin-right: 0;
   }
 
-  /* === ПУСТОЕ СОСТОЯНИЕ === */
   .clients-table td.empty-state,
   .data-table td.empty-state,
   .clients-table td[colspan],
@@ -580,41 +739,34 @@
     color: inherit;
   }
 
-  /* === МЕТКИ === */
-
-  /* admin/dashboard.html — clients-table */
+  /* Метки */
   .page-dashboard .clients-table td:nth-child(2)::before { content: "План"; }
   .page-dashboard .clients-table td:nth-child(3)::before { content: "Статус"; }
   .page-dashboard .clients-table td:nth-child(4)::before { content: "Диалогов"; }
   .page-dashboard .clients-table td:nth-child(5)::before { content: "Лидов"; }
   .page-dashboard .clients-table td:nth-child(6)::before { content: "Выручка"; }
 
-  /* admin/dashboard.html — data-table (на всякий случай) */
   .page-dashboard .data-table td:nth-child(2)::before { content: "План"; }
   .page-dashboard .data-table td:nth-child(3)::before { content: "Статус"; }
   .page-dashboard .data-table td:nth-child(4)::before { content: "Диалогов"; }
   .page-dashboard .data-table td:nth-child(5)::before { content: "Лидов"; }
   .page-dashboard .data-table td:nth-child(6)::before { content: "Выручка"; }
 
-  /* admin/clients.html */
   .page-clients .clients-table td:nth-child(2)::before { content: "Компания"; }
   .page-clients .clients-table td:nth-child(3)::before { content: "План"; }
   .page-clients .clients-table td:nth-child(4)::before { content: "Статус"; }
   .page-clients .clients-table td:nth-child(5)::before { content: "Создан"; }
 
-  /* admin/billing.html */
   .page-billing .clients-table td:nth-child(1)::before { content: "Дата"; }
   .page-billing .clients-table td:nth-child(2)::before { content: "Клиент"; }
   .page-billing .clients-table td:nth-child(3)::before { content: "Сумма"; }
   .page-billing .clients-table td:nth-child(4)::before { content: "Статус"; }
 
-  /* admin/logs.html */
   .page-logs .clients-table td:nth-child(1)::before { content: "Время"; }
   .page-logs .clients-table td:nth-child(2)::before { content: "Уровень"; }
   .page-logs .clients-table td:nth-child(3)::before { content: "Источник"; }
   .page-logs .clients-table td:nth-child(4)::before { content: "Сообщение"; }
 
-  /* billing/logs — первая ячейка без спец-стиля */
   .page-billing .clients-table td:first-child,
   .page-logs .clients-table td:first-child {
     padding-bottom: 10px;

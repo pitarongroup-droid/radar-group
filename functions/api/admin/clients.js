@@ -1,10 +1,18 @@
 // ============================================
 // /api/admin/clients — список и создание клиентов
+// ⚠️ Проверяет role = admin
 // ============================================
 
-// GET — список всех клиентов
-export async function onRequestGet({ env }) {
+export async function onRequestGet({ request, env }) {
   try {
+    const payload = getPayload(request);
+    if (!payload || payload.role !== 'admin') {
+      return Response.json(
+        { ok: false, error: { ru: 'Доступ запрещён', en: 'Forbidden' } },
+        { status: 403 }
+      );
+    }
+
     const { results } = await env.radar_group_db.prepare(
       `SELECT c.*,
         (SELECT COUNT(*) FROM dialogs WHERE client_id = c.id) as dialogs_count,
@@ -12,19 +20,26 @@ export async function onRequestGet({ env }) {
        FROM clients c
        ORDER BY c.created_at DESC`
     ).all();
+
     return Response.json({ ok: true, clients: results });
   } catch (err) {
-    console.error('Admin clients GET error:', err);
     return Response.json(
-      { ok: false, error: { ru: 'Ошибка загрузки', en: 'Load error' } },
+      { ok: false, error: { ru: err.message, en: err.message } },
       { status: 500 }
     );
   }
 }
 
-// POST — создать клиента
 export async function onRequestPost({ request, env }) {
   try {
+    const payload = getPayload(request);
+    if (!payload || payload.role !== 'admin') {
+      return Response.json(
+        { ok: false, error: { ru: 'Доступ запрещён', en: 'Forbidden' } },
+        { status: 403 }
+      );
+    }
+
     const b = await request.json();
 
     if (!b.name || !b.email) {
@@ -55,11 +70,24 @@ export async function onRequestPost({ request, env }) {
 
     return Response.json({ ok: true, id, api_key: apiKey });
   } catch (err) {
-    console.error('Admin clients POST error:', err);
     return Response.json(
       { ok: false, error: { ru: err.message, en: err.message } },
       { status: 500 }
     );
+  }
+}
+
+function getPayload(request) {
+  const auth = request.headers.get('Authorization') || '';
+  const token = auth.replace('Bearer ', '');
+  if (!token) return null;
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const p = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(atob(p));
+  } catch (e) {
+    return null;
   }
 }
 
