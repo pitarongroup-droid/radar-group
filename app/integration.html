@@ -70,87 +70,120 @@
       </div>
     </header>
 
-    <section class="dash-section">
-      <div class="widget-status">
-        <div class="widget-status-dot"></div>
-        <div>
-          <div class="widget-status-title">Виджет активен</div>
-          <div class="widget-status-subtitle">Работает на вашем сайте 24/7</div>
+    <div id="loadingBlock" class="dash-section" style="text-align:center; padding:60px 20px;">
+      <div class="spinner" style="width:32px; height:32px; display:inline-block; border:2px solid rgba(0,240,255,.2); border-top-color:#00F0FF; border-radius:50%; animation:spin .8s linear infinite;"></div>
+      <div style="margin-top:16px; color:var(--text-muted);">Загрузка...</div>
+    </div>
+
+    <div id="accessBlocked" style="display:none;">
+      <div class="dash-section" style="text-align:center; padding:40px 20px;">
+        <div style="font-size:48px; margin-bottom:12px;">⏳</div>
+        <div style="font-size:18px; font-weight:700; color:#FFC800; margin-bottom:8px;">Аккаунт на проверке</div>
+        <div style="color:var(--text-muted); line-height:1.6;">
+          Интеграция станет доступна после одобрения.<br>
+          📧 Свяжитесь: <a href="mailto:pitarongroup@gmail.com" style="color:var(--cyan);">pitarongroup@gmail.com</a>
         </div>
       </div>
-    </section>
+    </div>
 
-    <section class="dash-section">
-      <div class="dash-section-header">
-        <h2 class="dash-section-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          Ваш API-ключ
-        </h2>
-      </div>
-
-      <div class="key-block">
-        <code class="key-value" id="apiKey">Загрузка...</code>
-        <button class="btn btn-outline" onclick="copyKey()" style="flex-shrink: 0;">Копировать</button>
-      </div>
-
-      <div class="hint">
-        ⚠️ Не публикуйте ключ. Он нужен для связи виджета на вашем сайте с нашими серверами.
-      </div>
-    </section>
-
-    <section class="dash-section">
-      <div class="dash-section-header">
-        <h2 class="dash-section-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-          Код для вставки на сайт
-        </h2>
-      </div>
-
-      <div class="code-block">
-        <pre id="widgetCode">Загрузка...</pre>
-        <button class="btn btn-outline" onclick="copyCode()">Копировать код</button>
-      </div>
-    </section>
-
-    <section class="dash-section">
-      <div class="dash-section-header">
-        <h2 class="dash-section-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>
-          Куда вставить код
-        </h2>
-      </div>
-
-      <div class="instructions">
-        <div class="instruction-item">
-          <div class="instruction-num">1</div>
-          <div>
-            <strong>HTML-сайт</strong>
-            <p>Вставьте код перед закрывающим тегом &lt;/body&gt; в основном файле (index.html).</p>
-          </div>
-        </div>
-        <div class="instruction-item">
-          <div class="instruction-num">2</div>
-          <div>
-            <strong>WordPress</strong>
-            <p>Внешний вид → Редактор темы → footer.php. Или установите плагин «Insert Headers and Footers».</p>
-          </div>
-        </div>
-        <div class="instruction-item">
-          <div class="instruction-num">3</div>
-          <div>
-            <strong>Tilda</strong>
-            <p>Настройки сайта → Ещё → HTML-код для вставки внутрь HEAD. Или блок T123 «HTML-код».</p>
-          </div>
-        </div>
-        <div class="instruction-item">
-          <div class="instruction-num">4</div>
-          <div>
-            <strong>Bitrix</strong>
-            <p>Вставьте в шаблон сайта (footer.php) или через модуль «HTML-код» на нужной странице.</p>
+    <div id="widgetDisabled" style="display:none;">
+      <div class="dash-section" style="text-align:center; padding:40px 20px;">
+        <div style="font-size:48px; margin-bottom:12px;">🔒</div>
+        <div style="font-size:18px; font-weight:700; margin-bottom:8px;">Виджет не подключён</div>
+        <div style="color:var(--text-muted); line-height:1.6; max-width:420px; margin:0 auto;">
+          Услуга «Виджет на сайт» не активирована.<br>
+          Свяжитесь с менеджером для подключения.
+          <div style="margin-top:14px;">
+            📧 <a href="mailto:pitarongroup@gmail.com" style="color:var(--cyan);">pitarongroup@gmail.com</a>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+
+    <div id="integrationContent" style="display:none;">
+
+      <section class="dash-section">
+        <div class="widget-status">
+          <div class="widget-status-dot"></div>
+          <div>
+            <div class="widget-status-title">Виджет активен</div>
+            <div class="widget-status-subtitle">Работает на вашем сайте 24/7</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="dash-section">
+        <div class="dash-section-header">
+          <h2 class="dash-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Ваш API-ключ
+          </h2>
+        </div>
+
+        <div class="key-block">
+          <code class="key-value" id="apiKey">—</code>
+          <button class="btn btn-outline" onclick="copyKey()" style="flex-shrink: 0;">Копировать</button>
+        </div>
+
+        <div class="hint">
+          ⚠️ Не публикуйте ключ. Он нужен для связи виджета на вашем сайте с нашими серверами.
+        </div>
+      </section>
+
+      <section class="dash-section">
+        <div class="dash-section-header">
+          <h2 class="dash-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            Код для вставки на сайт
+          </h2>
+        </div>
+
+        <div class="code-block">
+          <pre id="widgetCode">—</pre>
+          <button class="btn btn-outline" onclick="copyCode()">Копировать код</button>
+        </div>
+      </section>
+
+      <section class="dash-section">
+        <div class="dash-section-header">
+          <h2 class="dash-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>
+            Куда вставить код
+          </h2>
+        </div>
+
+        <div class="instructions">
+          <div class="instruction-item">
+            <div class="instruction-num">1</div>
+            <div>
+              <strong>HTML-сайт</strong>
+              <p>Вставьте код перед закрывающим тегом &lt;/body&gt; в основном файле (index.html).</p>
+            </div>
+          </div>
+          <div class="instruction-item">
+            <div class="instruction-num">2</div>
+            <div>
+              <strong>WordPress</strong>
+              <p>Внешний вид → Редактор темы → footer.php. Или установите плагин «Insert Headers and Footers».</p>
+            </div>
+          </div>
+          <div class="instruction-item">
+            <div class="instruction-num">3</div>
+            <div>
+              <strong>Tilda</strong>
+              <p>Настройки сайта → Ещё → HTML-код для вставки внутрь HEAD. Или блок T123 «HTML-код».</p>
+            </div>
+          </div>
+          <div class="instruction-item">
+            <div class="instruction-num">4</div>
+            <div>
+              <strong>Bitrix</strong>
+              <p>Вставьте в шаблон сайта (footer.php) или через модуль «HTML-код» на нужной странице.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
   </main>
 </div>
 
@@ -218,9 +251,7 @@
     white-space: pre-wrap;
     word-break: break-all;
   }
-  .code-block .btn {
-    margin-top: 12px;
-  }
+  .code-block .btn { margin-top: 12px; }
   .hint {
     font-size: 12px;
     color: var(--text-dim);
@@ -262,75 +293,104 @@
     line-height: 1.5;
     margin: 0;
   }
+  @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 
 <script>
-  const token = localStorage.getItem('token');
-  if (!token) window.location.href = '/app/login.html';
+const token = localStorage.getItem('token');
+if (!token) window.location.href = '/app/login.html';
+
+try {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  if (user.name) {
+    document.getElementById('userName').textContent = user.name;
+    document.getElementById('userAvatar').textContent = user.name.charAt(0).toUpperCase();
+  }
+} catch (e) {}
+
+function logout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  document.cookie = 'token=; path=/; max-age=0';
+  window.location.href = '/app/login.html';
+}
+
+async function loadData() {
+  const loadingBlock = document.getElementById('loadingBlock');
 
   try {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    if (user.name) {
-      document.getElementById('userName').textContent = user.name;
-      document.getElementById('userAvatar').textContent = user.name.charAt(0).toUpperCase();
-    }
-  } catch (e) {}
+    // 1. Проверяем настройки
+    const res = await fetch('/api/settings', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
 
-  function logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    document.cookie = 'token=; path=/; max-age=0';
-    window.location.href = '/app/login.html';
-  }
-
-  async function loadData() {
-    try {
-      const res = await fetch('/api/settings', {
-        headers: { 'Authorization': 'Bearer ' + token }
-      });
-      const data = await res.json();
-
-      if (!data.ok) {
-        document.getElementById('apiKey').textContent = 'Ошибка загрузки';
-        document.getElementById('widgetCode').textContent = 'Ошибка загрузки';
+    if (res.status === 403) {
+      const d = await res.json();
+      loadingBlock.style.display = 'none';
+      if (d.account_status === 'pending' || d.account_status === 'suspended') {
+        document.getElementById('accessBlocked').style.display = 'block';
         return;
       }
+    }
 
-      // Берём api_key из user (клиент)
-      const userData = JSON.parse(localStorage.getItem('user') || '{}');
-      const apiKey = userData.apiKey || 'не найден';
+    const data = await res.json();
+    if (!data.ok) {
+      loadingBlock.style.display = 'none';
+      document.getElementById('accessBlocked').style.display = 'block';
+      return;
+    }
+
+    const s = data.settings || {};
+
+    // ⚠️ Если услуга виджета выключена — не показываем API-ключ и код
+    if (s.widget_enabled !== 1) {
+      loadingBlock.style.display = 'none';
+      document.getElementById('widgetDisabled').style.display = 'block';
+      return;
+    }
+
+    // Показываем контент
+    loadingBlock.style.display = 'none';
+    document.getElementById('integrationContent').style.display = 'block';
+
+    // 2. API-ключ из localStorage (кладётся при регистрации/логине)
+    const userData = JSON.parse(localStorage.getItem('user') || '{}');
+    const apiKey = userData.apiKey || userData.api_key || null;
+
+    if (apiKey) {
       document.getElementById('apiKey').textContent = apiKey;
 
-      const widgetCode = `<script src="https://radar-group.org/widget.js"
-        data-key="${apiKey}"
-        data-lang="ru"
-        async><\/script>`;
+      const widgetCode = `<script src="https://radar-group.org/widget.js"\n        data-key="${apiKey}"\n        data-lang="ru"\n        async><\/script>`;
       document.getElementById('widgetCode').textContent = widgetCode;
-
-    } catch (err) {
-      console.error('Load data error:', err);
-      document.getElementById('apiKey').textContent = 'Ошибка сети';
-      document.getElementById('widgetCode').textContent = 'Ошибка сети';
+    } else {
+      document.getElementById('apiKey').textContent = 'Ключ не найден — обратитесь к менеджеру';
+      document.getElementById('widgetCode').textContent = '—';
     }
-  }
 
-  function copyKey() {
-    const key = document.getElementById('apiKey').textContent.trim();
-    if (!key || key === 'Загрузка...' || key === 'Ошибка загрузки') return;
-    navigator.clipboard.writeText(key).then(() => {
-      alert('Ключ скопирован в буфер обмена');
-    });
+  } catch (err) {
+    console.error('Load error:', err);
+    loadingBlock.style.display = 'none';
+    document.getElementById('accessBlocked').style.display = 'block';
   }
+}
 
-  function copyCode() {
-    const code = document.getElementById('widgetCode').textContent;
-    if (!code || code === 'Загрузка...' || code === 'Ошибка загрузки') return;
-    navigator.clipboard.writeText(code).then(() => {
-      alert('Код скопирован в буфер обмена');
-    });
-  }
+function copyKey() {
+  const key = document.getElementById('apiKey').textContent.trim();
+  if (!key || key === '—' || key.includes('не найден')) return;
+  navigator.clipboard.writeText(key).then(() => {
+    alert('Ключ скопирован в буфер обмена');
+  });
+}
 
-  loadData();
+function copyCode() {
+  const code = document.getElementById('widgetCode').textContent;
+  if (!code || code === '—') return;
+  navigator.clipboard.writeText(code).then(() => {
+    alert('Код скопирован в буфер обмена');
+  });
+}
+
+loadData();
 </script>
 
 </body>
