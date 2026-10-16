@@ -97,6 +97,22 @@
 
     <div id="botContent" style="display:none;">
 
+      <div class="setup-notice">
+        <div class="setup-notice-icon">🎯</div>
+        <div class="setup-notice-text">
+          <h2>Бот настраивается индивидуально</h2>
+          <p>
+            Мы свяжемся с вами, чтобы собрать подробную информацию о вашем продукте:
+            <strong>ниша, услуги, цены, отличия, частые возражения клиентов</strong>.
+            Это нужно, чтобы ИИ-менеджер продавал именно ваш продукт — как живой опытный продавец.
+          </p>
+          <p class="setup-notice-contact">
+            📧 Если удобнее — напишите нам сразу:
+            <a href="mailto:info@radar-group.org">info@radar-group.org</a>
+          </p>
+        </div>
+      </div>
+
       <section class="dash-section">
         <div class="dash-section-header">
           <h2 class="dash-section-title">
@@ -117,8 +133,9 @@
                   <li>Откройте <a href="https://t.me/BotFather" target="_blank">@BotFather</a></li>
                   <li>Напишите <code>/newbot</code></li>
                   <li>Придумайте имя и username</li>
-                  <li>Скопируйте токен</li>
+                  <li>Скопируйте токен и вставьте в поле выше</li>
                 </ol>
+                <a href="https://t.me/BotFather" target="_blank" class="hint-link">🔗 Открыть @BotFather</a>
               </details>
             </div>
           </div>
@@ -127,107 +144,17 @@
             <label class="form-label">Admin ID (ваш chat_id)</label>
             <input class="form-input" type="text" id="botTelegramAdminId" placeholder="873975856">
             <div class="form-hint">
-              💡 <strong>Что это:</strong> куда бот пришлёт уведомления о лидах.
+              💡 <strong>Что это:</strong> куда бот пришлёт уведомления о новых лидах.
               <details class="hint-details">
                 <summary>📖 Как узнать</summary>
                 <ol>
                   <li>Откройте <a href="https://t.me/userinfobot" target="_blank">@userinfobot</a></li>
                   <li>Нажмите Start</li>
-                  <li>Скопируйте ваш ID</li>
+                  <li>Скопируйте ваш ID (набор цифр, например <code>873975856</code>)</li>
+                  <li>Вставьте в поле выше</li>
                 </ol>
+                <a href="https://t.me/userinfobot" target="_blank" class="hint-link">🔗 Открыть @userinfobot</a>
               </details>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="dash-section">
-        <div class="dash-section-header">
-          <h2 class="dash-section-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/></svg>
-            ИИ и промпт бота
-          </h2>
-        </div>
-
-        <div class="settings-form">
-          <div class="form-row">
-            <label class="form-label">Промпт RU (до 8000 символов)</label>
-            <textarea class="form-textarea" id="botPromptRu" style="min-height:250px;" maxlength="8000"
-              placeholder="Ты — опытный ИИ-менеджер компании...&#10;&#10;Твои задачи:&#10;1. ...&#10;2. ...&#10;&#10;Стиль: ..."></textarea>
-            <div class="form-hint">
-              💡 Полный промпт с FSM-сценарием квалификации.
-              <div class="counter-row"><span id="counterBotPrompt">0</span> / 8000</div>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <label class="form-label">Ниша</label>
-            <input class="form-input" type="text" id="botIndustry" maxlength="100" placeholder="Автосервис / Салон / Клиника">
-          </div>
-
-          <div class="form-row">
-            <label class="form-label">Услуги и цены</label>
-            <textarea class="form-textarea" id="botServices" style="min-height:100px;" maxlength="2000"
-              placeholder="Замена масла — от 40$&#10;Стрижка — 25$&#10;..."></textarea>
-          </div>
-
-          <div class="form-row">
-            <label class="form-label">AI-провайдер для бота</label>
-            <select class="form-select" id="botAiProvider" style="width:100%; padding:11px 14px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font-family:inherit; font-size:14px; outline:none;">
-              <option value="proxyapi">ProxyAPI</option>
-              <option value="openai">OpenAI</option>
-              <option value="claude">Claude</option>
-              <option value="gemini">Gemini</option>
-              <option value="deepseek">DeepSeek</option>
-            </select>
-          </div>
-
-          <div class="form-row">
-            <label class="form-label">AI API Key для бота</label>
-            <input class="form-input" type="text" id="botAiApiKey" placeholder="sk-...">
-            <div class="form-hint">
-              💡 Впишите свой AI-ключ или попросите менеджера подключить общий ключ Radar Group.
-            </div>
-          </div>
-
-          <div class="form-row">
-            <label class="form-label">AI Base URL (опционально)</label>
-            <input class="form-input" type="text" id="botAiBaseUrl" placeholder="https://...">
-          </div>
-        </div>
-      </section>
-
-      <section class="dash-section">
-        <div class="dash-section-header">
-          <h2 class="dash-section-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-            Рабочие настройки
-          </h2>
-        </div>
-
-        <div class="settings-form">
-          <div class="form-row">
-            <label class="form-label">Часы работы</label>
-            <select class="form-select" id="botWorkHours" style="width:100%; padding:11px 14px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font-family:inherit; font-size:14px; outline:none;">
-              <option value="always">Круглосуточно</option>
-              <option value="9-20">09:00–20:00</option>
-              <option value="custom">Custom (по промпту)</option>
-            </select>
-          </div>
-
-          <div class="form-row">
-            <label class="form-label">Лимит запросов в день</label>
-            <input class="form-input" type="number" id="botMaxDaily" min="0" max="100000" value="1000">
-            <div class="form-hint">💡 Защита от спама. 0 = без лимита.</div>
-          </div>
-
-          <div class="form-row">
-            <label style="display:flex; align-items:center; gap:10px; cursor:pointer; user-select:none;">
-              <input type="checkbox" id="botRemindersEnabled" style="width:18px; height:18px; accent-color:var(--cyan);">
-              <span style="font-size:14px; font-weight:600;">Включить напоминания (4 стадии дожима)</span>
-            </label>
-            <div class="form-hint">
-              💡 Напоминания через 15 мин, 1 час, 24 часа, 48 часов, если клиент ушёл думать.
             </div>
           </div>
         </div>
@@ -237,7 +164,7 @@
         <div class="dash-section-header">
           <h2 class="dash-section-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            Куда присылать лиды из бота
+            Куда присылать лиды
           </h2>
         </div>
 
@@ -268,6 +195,9 @@
               <div class="form-row">
                 <label class="form-label">URL веб-приложения</label>
                 <input class="form-input" type="text" id="botSheetsUrl" placeholder="https://script.google.com/macros/s/.../exec">
+                <div class="form-hint">
+                  💡 Как подключить — в разделе <a href="/app/help.html" style="color:var(--cyan);">«База знаний»</a>.
+                </div>
               </div>
             </div>
           </div>
@@ -311,7 +241,7 @@
 
       <section class="dash-section" style="text-align:center;">
         <button class="btn btn-primary btn-large" onclick="saveBot()" style="padding:16px 40px;">
-          💾 Сохранить бота
+          💾 Сохранить
         </button>
         <div class="form-status" id="saveStatus" style="margin-top:16px;"></div>
       </section>
@@ -354,6 +284,68 @@
     gap: 14px;
   }
   .form-group { display: flex; flex-direction: column; }
+
+  .setup-notice {
+    display: flex;
+    gap: 18px;
+    padding: 22px 24px;
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.08) 0%, rgba(168, 85, 247, 0.06) 100%);
+    border: 2px solid rgba(0, 240, 255, 0.3);
+    border-radius: var(--radius);
+    margin-bottom: 24px;
+  }
+  .setup-notice-icon {
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: rgba(0, 240, 255, 0.12);
+    border: 1px solid rgba(0, 240, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
+  .setup-notice-text h2 {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--cyan);
+    margin-bottom: 8px;
+  }
+  .setup-notice-text p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+  .setup-notice-text p strong {
+    color: var(--text);
+  }
+  .setup-notice-contact {
+    margin-top: 10px !important;
+  }
+  .setup-notice-contact a {
+    color: var(--cyan);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .setup-notice-contact a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 640px) {
+    .setup-notice {
+      padding: 18px 18px;
+      gap: 14px;
+    }
+    .setup-notice-icon {
+      width: 44px;
+      height: 44px;
+      font-size: 20px;
+    }
+    .setup-notice-text h2 { font-size: 15px; }
+    .setup-notice-text p { font-size: 13px; }
+  }
 </style>
 
 <script>
@@ -374,14 +366,6 @@ function logout() {
   document.cookie = 'token=; path=/; max-age=0';
   window.location.href = '/app/login.html';
 }
-
-const botPromptRu = document.getElementById('botPromptRu');
-const counterBotPrompt = document.getElementById('counterBotPrompt');
-botPromptRu.addEventListener('input', () => {
-  const len = botPromptRu.value.length;
-  counterBotPrompt.textContent = len;
-  counterBotPrompt.parentElement.classList.toggle('warn', len > 7200);
-});
 
 async function loadSettings() {
   try {
@@ -415,18 +399,6 @@ async function loadSettings() {
     document.getElementById('botTelegramToken').value = s.bot_telegram_token || '';
     document.getElementById('botTelegramAdminId').value = s.bot_telegram_admin_id || '';
 
-    botPromptRu.value = s.bot_prompt_ru || '';
-    counterBotPrompt.textContent = (s.bot_prompt_ru || '').length;
-    document.getElementById('botIndustry').value = s.bot_industry || '';
-    document.getElementById('botServices').value = s.bot_services || '';
-    document.getElementById('botAiProvider').value = s.bot_ai_provider || 'proxyapi';
-    document.getElementById('botAiApiKey').value = s.bot_ai_api_key || '';
-    document.getElementById('botAiBaseUrl').value = s.bot_ai_base_url || '';
-
-    document.getElementById('botWorkHours').value = s.bot_work_hours || 'always';
-    document.getElementById('botMaxDaily').value = s.bot_max_daily || 1000;
-    document.getElementById('botRemindersEnabled').checked = s.bot_reminders_enabled === 1;
-
     document.getElementById('botChTelegram').checked = s.bot_channel_telegram_enabled === 1;
     document.getElementById('botChSheets').checked = s.bot_channel_sheets_enabled === 1;
     document.getElementById('botChWebhook').checked = s.bot_channel_webhook_enabled === 1;
@@ -446,26 +418,10 @@ async function saveBot() {
   status.className = 'form-status';
   status.textContent = 'Сохраняем...';
 
-  const promptLen = botPromptRu.value.length;
-  if (promptLen > 0 && promptLen < 200) {
-    status.className = 'form-status error';
-    status.textContent = '⚠️ Промпт: минимум 200 символов. Сейчас: ' + promptLen;
-    return;
-  }
-
   try {
     const payload = {
       bot_telegram_token: document.getElementById('botTelegramToken').value.trim(),
       bot_telegram_admin_id: document.getElementById('botTelegramAdminId').value.trim() || null,
-      bot_prompt_ru: botPromptRu.value,
-      bot_industry: document.getElementById('botIndustry').value.trim(),
-      bot_services: document.getElementById('botServices').value.trim(),
-      bot_ai_provider: document.getElementById('botAiProvider').value,
-      bot_ai_api_key: document.getElementById('botAiApiKey').value.trim(),
-      bot_ai_base_url: document.getElementById('botAiBaseUrl').value.trim(),
-      bot_work_hours: document.getElementById('botWorkHours').value,
-      bot_max_daily: parseInt(document.getElementById('botMaxDaily').value) || 1000,
-      bot_reminders_enabled: document.getElementById('botRemindersEnabled').checked ? 1 : 0,
       bot_channel_telegram_enabled: document.getElementById('botChTelegram').checked ? 1 : 0,
       bot_channel_sheets_enabled: document.getElementById('botChSheets').checked ? 1 : 0,
       bot_channel_webhook_enabled: document.getElementById('botChWebhook').checked ? 1 : 0,
@@ -486,8 +442,8 @@ async function saveBot() {
     if (!data.ok) throw new Error(data.error?.ru || 'Ошибка');
 
     status.className = 'form-status success';
-    status.textContent = '✅ Настройки бота сохранены!';
-    setTimeout(() => { status.className = 'form-status'; status.textContent = ''; }, 3000);
+    status.textContent = '✅ Сохранено! Мы свяжемся с вами для настройки бота.';
+    setTimeout(() => { status.className = 'form-status'; status.textContent = ''; }, 5000);
   } catch (err) {
     status.className = 'form-status error';
     status.textContent = '❌ ' + err.message;
