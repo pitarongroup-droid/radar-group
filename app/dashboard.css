@@ -111,7 +111,7 @@
   color: var(--text-dim);
 }
 
-/* ===== SECTION (общий) ===== */
+/* ===== SECTION ===== */
 .dash-section {
   background: var(--bg-elevated);
   border: 1px solid var(--border);
@@ -213,7 +213,7 @@
   color: var(--magenta);
 }
 
-/* ===== ГРАФИК (заглушка) ===== */
+/* ===== ГРАФИК ===== */
 .chart-placeholder {
   height: 180px;
   background: linear-gradient(180deg, var(--cyan-soft) 0%, transparent 100%);
@@ -254,7 +254,7 @@
   opacity: 0.5;
 }
 
-/* ===== АДАПТИВ ===== */
+/* ===== АДАПТИВ ПЛАНШЕТ ===== */
 @media (max-width: 960px) {
   .app-main {
     padding: 24px 20px;
@@ -264,28 +264,100 @@
   }
 }
 
+/* ============================================
+   МОБИЛЬНАЯ ВЕРСИЯ (≤ 640px)
+   ============================================ */
 @media (max-width: 640px) {
   .app-main {
-    padding: 16px 14px 90px;
+    padding: 20px 14px 100px;
   }
+
+  .app-header {
+    margin-bottom: 20px;
+    gap: 12px;
+  }
+  .app-header-title { font-size: 22px; }
+
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
+    margin-bottom: 20px;
   }
-  .stat-card {
-    padding: 16px 14px;
+  .stat-card { padding: 16px 14px; }
+  .stat-card-value { font-size: 24px; }
+  .stat-card-label { font-size: 11px; }
+
+  .dash-section { padding: 18px 16px; }
+
+  /* ===== КАРТОЧКИ вместо таблиц ===== */
+
+  .data-table thead {
+    display: none;
   }
-  .stat-card-value {
-    font-size: 24px;
-  }
-  .dash-section {
-    padding: 18px 16px;
-  }
+
   .data-table {
+    display: block;
+    width: 100%;
+    border-collapse: separate;
+  }
+
+  .data-table tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .data-table tr {
+    display: block;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+
+  .data-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    text-align: right;
     font-size: 13px;
   }
-  .data-table th,
-  .data-table td {
-    padding: 10px 8px;
+
+  .data-table td::before {
+    content: "";
+    color: var(--text-dim);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-align: left;
+    flex-shrink: 0;
+    margin-right: 12px;
+  }
+
+  .data-table td:first-child {
+    padding-bottom: 10px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+    justify-content: flex-start;
+    text-align: left;
+  }
+  .data-table td:first-child::before {
+    content: none;
+  }
+
+  .data-table td:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    justify-content: flex-end;
+  }
+
+  /* Метки для разных таблиц — задаются в конкретных HTML */
+
+  .data-table tr:hover td {
+    background: transparent;
+    color: inherit;
   }
 }

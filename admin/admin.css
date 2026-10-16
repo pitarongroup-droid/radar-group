@@ -8,7 +8,7 @@
   background: var(--bg);
 }
 
-/* ===== SIDEBAR (отличается цветом) ===== */
+/* ===== SIDEBAR ===== */
 .admin-sidebar {
   width: 240px;
   flex-shrink: 0;
@@ -106,6 +106,29 @@
   border-top: 1px solid var(--border);
   padding-top: 16px;
   margin-top: 16px;
+}
+
+.admin-sidebar-bottom .sidebar-logout {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.admin-sidebar-bottom .sidebar-logout:hover {
+  color: var(--magenta);
+  background: var(--magenta-soft);
+  border-color: var(--magenta);
 }
 
 /* ===== MAIN ===== */
@@ -219,7 +242,7 @@
   color: var(--magenta);
 }
 
-/* ===== АДАПТИВ ===== */
+/* ===== АДАПТИВ ПЛАНШЕТ ===== */
 @media (max-width: 960px) {
   .admin-sidebar { width: 72px; padding: 16px 8px; }
   .admin-sidebar-logo-text,
@@ -229,25 +252,200 @@
   .admin-main { padding: 24px 20px; }
 }
 
+/* ============================================
+   МОБИЛЬНАЯ ВЕРСИЯ (≤ 640px)
+   ============================================ */
 @media (max-width: 640px) {
+
+  /* === SIDEBAR — внизу экрана === */
   .admin-sidebar {
     width: 100%;
     height: auto;
     position: fixed;
     bottom: 0;
     top: auto;
+    left: 0;
     flex-direction: row;
     padding: 8px;
     z-index: 100;
     border-right: none;
     border-top: 1px solid var(--border);
+    gap: 4px;
   }
-  .admin-sidebar-logo,
-  .admin-sidebar-bottom { display: none; }
-  .admin-sidebar-nav { flex-direction: row; width: 100%; justify-content: space-around; }
-  .admin-sidebar-link { flex-direction: column; gap: 4px; font-size: 11px; flex: 1; }
-  .admin-sidebar-link svg { width: 20px; height: 20px; }
-  .admin-main { padding: 16px 14px 90px; }
-  .clients-table { font-size: 12px; }
-  .clients-table th, .clients-table td { padding: 10px 8px; }
+
+  /* Скрываем логотип */
+  .admin-sidebar-logo { display: none; }
+
+  /* Навигация — занимает всё место */
+  .admin-sidebar-nav {
+    flex-direction: row;
+    flex: 1;
+    gap: 0;
+    justify-content: space-around;
+  }
+
+  .admin-sidebar-link {
+    flex-direction: column;
+    gap: 4px;
+    font-size: 10px;
+    flex: 1;
+    padding: 8px 4px;
+    justify-content: center;
+  }
+  .admin-sidebar-link svg { width: 22px; height: 22px; }
+  .admin-sidebar-link.active::before { display: none; }
+
+  /* Кнопка "Выйти" — отдельным блоком справа */
+  .admin-sidebar-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top: none;
+    border-left: 1px solid var(--border);
+    padding-top: 0;
+    padding-left: 8px;
+    margin-top: 0;
+    margin-left: 0;
+  }
+
+  .admin-sidebar-bottom .sidebar-logout {
+    width: 46px;
+    height: 46px;
+    padding: 0;
+    justify-content: center;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+  .admin-sidebar-bottom .sidebar-logout span { display: none; }
+  .admin-sidebar-bottom .sidebar-logout svg { width: 22px; height: 22px; }
+
+  /* === MAIN === */
+  .admin-main { padding: 20px 14px 100px; }
+
+  .admin-header {
+    margin-bottom: 20px;
+    gap: 12px;
+  }
+  .admin-header-title { font-size: 22px; }
+  .admin-header-actions { width: 100%; }
+  .admin-header-actions .btn { width: 100%; justify-content: center; }
+
+  /* === КАРТОЧКИ вместо таблиц === */
+
+  /* Скрываем шапку таблицы */
+  .clients-table thead,
+  .data-table thead {
+    display: none;
+  }
+
+  /* Таблица — блок */
+  .clients-table,
+  .data-table {
+    display: block;
+    width: 100%;
+    border-collapse: separate;
+  }
+
+  .clients-table tbody,
+  .data-table tbody {
+    display: block;
+    width: 100%;
+  }
+
+  /* Каждая строка — карточка */
+  .clients-table tr,
+  .data-table tr {
+    display: block;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 12px;
+    transition: var(--transition);
+  }
+
+  .clients-table tr:hover,
+  .data-table tr:hover {
+    border-color: var(--border-strong);
+    background: var(--bg-hover);
+  }
+
+  /* Ячейка — строка "Метка: значение" */
+  .clients-table td,
+  .data-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    text-align: right;
+    font-size: 13px;
+  }
+
+  /* Метка слева */
+  .clients-table td::before,
+  .data-table td::before {
+    content: "";
+    color: var(--text-dim);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-align: left;
+    flex-shrink: 0;
+    margin-right: 12px;
+  }
+
+  /* Первая ячейка (клиент) — крупнее, без метки */
+  .clients-table td:first-child,
+  .data-table td:first-child {
+    padding-bottom: 12px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+    justify-content: flex-start;
+    text-align: left;
+  }
+  .clients-table td:first-child::before,
+  .data-table td:first-child::before {
+    content: none;
+  }
+
+  /* Последняя ячейка — без границы */
+  .clients-table td:last-child,
+  .data-table td:last-child {
+    border-bottom: none;
+    padding-top: 12px;
+    justify-content: flex-end;
+  }
+
+  /* === Метки для admin/dashboard.html (6 колонок) === */
+  .data-table td:nth-child(2)::before { content: "План"; }
+  .data-table td:nth-child(3)::before { content: "Статус"; }
+  .data-table td:nth-child(4)::before { content: "Диалогов"; }
+  .data-table td:nth-child(5)::before { content: "Лидов"; }
+  .data-table td:nth-child(6)::before { content: "Выручка"; }
+
+  /* === Метки для admin/clients.html (6 колонок) === */
+  .clients-table td:nth-child(2)::before { content: "Компания"; }
+  .clients-table td:nth-child(3)::before { content: "План"; }
+  .clients-table td:nth-child(4)::before { content: "Статус"; }
+  .clients-table td:nth-child(5)::before { content: "Создан"; }
+
+  /* === Метки для admin/billing.html (4 колонки) === */
+  /* data-table внутри billing = Дата, Клиент, Сумма, Статус */
+  /* первые 2 уникальны — зададим через конкретный родитель */
+  /* при необходимости — можно добавить специфичные правила */
+
+  /* === Метки для admin/logs.html (4 колонки) === */
+  /* Время, Уровень, Источник, Сообщение */
+  .clients-table td:nth-child(1)::before { content: "Время"; }
+  /* ⚠️ в logs таблица тоже clients-table, но 4 колонки — общие метки применятся */
+  /* Для точности можно добавить id на таблицы */
+
+  /* === Отключаем hover у table-строк === */
+  .clients-table tr:hover td,
+  .data-table tr:hover td {
+    background: transparent;
+    color: inherit;
+  }
 }
