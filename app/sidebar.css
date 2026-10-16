@@ -130,22 +130,14 @@
   border-color: var(--magenta);
 }
 
-/* ===== АДАПТИВ ПЛАНШЕТ ===== */
+/* ===== ПЛАНШЕТ ===== */
 @media (max-width: 960px) {
-  .sidebar {
-    width: 72px;
-    padding: 16px 8px;
-  }
+  .sidebar { width: 72px; padding: 16px 8px; }
   .sidebar-logo-text,
   .sidebar-link span,
-  .sidebar-logout span {
-    display: none;
-  }
+  .sidebar-logout span { display: none; }
   .sidebar-link,
-  .sidebar-logout {
-    justify-content: center;
-    padding: 11px;
-  }
+  .sidebar-logout { justify-content: center; padding: 11px; }
   .sidebar-logo { justify-content: center; padding: 0; }
 }
 
@@ -171,10 +163,8 @@
     gap: 4px;
   }
 
-  /* Логотип скрыт */
   .sidebar-logo { display: none; }
 
-  /* Навигация */
   .sidebar-nav {
     flex-direction: row;
     flex: 1;
@@ -194,7 +184,6 @@
   .sidebar-link svg { width: 22px; height: 22px; }
   .sidebar-link.active::before { display: none; }
 
-  /* "Выйти" — отдельный блок справа */
   .sidebar-bottom {
     display: flex;
     align-items: center;

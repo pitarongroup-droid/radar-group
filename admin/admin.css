@@ -159,7 +159,7 @@
   align-items: center;
 }
 
-/* ===== ТАБЛИЦА КЛИЕНТОВ ===== */
+/* ===== ТАБЛИЦА ===== */
 .clients-table {
   width: 100%;
   border-collapse: collapse;
@@ -242,7 +242,7 @@
   color: var(--magenta);
 }
 
-/* ===== АДАПТИВ ПЛАНШЕТ ===== */
+/* ===== ПЛАНШЕТ ===== */
 @media (max-width: 960px) {
   .admin-sidebar { width: 72px; padding: 16px 8px; }
   .admin-sidebar-logo-text,
@@ -257,7 +257,7 @@
    ============================================ */
 @media (max-width: 640px) {
 
-  /* === SIDEBAR — внизу экрана === */
+  /* === SIDEBAR === */
   .admin-sidebar {
     width: 100%;
     height: auto;
@@ -273,10 +273,8 @@
     gap: 4px;
   }
 
-  /* Скрываем логотип */
   .admin-sidebar-logo { display: none; }
 
-  /* Навигация — занимает всё место */
   .admin-sidebar-nav {
     flex-direction: row;
     flex: 1;
@@ -295,7 +293,6 @@
   .admin-sidebar-link svg { width: 22px; height: 22px; }
   .admin-sidebar-link.active::before { display: none; }
 
-  /* Кнопка "Выйти" — отдельным блоком справа */
   .admin-sidebar-bottom {
     display: flex;
     align-items: center;
@@ -322,23 +319,25 @@
   /* === MAIN === */
   .admin-main { padding: 20px 14px 100px; }
 
-  .admin-header {
-    margin-bottom: 20px;
-    gap: 12px;
-  }
+  .admin-header { margin-bottom: 20px; gap: 12px; }
   .admin-header-title { font-size: 22px; }
   .admin-header-actions { width: 100%; }
   .admin-header-actions .btn { width: 100%; justify-content: center; }
 
-  /* === КАРТОЧКИ вместо таблиц === */
-
-  /* Скрываем шапку таблицы */
-  .clients-table thead,
-  .data-table thead {
-    display: none;
+  /* === ФИКС АВТОЗУМА при фокусе на input (iOS) === */
+  input,
+  textarea,
+  select,
+  .form-input,
+  .form-textarea,
+  .form-select {
+    font-size: 16px !important;
   }
 
-  /* Таблица — блок */
+  /* === КАРТОЧКИ вместо таблиц === */
+  .clients-table thead,
+  .data-table thead { display: none; }
+
   .clients-table,
   .data-table {
     display: block;
@@ -352,7 +351,6 @@
     width: 100%;
   }
 
-  /* Каждая строка — карточка */
   .clients-table tr,
   .data-table tr {
     display: block;
@@ -361,31 +359,24 @@
     border-radius: var(--radius);
     padding: 16px 18px;
     margin-bottom: 12px;
-    transition: var(--transition);
   }
 
-  .clients-table tr:hover,
-  .data-table tr:hover {
-    border-color: var(--border-strong);
-    background: var(--bg-hover);
-  }
-
-  /* Ячейка — строка "Метка: значение" */
+  /* Ячейка = строка */
   .clients-table td,
   .data-table td {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 0;
+    padding: 10px 0;
     border-bottom: 1px solid var(--border);
     text-align: right;
     font-size: 13px;
+    gap: 12px;
   }
 
-  /* Метка слева */
+  /* Метка */
   .clients-table td::before,
   .data-table td::before {
-    content: "";
     color: var(--text-dim);
     font-size: 11px;
     font-weight: 700;
@@ -393,10 +384,10 @@
     letter-spacing: 0.06em;
     text-align: left;
     flex-shrink: 0;
-    margin-right: 12px;
+    margin-right: auto;
   }
 
-  /* Первая ячейка (клиент) — крупнее, без метки */
+  /* Первая ячейка (клиент) */
   .clients-table td:first-child,
   .data-table td:first-child {
     padding-bottom: 12px;
@@ -410,42 +401,66 @@
     content: none;
   }
 
-  /* Последняя ячейка — без границы */
+  /* Последняя ячейка */
   .clients-table td:last-child,
   .data-table td:last-child {
     border-bottom: none;
     padding-top: 12px;
+    padding-bottom: 0;
     justify-content: flex-end;
   }
 
-  /* === Метки для admin/dashboard.html (6 колонок) === */
-  .data-table td:nth-child(2)::before { content: "План"; }
-  .data-table td:nth-child(3)::before { content: "Статус"; }
-  .data-table td:nth-child(4)::before { content: "Диалогов"; }
-  .data-table td:nth-child(5)::before { content: "Лидов"; }
-  .data-table td:nth-child(6)::before { content: "Выручка"; }
+  /* === ВЫРАВНИВАНИЕ === */
+  .clients-table td .status-badge,
+  .data-table td .status-badge {
+    margin-left: auto;
+    margin-right: 0;
+  }
 
-  /* === Метки для admin/clients.html (6 колонок) === */
-  .clients-table td:nth-child(2)::before { content: "Компания"; }
-  .clients-table td:nth-child(3)::before { content: "План"; }
-  .clients-table td:nth-child(4)::before { content: "Статус"; }
-  .clients-table td:nth-child(5)::before { content: "Создан"; }
-
-  /* === Метки для admin/billing.html (4 колонки) === */
-  /* data-table внутри billing = Дата, Клиент, Сумма, Статус */
-  /* первые 2 уникальны — зададим через конкретный родитель */
-  /* при необходимости — можно добавить специфичные правила */
-
-  /* === Метки для admin/logs.html (4 колонки) === */
-  /* Время, Уровень, Источник, Сообщение */
-  .clients-table td:nth-child(1)::before { content: "Время"; }
-  /* ⚠️ в logs таблица тоже clients-table, но 4 колонки — общие метки применятся */
-  /* Для точности можно добавить id на таблицы */
-
-  /* === Отключаем hover у table-строк === */
+  /* Отключаем hover */
   .clients-table tr:hover td,
   .data-table tr:hover td {
     background: transparent;
     color: inherit;
+  }
+
+  /* === УНИКАЛЬНЫЕ МЕТКИ по страницам === */
+
+  /* admin/dashboard.html */
+  .page-dashboard .data-table td:nth-child(2)::before { content: "План"; }
+  .page-dashboard .data-table td:nth-child(3)::before { content: "Статус"; }
+  .page-dashboard .data-table td:nth-child(4)::before { content: "Диалогов"; }
+  .page-dashboard .data-table td:nth-child(5)::before { content: "Лидов"; }
+  .page-dashboard .data-table td:nth-child(6)::before { content: "Выручка"; }
+
+  /* admin/clients.html */
+  .page-clients .clients-table td:nth-child(2)::before { content: "Компания"; }
+  .page-clients .clients-table td:nth-child(3)::before { content: "План"; }
+  .page-clients .clients-table td:nth-child(4)::before { content: "Статус"; }
+  .page-clients .clients-table td:nth-child(5)::before { content: "Создан"; }
+
+  /* admin/billing.html */
+  .page-billing .clients-table td:nth-child(1)::before { content: "Дата"; }
+  .page-billing .clients-table td:nth-child(2)::before { content: "Клиент"; }
+  .page-billing .clients-table td:nth-child(3)::before { content: "Сумма"; }
+  .page-billing .clients-table td:nth-child(4)::before { content: "Статус"; }
+
+  /* admin/logs.html */
+  .page-logs .clients-table td:nth-child(1)::before { content: "Время"; }
+  .page-logs .clients-table td:nth-child(2)::before { content: "Уровень"; }
+  .page-logs .clients-table td:nth-child(3)::before { content: "Источник"; }
+  .page-logs .clients-table td:nth-child(4)::before { content: "Сообщение"; }
+
+  /* Первую ячейку billing/logs делаем обычной строкой */
+  .page-billing .clients-table td:first-child,
+  .page-logs .clients-table td:first-child {
+    padding-bottom: 10px;
+    margin-bottom: 0;
+    justify-content: space-between;
+    text-align: right;
+  }
+  .page-billing .clients-table td:first-child::before,
+  .page-logs .clients-table td:first-child::before {
+    content: inherit;
   }
 }
