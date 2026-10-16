@@ -96,7 +96,7 @@
       <div style="color:var(--text-muted); line-height:1.6; max-width:400px; margin:0 auto;">
         Попробуйте другие слова. Если не нашли ответ — напишите нам:
         <div style="margin-top:12px;">
-          📧 <a href="mailto:pitarongroup@gmail.com" style="color:var(--cyan);">pitarongroup@gmail.com</a><br>
+          📧 <a href="mailto:info@radar-group.org" style="color:var(--cyan);">info@radar-group.org</a><br>
           💬 <a href="https://t.me/my_ai_TGAgency_bot" target="_blank" style="color:var(--cyan);">Telegram-поддержка</a>
         </div>
       </div>
@@ -107,7 +107,7 @@
       <div style="font-size:14px; color:var(--text-muted); line-height:1.6; margin-bottom:16px;">Напишите нам — ответим в течение часа</div>
       <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
         <a href="https://t.me/my_ai_TGAgency_bot" target="_blank" class="btn btn-primary" style="padding:12px 24px;">💬 Telegram</a>
-        <a href="mailto:pitarongroup@gmail.com" class="btn btn-outline" style="padding:12px 24px;">📧 Email</a>
+        <a href="mailto:info@radar-group.org" class="btn btn-outline" style="padding:12px 24px;">📧 Email</a>
       </div>
     </section>
 
@@ -302,7 +302,7 @@ const KB = [
       },
       {
         q: 'Как изменить пароль или email?',
-        a: `<p>Пока смена пароля и email — через поддержку. Напишите на <a href="mailto:pitarongroup@gmail.com">pitarongroup@gmail.com</a> или в Telegram.</p>
+        a: `<p>Пока смена пароля и email — через поддержку. Напишите на <a href="mailto:info@radar-group.org">info@radar-group.org</a> или в Telegram.</p>
             <div class="kb-tip">💡 Функция самостоятельной смены пароля появится позже.</div>`
       }
     ]
@@ -367,6 +367,25 @@ const KB = [
     title: 'Telegram-бот',
     questions: [
       {
+        q: 'Как настраивается Telegram-бот?',
+        a: `<p>Telegram-бот настраивается <strong>индивидуально</strong> — мы делаем это за вас.</p>
+            <p>Что делаете вы:</p>
+            <ol>
+              <li>Создаёте бота у <a href="https://t.me/BotFather" target="_blank">@BotFather</a> и вставляете токен</li>
+              <li>Указываете ваш Admin ID (ваш chat_id)</li>
+              <li>Выбираете каналы лидов</li>
+              <li>Сохраняете</li>
+            </ol>
+            <p>Что делаем мы:</p>
+            <ol>
+              <li>Связываемся с вами, собираем информацию о продукте (ниша, услуги, цены, возражения)</li>
+              <li>Пишем мощный промпт с FSM-сценарием квалификации</li>
+              <li>Настраиваем AI-ключ, часы работы, напоминания</li>
+              <li>Запускаем бота</li>
+            </ol>
+            <div class="kb-tip">💡 Обычно настройка занимает 1–2 дня. Мы держим вас в курсе на всех этапах.</div>`
+      },
+      {
         q: 'Чем Telegram-бот отличается от виджета?',
         a: `<p>Это <strong>два разных продукта</strong>, у каждого своя настройка:</p>
             <ul>
@@ -374,16 +393,6 @@ const KB = [
               <li><strong>Telegram-бот</strong> — отдельный бот в Telegram. Для тех, кто пишет в мессенджер.</li>
             </ul>
             <p>Можно использовать оба одновременно. Или только один.</p>`
-      },
-      {
-        q: 'Нужен ли свой AI-ключ для бота?',
-        a: `<p>Да, для работы бота нужен AI-ключ. Есть два варианта:</p>
-            <ol>
-              <li><strong>Свой ключ</strong> — впишите в разделе «Telegram-бот» → «🧠 ИИ и промпт бота» → AI API Key</li>
-              <li><strong>Общий ключ Radar</strong> — напишите менеджеру, он подключит за вас</li>
-            </ol>
-            <p><strong>Если ключа нет — бот не отвечает на сообщения.</strong></p>
-            <div class="kb-warn">⚠️ Ключ Radar Group расходует наши деньги на каждый запрос — он подключается по договорённости и на определённых тарифах.</div>`
       },
       {
         q: 'Как создать Telegram-бота и получить токен?',
@@ -394,7 +403,7 @@ const KB = [
               <li>Придумайте имя бота (то, что видят пользователи)</li>
               <li>Придумайте username (должен заканчиваться на <code>_bot</code>)</li>
               <li>BotFather пришлёт токен вида <code>123456:ABC-DEF...</code></li>
-              <li>Скопируйте токен и вставьте в поле <strong>Bot Token</strong></li>
+              <li>Скопируйте токен и вставьте в разделе «Telegram-бот»</li>
             </ol>
             <div class="kb-warn">⚠️ Никому не показывайте токен — это доступ к боту.</div>`
       },
@@ -406,21 +415,19 @@ const KB = [
               <li>Откройте <a href="https://t.me/userinfobot" target="_blank">@userinfobot</a></li>
               <li>Нажмите <code>Start</code></li>
               <li>Скопируйте ваш ID (набор цифр, например <code>873975856</code>)</li>
-              <li>Вставьте в поле <strong>Admin ID</strong></li>
+              <li>Вставьте в разделе «Telegram-бот»</li>
             </ol>
             <div class="kb-tip">💡 Не забудьте написать <code>/start</code> своему боту — иначе он не сможет присылать уведомления.</div>`
       },
       {
-        q: 'Как включить напоминания (4 стадии дожима)?',
-        a: `<p>В разделе «Telegram-бот» → секция «⚙️ Рабочие настройки» → поставьте галку <strong>«Включить напоминания»</strong>.</p>
-            <p>Что произойдёт:</p>
-            <ul>
-              <li>Клиент ушёл думать — бот напомнит через 15 минут</li>
-              <li>Не ответил — напомнит через 1 час</li>
-              <li>Молчит — через 24 часа</li>
-              <li>Всё ещё молчит — через 48 часов</li>
-            </ul>
-            <p>Все напоминания мягкие, без давления.</p>`
+        q: 'Нужен ли свой AI-ключ для бота?',
+        a: `<p>Для работы бота нужен AI-ключ. Есть два варианта:</p>
+            <ol>
+              <li><strong>Свой ключ</strong> — пришлите менеджеру, он впишет в админке</li>
+              <li><strong>Общий ключ Radar</strong> — подключим за вас, по договорённости</li>
+            </ol>
+            <p><strong>Если ключа нет — бот не отвечает на сообщения.</strong></p>
+            <div class="kb-warn">⚠️ Ключ Radar Group расходует наши деньги на каждый запрос — он подключается по договорённости и на определённых тарифах.</div>`
       },
       {
         q: 'Что делать, если бот не отвечает?',
@@ -429,9 +436,8 @@ const KB = [
               <li><strong>Bot Token</strong> — правильно ли вставлен?</li>
               <li><strong>Admin ID</strong> — ваш ID указан?</li>
               <li>Вы написали боту <code>/start</code>?</li>
-              <li>В админке нажали <strong>«🔗 Установить webhook»</strong>?</li>
               <li>Услуга <strong>«Telegram-бот»</strong> включена в вашем аккаунте?</li>
-              <li><strong>AI-ключ</strong> — есть? Если нет — бот не отвечает.</li>
+              <li><strong>Настройка завершена?</strong> — свяжитесь с менеджером</li>
             </ol>
             <p>Если всё верно — напишите в поддержку.</p>`
       }
@@ -457,7 +463,7 @@ const KB = [
         a: `<p>Два варианта:</p>
             <ul>
               <li>Для <strong>виджета</strong>: раздел «Виджет» → «Куда присылать лиды» → Telegram</li>
-              <li>Для <strong>бота</strong>: раздел «Telegram-бот» → «Куда присылать лиды из бота» → Telegram</li>
+              <li>Для <strong>бота</strong>: раздел «Telegram-бот» → «Куда присылать лиды» → Telegram</li>
             </ul>
             <p>Впишите Bot Token и Admin ID. Готово.</p>`
       },
