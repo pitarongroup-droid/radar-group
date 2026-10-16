@@ -16,7 +16,6 @@
   <link rel="stylesheet" href="/admin/admin.css">
 
   <style>
-    /* Форма карточки клиента */
     .client-form { max-width: 900px; }
     .form-section {
       background: var(--bg-elevated, #0F0F18);
@@ -74,6 +73,7 @@
       gap: 12px;
       justify-content: flex-end;
       margin-top: 8px;
+      margin-bottom: 40px;
     }
     .btn-secondary {
       background: rgba(255,255,255,.05);
@@ -120,6 +120,9 @@
       position: fixed;
       bottom: 24px;
       right: 24px;
+      left: 24px;
+      max-width: 400px;
+      margin-left: auto;
       background: var(--bg-elevated, #0F0F18);
       border: 1px solid var(--cyan, #00F0FF);
       color: var(--text, #fff);
@@ -223,41 +226,71 @@
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">Язык</label>
-            <select class="form-select" name="language">
-              <option value="ru">🇷🇺 RU</option>
-              <option value="en">🇬🇧 EN</option>
-            </select>
+            <div class="pill-group">
+              <label class="pill">
+                <input type="radio" name="language" value="ru" checked>
+                <span>🇷🇺 RU</span>
+              </label>
+              <label class="pill">
+                <input type="radio" name="language" value="en">
+                <span>🇬🇧 EN</span>
+              </label>
+            </div>
           </div>
           <div class="form-group">
             <label class="form-label">Валюта</label>
-            <select class="form-select" name="currency">
-              <option value="USD">$ USD</option>
-              <option value="RUB">₽ RUB</option>
-            </select>
+            <div class="pill-group">
+              <label class="pill">
+                <input type="radio" name="currency" value="USD" checked>
+                <span>$ USD</span>
+              </label>
+              <label class="pill">
+                <input type="radio" name="currency" value="RUB">
+                <span>₽ RUB</span>
+              </label>
+            </div>
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">План</label>
-            <select class="form-select" name="plan">
-              <option value="basic">Basic</option>
-              <option value="standard">Standard</option>
-              <option value="turnkey">Turnkey</option>
-            </select>
+            <div class="pill-group">
+              <label class="pill">
+                <input type="radio" name="plan" value="basic" checked>
+                <span>Basic</span>
+              </label>
+              <label class="pill">
+                <input type="radio" name="plan" value="standard">
+                <span>Standard</span>
+              </label>
+              <label class="pill">
+                <input type="radio" name="plan" value="turnkey">
+                <span>Turnkey</span>
+              </label>
+            </div>
           </div>
           <div class="form-group">
             <label class="form-label">Статус</label>
-            <select class="form-select" name="status">
-              <option value="active">🟢 Активен</option>
-              <option value="trial">🟡 Trial</option>
-              <option value="suspended">🔴 Заблокирован</option>
-            </select>
+            <div class="pill-group">
+              <label class="pill">
+                <input type="radio" name="status" value="active" checked>
+                <span>🟢 Активен</span>
+              </label>
+              <label class="pill">
+                <input type="radio" name="status" value="trial">
+                <span>🟡 Trial</span>
+              </label>
+              <label class="pill">
+                <input type="radio" name="status" value="suspended">
+                <span>🔴 Блок</span>
+              </label>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- ===== API KEY (только для существующего клиента) ===== -->
+      <!-- ===== API KEY ===== -->
       <section class="form-section" id="apiKeySection" style="display:none;">
         <h2 class="form-section-title">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
@@ -392,32 +425,26 @@
 <div class="toast" id="toast">Сохранено!</div>
 
 <script>
-// ============================================
-// Проверка авторизации
-// ============================================
 const token = localStorage.getItem('token');
 const user = JSON.parse(localStorage.getItem('user') || '{}');
 if (!token || user.role !== 'admin') {
   window.location.href = '/app/login.html';
 }
 
-// ============================================
-// URL параметр ?id=cli_xxx
-// ============================================
 const urlParams = new URLSearchParams(window.location.search);
 const clientId = urlParams.get('id');
 const isEdit = !!clientId;
 
-// ============================================
-// Форма
-// ============================================
 const form = document.getElementById('clientForm');
 const pageTitle = document.getElementById('pageTitle');
 const submitBtn = document.getElementById('submitBtn');
 
-// ============================================
-// Загрузка данных (если редактирование)
-// ============================================
+// Установка radio
+function setRadio(name, value) {
+  const radio = form.querySelector(`input[name="${name}"][value="${value}"]`);
+  if (radio) radio.checked = true;
+}
+
 async function loadClient() {
   if (!isEdit) return;
 
@@ -425,7 +452,6 @@ async function loadClient() {
   submitBtn.textContent = '💾 Сохранить изменения';
 
   try {
-    // Загружаем основное
     const cRes = await fetch('/api/admin/clients/' + clientId);
     const cData = await cRes.json();
     if (!cData.ok) throw new Error('Клиент не найден');
@@ -435,12 +461,12 @@ async function loadClient() {
     form.email.value = c.email || '';
     form.company.value = c.company || '';
     form.site_url.value = c.site_url || '';
-    form.language.value = c.language || 'ru';
-    form.currency.value = c.currency || 'USD';
-    form.plan.value = c.plan || 'basic';
-    form.status.value = c.status || 'active';
 
-    // Загружаем настройки
+    setRadio('language', c.language || 'ru');
+    setRadio('currency', c.currency || 'USD');
+    setRadio('plan', c.plan || 'basic');
+    setRadio('status', c.status || 'active');
+
     const sRes = await fetch('/api/admin/settings?client_id=' + clientId);
     const sData = await sRes.json();
     if (sData.ok && sData.settings) {
@@ -461,7 +487,6 @@ async function loadClient() {
       form.max_daily_requests.value = s.max_daily_requests || 1000;
     }
 
-    // Показываем API-key
     if (c.api_key) {
       document.getElementById('apiKeySection').style.display = 'block';
       document.getElementById('apiKeyText').textContent = c.api_key;
@@ -474,9 +499,6 @@ async function loadClient() {
   }
 }
 
-// ============================================
-// Сохранение
-// ============================================
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   submitBtn.disabled = true;
@@ -486,7 +508,6 @@ form.addEventListener('submit', async (e) => {
     const data = Object.fromEntries(new FormData(form));
 
     if (isEdit) {
-      // PUT клиент
       const cRes = await fetch('/api/admin/clients/' + clientId, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -495,7 +516,6 @@ form.addEventListener('submit', async (e) => {
       const cData = await cRes.json();
       if (!cData.ok) throw new Error(cData.error?.ru || 'Ошибка клиента');
 
-      // PUT настройки
       data.client_id = clientId;
       const sRes = await fetch('/api/admin/settings', {
         method: 'PUT',
@@ -507,7 +527,6 @@ form.addEventListener('submit', async (e) => {
 
       showToast('✅ Сохранено!');
     } else {
-      // POST — создать нового клиента
       const cRes = await fetch('/api/admin/clients', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -516,13 +535,11 @@ form.addEventListener('submit', async (e) => {
       const cData = await cRes.json();
       if (!cData.ok) throw new Error(cData.error?.ru || 'Ошибка создания');
 
-      // Показываем ключ
       document.getElementById('apiKeySection').style.display = 'block';
       document.getElementById('apiKeyText').textContent = cData.api_key;
       document.getElementById('embedCode').textContent =
         '<script src="https://radar-group.org/widget.js" data-key="' + cData.api_key + '" async><\/script>';
 
-      // Переключаем в режим редактирования
       window.history.replaceState(null, '', '?id=' + cData.id);
 
       showToast('✅ Клиент создан! Скопируйте API-ключ.');
@@ -542,9 +559,6 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
-// ============================================
-// Копирование
-// ============================================
 function copyApiKey() {
   navigator.clipboard.writeText(document.getElementById('apiKeyText').textContent);
   showToast('📋 API-ключ скопирован');
@@ -555,9 +569,6 @@ function copyEmbed() {
   showToast('📋 Код виджета скопирован');
 }
 
-// ============================================
-// Toast уведомления
-// ============================================
 function showToast(msg, isError = false) {
   const toast = document.getElementById('toast');
   toast.textContent = msg;
@@ -565,9 +576,6 @@ function showToast(msg, isError = false) {
   setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-// ============================================
-// Logout
-// ============================================
 function logout() {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
@@ -575,9 +583,6 @@ function logout() {
   window.location.href = '/app/login.html';
 }
 
-// ============================================
-// Запуск
-// ============================================
 loadClient();
 </script>
 

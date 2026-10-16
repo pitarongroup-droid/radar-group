@@ -168,6 +168,57 @@
   align-items: center;
 }
 
+/* ===== PILL-переключатели ===== */
+.pill-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  cursor: pointer;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pill input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pill span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 11px 18px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 500;
+  transition: var(--transition);
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  white-space: nowrap;
+}
+
+.pill:hover span {
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.pill input:checked + span {
+  background: rgba(0, 240, 255, 0.1);
+  border-color: var(--cyan);
+  color: var(--cyan);
+  font-weight: 600;
+  box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.1);
+}
+
 /* ===== ТАБЛИЦА ===== */
 .clients-table {
   width: 100%;
@@ -234,7 +285,6 @@
 .status-trial { background: rgba(255, 200, 0, 0.1); color: #FFC800; }
 .status-suspended { background: var(--magenta-soft); color: var(--magenta); }
 
-/* Пустое состояние (десктоп) */
 .empty-state {
   text-align: center;
   padding: 60px 20px;
@@ -269,7 +319,6 @@
    ============================================ */
 @media (max-width: 640px) {
 
-  /* === БАЗА === */
   html, body {
     overflow-x: hidden;
     max-width: 100vw;
@@ -340,14 +389,11 @@
 
   /* === MAIN === */
   .admin-main {
-    padding: 20px 14px calc(100px + env(safe-area-inset-bottom, 0px));
+    padding: 20px 14px calc(140px + env(safe-area-inset-bottom, 0px));
     overflow-x: hidden;
   }
 
-  .admin-header {
-    margin-bottom: 20px;
-    gap: 12px;
-  }
+  .admin-header { margin-bottom: 20px; gap: 12px; }
   .admin-header-title { font-size: 22px; }
   .admin-header-actions { width: 100%; }
   .admin-header-actions .btn {
@@ -356,7 +402,7 @@
     touch-action: manipulation;
   }
 
-  /* === ЗАПРЕТ АВТОЗУМА на input === */
+  /* === АВТОЗУМ === */
   input,
   textarea,
   select,
@@ -366,6 +412,17 @@
   .clients-toolbar input {
     font-size: 16px !important;
     touch-action: manipulation;
+  }
+
+  /* === PILL — крупнее на мобиле === */
+  .pill span {
+    padding: 12px 20px;
+    font-size: 15px;
+    flex: 1;
+    justify-content: center;
+  }
+  .pill-group {
+    width: 100%;
   }
 
   /* === ТУЛБАР ПОИСКА === */
@@ -463,7 +520,6 @@
     justify-content: flex-end;
   }
 
-  /* Кнопки в строке */
   .row-actions {
     gap: 10px;
     justify-content: flex-end;
@@ -475,7 +531,6 @@
     touch-action: manipulation;
   }
 
-  /* Выравнивание */
   .clients-table td .status-badge,
   .data-table td .status-badge,
   .clients-table td .plan-badge,
@@ -484,7 +539,7 @@
     margin-right: 0;
   }
 
-  /* === ПУСТОЕ СОСТОЯНИЕ — ФИКС === */
+  /* === ПУСТОЕ СОСТОЯНИЕ === */
   .clients-table td.empty-state,
   .data-table td.empty-state,
   .clients-table td[colspan],
@@ -519,7 +574,6 @@
     text-align: center;
   }
 
-  /* === УБИРАЕМ HOVER === */
   .clients-table tr:hover td,
   .data-table tr:hover td {
     background: transparent;
@@ -528,7 +582,14 @@
 
   /* === МЕТКИ === */
 
-  /* admin/dashboard.html */
+  /* admin/dashboard.html — clients-table */
+  .page-dashboard .clients-table td:nth-child(2)::before { content: "План"; }
+  .page-dashboard .clients-table td:nth-child(3)::before { content: "Статус"; }
+  .page-dashboard .clients-table td:nth-child(4)::before { content: "Диалогов"; }
+  .page-dashboard .clients-table td:nth-child(5)::before { content: "Лидов"; }
+  .page-dashboard .clients-table td:nth-child(6)::before { content: "Выручка"; }
+
+  /* admin/dashboard.html — data-table (на всякий случай) */
   .page-dashboard .data-table td:nth-child(2)::before { content: "План"; }
   .page-dashboard .data-table td:nth-child(3)::before { content: "Статус"; }
   .page-dashboard .data-table td:nth-child(4)::before { content: "Диалогов"; }
@@ -594,5 +655,10 @@
     width: 28px;
     height: 28px;
     font-size: 11px;
+  }
+
+  .pill span {
+    padding: 10px 14px;
+    font-size: 13px;
   }
 }
