@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#08080F">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Telegram Bot — Radar Group</title>
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"></noscript>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/app/sidebar.css">
+  <link rel="stylesheet" href="/app/dashboard.css">
+</head>
+<body>
+
+<div class="app-layout">
+  <aside class="sidebar">
+    <a href="/en/app/dashboard.html" class="sidebar-logo">
+      <img src="/images/logo.webp" alt="Radar Group" width="32" height="32">
+      <span class="sidebar-logo-text">RADAR</span>
+    </a>
+    <nav class="sidebar-nav">
+      <a href="/en/app/dashboard.html" class="sidebar-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="/en/app/dialogs.html" class="sidebar-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span>Dialogs</span>
+      </a>
+      <a href="/en/app/reports.html" class="sidebar-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg>
+        <span>Reports</span>
+      </a>
+      <a href="/en/app/billing.html" class="sidebar-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        <span>Billing</span>
+      </a>
+      <a href="/en/app/widget.html" class="sidebar-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 10h.01"/><path d="M16 10h.01"/><path d="M12 16a4 4 0 0 0 4-4"/></svg>
+        <span>Widget</span>
+      </a>
+      <a href="/en/app/bot.html" class="sidebar-link active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/></svg>
+        <span>Telegram Bot</span>
+      </a>
+      <a href="/en/app/integration.html" class="sidebar-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        <span>Integration</span>
+      </a>
+    </nav>
+    <div class="sidebar-bottom">
+      <button class="sidebar-logout" onclick="logout()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <main class="app-main">
+    <header class="app-header">
+      <h1 class="app-header-title">🤖 Telegram Bot Settings</h1>
+      <div class="app-header-user">
+        <div class="app-header-user-avatar" id="userAvatar">?</div>
+        <span id="userName">Client</span>
+      </div>
+    </header>
+
+    <div id="accessBlocked" style="display:none;">
+      <div class="dash-section" style="text-align:center; padding:40px 20px;">
+        <div style="font-size:48px; margin-bottom:12px;">⏳</div>
+        <div style="font-size:18px; font-weight:700; color:#FFC800; margin-bottom:8px;">Account pending approval</div>
+        <div style="color:var(--text-muted); line-height:1.6;">
+          Bot settings will become available after approval.<br>
+          📧 Contact: <a href="mailto:pitarongroup@gmail.com" style="color:var(--cyan);">pitarongroup@gmail.com</a>
+        </div>
+      </div>
+    </div>
+
+    <div id="serviceDisabled" style="display:none;">
+      <div class="dash-section" style="text-align:center; padding:40px 20px;">
+        <div style="font-size:48px; margin-bottom:12px;">🔒</div>
+        <div style="font-size:18px; font-weight:700; margin-bottom:8px;">Service not activated</div>
+        <div style="color:var(--text-muted); line-height:1.6;">
+          Telegram bot is not activated.<br>
+          📧 Contact: <a href="mailto:pitarongroup@gmail.com" style="color:var(--cyan);">pitarongroup@gmail.com</a>
+        </div>
+      </div>
+    </div>
+
+    <div id="botContent" style="display:none;">
+
+      <section class="dash-section">
+        <div class="dash-section-header">
+          <h2 class="dash-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/></svg>
+            Bot Connection
+          </h2>
+        </div>
+
+        <div class="settings-form">
+          <div class="form-row">
+            <label class="form-label">Bot Token</label>
+            <input class="form-input" type="text" id="botTelegramToken" placeholder="123456:ABC-DEF..." autocomplete="off">
+            <div class="form-hint">
+              💡 <strong>What is it:</strong> your bot token from @BotFather.
+              <details class="hint-details">
+                <summary>📖 How to create a bot</summary>
+                <ol>
+                  <li>Open <a href="https://t.me/BotFather" target="_blank">@BotFather</a></li>
+                  <li>Type <code>/newbot</code></li>
+                  <li>Pick name and username</li>
+                  <li>Copy the token</li>
+                </ol>
+                <a href="https://t.me/BotFather" target="_blank" class="hint-link">🔗 Open @BotFather</a>
+              </details>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Admin ID (your chat_id)</label>
+            <input class="form-input" type="text" id="botTelegramAdminId" placeholder="873975856">
+            <div class="form-hint">
+              💡 <strong>What is it:</strong> where the bot sends lead notifications.
+              <details class="hint-details">
+                <summary>📖 How to find it</summary>
+                <ol>
+                  <li>Open <a href="https://t.me/userinfobot" target="_blank">@userinfobot</a></li>
+                  <li>Press Start</li>
+                  <li>Copy your ID</li>
+                </ol>
+              </details>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="dash-section">
+        <div class="dash-section-header">
+          <h2 class="dash-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/></svg>
+            AI & Bot Prompt
+          </h2>
+        </div>
+
+        <div class="settings-form">
+          <div class="form-row">
+            <label class="form-label">Prompt (EN, up to 8000 chars)</label>
+            <textarea class="form-textarea" id="botPromptEn" style="min-height:250px;" maxlength="8000"
+              placeholder="You are an experienced AI Manager at...&#10;&#10;Your tasks:&#10;1. ...&#10;2. ...&#10;&#10;Style: ..."></textarea>
+            <div class="form-hint">
+              💡 Full prompt with FSM qualification scenario.
+              <div class="counter-row"><span id="counterBotPrompt">0</span> / 8000</div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Industry</label>
+            <input class="form-input" type="text" id="botIndustry" maxlength="100" placeholder="Auto service / Salon / Clinic">
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Services & Prices</label>
+            <textarea class="form-textarea" id="botServices" style="min-height:100px;" maxlength="2000"
+              placeholder="Oil change — from $40&#10;Haircut — $25&#10;..."></textarea>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">AI Provider for bot</label>
+            <select class="form-select" id="botAiProvider" style="width:100%; padding:11px 14px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font-family:inherit; font-size:14px; outline:none;">
+              <option value="proxyapi">ProxyAPI</option>
+              <option value="openai">OpenAI</option>
+              <option value="claude">Claude</option>
+              <option value="gemini">Gemini</option>
+              <option value="deepseek">DeepSeek</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">AI API Key for bot</label>
+            <input class="form-input" type="text" id="botAiApiKey" placeholder="sk-...">
+            <div class="form-hint">💡 If empty — Radar Group's shared key is used.</div>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">AI Base URL (optional)</label>
+            <input class="form-input" type="text" id="botAiBaseUrl" placeholder="https://...">
+          </div>
+        </div>
+      </section>
+
+      <section class="dash-section">
+        <div class="dash-section-header">
+          <h2 class="dash-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            Working Settings
+          </h2>
+        </div>
+
+        <div class="settings-form">
+          <div class="form-row">
+            <label class="form-label">Working hours</label>
+            <select class="form-select" id="botWorkHours" style="width:100%; padding:11px 14px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font-family:inherit; font-size:14px; outline:none;">
+              <option value="always">24/7</option>
+              <option value="9-20">09:00–20:00</option>
+              <option value="custom">Custom (per prompt)</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Daily request limit</label>
+            <input class="form-input" type="number" id="botMaxDaily" min="0" max="100000" value="1000">
+            <div class="form-hint">💡 Anti-spam protection. 0 = unlimited.</div>
+          </div>
+
+          <div class="form-row">
+            <label style="display:flex; align-items:center; gap:10px; cursor:pointer; user-select:none;">
+              <input type="checkbox" id="botRemindersEnabled" style="width:18px; height:18px; accent-color:var(--cyan);">
+              <span style="font-size:14px; font-weight:600;">Enable reminders (4 follow-up stages)</span>
+            </label>
+            <div class="form-hint">
+              💡 Auto reminders at 15 min, 1 hour, 24 hours, 48 hours if the client stops replying.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="dash-section">
+        <div class="dash-section-header">
+          <h2 class="dash-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            Where to send bot leads
+          </h2>
+        </div>
+
+        <div class="settings-form">
+
+          <div class="form-group">
+            <div class="channel-header">
+              <label class="channel-toggle">
+                <input type="checkbox" id="botChTelegram">
+                <span class="channel-label">📱 Telegram</span>
+              </label>
+            </div>
+            <div class="channel-body">
+              <div class="form-hint" style="margin:0;">
+                💡 Leads go to the chat specified in <strong>Admin ID</strong> above.
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="channel-header">
+              <label class="channel-toggle">
+                <input type="checkbox" id="botChSheets">
+                <span class="channel-label">📊 Google Sheets</span>
+              </label>
+            </div>
+            <div class="channel-body">
+              <div class="form-row">
+                <label class="form-label">Web App URL</label>
+                <input class="form-input" type="text" id="botSheetsUrl" placeholder="https://script.google.com/macros/s/.../exec">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="channel-header">
+              <label class="channel-toggle">
+                <input type="checkbox" id="botChWebhook">
+                <span class="channel-label">🔗 Webhook (CRM)</span>
+              </label>
+            </div>
+            <div class="channel-body">
+              <div class="form-row">
+                <label class="form-label">URL</label>
+                <input class="form-input" type="text" id="botWebhookUrl" placeholder="https://...">
+              </div>
+              <div class="form-row">
+                <label class="form-label">Secret (HMAC-SHA256)</label>
+                <input class="form-input" type="text" id="botWebhookSecret" placeholder="shared secret">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="channel-header">
+              <label class="channel-toggle">
+                <input type="checkbox" id="botChEmail">
+                <span class="channel-label">📧 Email</span>
+              </label>
+            </div>
+            <div class="channel-body">
+              <div class="form-row">
+                <label class="form-label">Notification Email</label>
+                <input class="form-input" type="email" id="botNotificationEmail" placeholder="owner@example.com">
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <section class="dash-section" style="text-align:center;">
+        <button class="btn btn-primary btn-large" onclick="saveBot()" style="padding:16px 40px;">
+          💾 Save Bot
+        </button>
+        <div class="form-status" id="saveStatus" style="margin-top:16px;"></div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<style>
+  .settings-form { display: flex; flex-direction: column; gap: 18px; }
+  .channel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: rgba(255,255,255,.03);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 12px;
+  }
+  .channel-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .channel-toggle input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--cyan);
+  }
+  .channel-body {
+    padding-left: 16px;
+    border-left: 2px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .form-group { display: flex; flex-direction: column; }
+</style>
+
+<script>
+const token = localStorage.getItem('token');
+if (!token) window.location.href = '/en/app/login.html';
+
+try {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  if (user.name) {
+    document.getElementById('userName').textContent = user.name;
+    document.getElementById('userAvatar').textContent = user.name.charAt(0).toUpperCase();
+  }
+} catch (e) {}
+
+function logout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  document.cookie = 'token=; path=/; max-age=0';
+  window.location.href = '/en/app/login.html';
+}
+
+const botPromptEn = document.getElementById('botPromptEn');
+const counterBotPrompt = document.getElementById('counterBotPrompt');
+botPromptEn.addEventListener('input', () => {
+  const len = botPromptEn.value.length;
+  counterBotPrompt.textContent = len;
+  counterBotPrompt.parentElement.classList.toggle('warn', len > 7200);
+});
+
+async function loadSettings() {
+  try {
+    const res = await fetch('/api/settings', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+
+    if (res.status === 403) {
+      const d = await res.json();
+      if (d.account_status === 'pending' || d.account_status === 'suspended') {
+        document.getElementById('accessBlocked').style.display = 'block';
+        return;
+      }
+    }
+
+    const data = await res.json();
+    if (!data.ok) {
+      document.getElementById('accessBlocked').style.display = 'block';
+      return;
+    }
+
+    const s = data.settings || {};
+
+    if (s.bot_enabled !== 1) {
+      document.getElementById('serviceDisabled').style.display = 'block';
+      document.querySelectorAll('a[href*="bot"]').forEach(el => {
+        el.style.opacity = '0.4';
+        el.style.pointerEvents = 'none';
+      });
+      return;
+    }
+
+    document.getElementById('botContent').style.display = 'block';
+
+    document.getElementById('botTelegramToken').value = s.bot_telegram_token || '';
+    document.getElementById('botTelegramAdminId').value = s.bot_telegram_admin_id || '';
+
+    botPromptEn.value = s.bot_prompt_en || '';
+    counterBotPrompt.textContent = (s.bot_prompt_en || '').length;
+    document.getElementById('botIndustry').value = s.bot_industry || '';
+    document.getElementById('botServices').value = s.bot_services || '';
+    document.getElementById('botAiProvider').value = s.bot_ai_provider || 'proxyapi';
+    document.getElementById('botAiApiKey').value = s.bot_ai_api_key || '';
+    document.getElementById('botAiBaseUrl').value = s.bot_ai_base_url || '';
+
+    document.getElementById('botWorkHours').value = s.bot_work_hours || 'always';
+    document.getElementById('botMaxDaily').value = s.bot_max_daily || 1000;
+    document.getElementById('botRemindersEnabled').checked = s.bot_reminders_enabled === 1;
+
+    document.getElementById('botChTelegram').checked = s.bot_channel_telegram_enabled === 1;
+    document.getElementById('botChSheets').checked = s.bot_channel_sheets_enabled === 1;
+    document.getElementById('botChWebhook').checked = s.bot_channel_webhook_enabled === 1;
+    document.getElementById('botChEmail').checked = s.bot_channel_email_enabled === 1;
+
+    document.getElementById('botSheetsUrl').value = s.bot_sheets_url || '';
+    document.getElementById('botNotificationEmail').value = s.bot_notification_email || '';
+
+  } catch (err) {
+    console.error('Load settings error:', err);
+    document.getElementById('accessBlocked').style.display = 'block';
+  }
+}
+
+async function saveBot() {
+  const status = document.getElementById('saveStatus');
+  status.className = 'form-status';
+  status.textContent = 'Saving...';
+
+  const promptLen = botPromptEn.value.length;
+  if (promptLen > 0 && promptLen < 200) {
+    status.className = 'form-status error';
+    status.textContent = '⚠️ Prompt: minimum 200 characters. Current: ' + promptLen;
+    return;
+  }
+
+  try {
+    const payload = {
+      bot_telegram_token: document.getElementById('botTelegramToken').value.trim(),
+      bot_telegram_admin_id: document.getElementById('botTelegramAdminId').value.trim() || null,
+      bot_prompt_en: botPromptEn.value,
+      bot_industry: document.getElementById('botIndustry').value.trim(),
+      bot_services: document.getElementById('botServices').value.trim(),
+      bot_ai_provider: document.getElementById('botAiProvider').value,
+      bot_ai_api_key: document.getElementById('botAiApiKey').value.trim(),
+      bot_ai_base_url: document.getElementById('botAiBaseUrl').value.trim(),
+      bot_work_hours: document.getElementById('botWorkHours').value,
+      bot_max_daily: parseInt(document.getElementById('botMaxDaily').value) || 1000,
+      bot_reminders_enabled: document.getElementById('botRemindersEnabled').checked ? 1 : 0,
+      bot_channel_telegram_enabled: document.getElementById('botChTelegram').checked ? 1 : 0,
+      bot_channel_sheets_enabled: document.getElementById('botChSheets').checked ? 1 : 0,
+      bot_channel_webhook_enabled: document.getElementById('botChWebhook').checked ? 1 : 0,
+      bot_channel_email_enabled: document.getElementById('botChEmail').checked ? 1 : 0,
+      bot_sheets_url: document.getElementById('botSheetsUrl').value.trim(),
+      bot_notification_email: document.getElementById('botNotificationEmail').value.trim()
+    };
+
+    const res = await fetch('/api/settings', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error?.en || 'Error');
+
+    status.className = 'form-status success';
+    status.textContent = '✅ Bot settings saved!';
+    setTimeout(() => { status.className = 'form-status'; status.textContent = ''; }, 3000);
+  } catch (err) {
+    status.className = 'form-status error';
+    status.textContent = '❌ ' + err.message;
+  }
+}
+
+loadSettings();
+</script>
+
+</body>
+</html>

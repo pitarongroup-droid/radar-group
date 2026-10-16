@@ -1,0 +1,152 @@
+// ============================================
+// POST /api/bot/ai — прокси для AI (VPS-бот)
+// Авторизация: X-Bot-Secret
+// Body: { client_id, messages, mode }
+// mode: 'chat' | 'reminder'
+// ============================================
+
+export async function onRequestPost({ request, env }) {
+  try {
+    const secret = request.headers.get('X-Bot-Secret');
+    if (!secret || secret !== env.BOT_SECRET) {
+      return Response.json({ ok: false, error: 'Forbidden' }, { status: 403 });
+    }
+
+    const body = await request.json();
+    const { client_id, messages, mode } = body;
+
+    if (!client_id || !Array.isArray(messages)) {
+      return Response.json({ ok: false, error: 'client_id and messages required' }, { status: 400 });
+    }
+
+    const s = await env.radar_group_db.prepare(
+      `SELECT bot_prompt_ru, bot_prompt_en, bot_ai_provider, bot_ai_api_key,
+              bot_ai_base_url, bot_reminders_enabled
+       FROM settings WHERE client_id = ?`
+    ).bind(client_id).first();
+
+    if (!s) {
+      return Response.json({ ok: false, error: 'Settings not found' }, { status: 404 });
+    }
+
+    const apiKey = s.bot_ai_api_key || env.OPENAI_API_KEY;
+    if (!apiKey) {
+      return Response.json({ ok: false, error: 'No AI key' }, { status: 503 });
+    }
+
+    const provider = s.bot_ai_provider || 'proxyapi';
+    const baseUrl = s.bot_ai_base_url || null;
+    const systemPrompt = s.bot_prompt_ru || s.bot_prompt_en || '';
+
+    let reply;
+
+    if (mode === 'reminder' && s.bot_reminders_enabled !== 1) {
+      return Response.json({ ok: false, error: 'Reminders disabled' }, { status: 403 });
+    }
+
+    if (provider === 'claude') {
+      reply = await callClaude({ apiKey, baseUrl, systemPrompt, messages });
+    } else if (provider === 'gemini') {
+      reply = await callGemini({ apiKey, baseUrl, systemPrompt, messages });
+    } else {
+      reply = await callOpenAI({ provider, apiKey, baseUrl, systemPrompt, messages });
+    }
+
+    return Response.json({ ok: true, reply: reply.trim() });
+
+  } catch (err) {
+    console.error('Bot AI error:', err);
+    return Response.json({ ok: false, error: err.message }, { status: 500 });
+  }
+}
+
+export async function onRequestOptions() {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, X-Bot-Secret',
+      'Access-Control-Max-Age': '86400'
+    }
+  });
+}
+
+async function callOpenAI({ provider, apiKey, baseUrl, systemPrompt, messages }) {
+  let url = baseUrl;
+  if (!url) {
+    if (provider === 'openai') url = 'https://api.openai.com/v1/chat/completions';
+    else if (provider === 'deepseek') url = 'https://api.deepseek.com/v1/chat/completions';
+    else url = 'https://api.proxyapi.ru/v1/chat/completions';
+  }
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        ...messages
+      ],
+      temperature: 0.7,
+      max_tokens: 400,
+      frequency_penalty: 0.6,
+      presence_penalty: 0.6
+    })
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error?.message || 'AI error');
+  return data.choices[0].message.content;
+}
+
+async function callClaude({ apiKey, baseUrl, systemPrompt, messages }) {
+  const url = baseUrl || 'https://api.anthropic.com/v1/messages';
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01'
+    },
+    body: JSON.stringify({
+      model: 'claude-3-5-sonnet-20241022',
+      max_tokens: 400,
+      system: systemPrompt,
+      messages
+    })
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error?.message || 'Claude error');
+  return data.content[0].text;
+}
+
+async function callGemini({ apiKey, baseUrl, systemPrompt, messages }) {
+  const defaultUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  const url = baseUrl ? `${baseUrl}?key=${apiKey}` : defaultUrl;
+
+  const contents = messages.map(m => ({
+    role: m.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: m.content }]
+  }));
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: systemPrompt }] },
+      contents,
+      generationConfig: { temperature: 0.7, maxOutputTokens: 400 }
+    })
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error?.message || 'Gemini error');
+  return data.candidates[0].content.parts[0].text;
+}

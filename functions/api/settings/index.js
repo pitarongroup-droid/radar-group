@@ -1,130 +1,259 @@
 // ============================================
-// /api/settings — настройки клиента (клиентский уровень)
-// Клиент видит только СВОИ каналы + дизайн виджета.
-// НЕ видит: ai_api_key, ai_provider, ai_base_url, industry, services, webhook_*
+// GET /api/settings — получить настройки клиента
+// PUT /api/settings — сохранить настройки клиента
+// Проверяет account_status + widget_enabled/bot_enabled
 // ============================================
 
-export async function onRequestGet({ request, env }) {
-  try {
-    const payload = getPayload(request);
-    if (!payload) return unauthorized();
+// ⚠️ БЕЛЫЙ СПИСОК — что клиент МОЖЕТ менять сам
+const CLIENT_FIELDS_WIDGET = [
+  'prompt_ru', 'prompt_en',
+  'ai_provider', 'ai_api_key', 'ai_base_url',
+  'industry', 'services',
+  'widget_title_ru', 'widget_title_en',
+  'widget_welcome_ru', 'widget_welcome_en',
+  'widget_color', 'widget_position',
+  'telegram_token', 'telegram_admin_id',
+  'sheets_url', 'webhook_url', 'webhook_secret',
+  'notification_email', 'max_daily_requests',
+  'channel_telegram_enabled',
+  'channel_sheets_enabled',
+  'channel_webhook_enabled',
+  'channel_email_enabled'
+];
 
-    // ⚠️ Клиент видит ТОЛЬКО эти поля:
-    const settings = await env.radar_group_db.prepare(
-      `SELECT prompt_ru, prompt_en,
-              telegram_token, telegram_admin_id,
-              notification_email,
-              sheets_url,
-              widget_color, widget_title_ru, widget_title_en,
-              widget_welcome_ru, widget_welcome_en,
-              max_daily_requests,
-              channel_telegram_enabled,
-              channel_sheets_enabled,
-              channel_webhook_enabled,
-              channel_email_enabled
-       FROM settings WHERE client_id = ?`
-    ).bind(payload.clientId).first();
+const CLIENT_FIELDS_BOT = [
+  'bot_prompt_ru', 'bot_prompt_en',
+  'bot_ai_provider', 'bot_ai_api_key', 'bot_ai_base_url',
+  'bot_industry', 'bot_services',
+  'bot_telegram_token', 'bot_telegram_admin_id',
+  'bot_sheets_url', 'bot_webhook_url', 'bot_webhook_secret',
+  'bot_notification_email',
+  'bot_channel_telegram_enabled',
+  'bot_channel_sheets_enabled',
+  'bot_channel_webhook_enabled',
+  'bot_channel_email_enabled',
+  'bot_work_hours', 'bot_reminders_enabled', 'bot_max_daily'
+];
+
+// ⚠️ ЧЁРНЫЙ СПИСОК — что клиент НЕ может менять (только админ)
+const ADMIN_ONLY_FIELDS = [
+  'account_status',
+  'widget_enabled',
+  'bot_enabled',
+  'admin_allow_telegram',
+  'admin_allow_sheets',
+  'admin_allow_webhook',
+  'admin_allow_email'
+];
+
+// ============================================
+// GET — отдать настройки
+// ============================================
+export async function onRequestGet(context) {
+  const { request, env } = context;
+
+  try {
+    const user = await getUserFromToken(request, env);
+    if (!user) {
+      return error('Не авторизован', 'Unauthorized', 401);
+    }
 
     const client = await env.radar_group_db.prepare(
-      `SELECT id, name, email, company, site_url, api_key, plan, language, currency
-       FROM clients WHERE id = ?`
-    ).bind(payload.clientId).first();
+      'SELECT account_status FROM clients WHERE id = ?'
+    ).bind(user.clientId).first();
 
-    return Response.json({
-      ok: true,
-      settings: settings || {},
-      client: client || {}
-    });
+    if (!client) {
+      return error('Клиент не найден', 'Client not found', 404);
+    }
+
+    if (client.account_status !== 'approved') {
+      return Response.json({
+        ok: false,
+        error: {
+          ru: 'Аккаунт на проверке. Настройки недоступны.',
+          en: 'Account pending approval. Settings unavailable.'
+        },
+        account_status: client.account_status
+      }, { status: 403 });
+    }
+
+    const settings = await env.radar_group_db.prepare(
+      `SELECT * FROM settings WHERE client_id = ?`
+    ).bind(user.clientId).first();
+
+    if (!settings) {
+      return error('Настройки не найдены', 'Settings not found', 404);
+    }
+
+    // ⚠️ Убираем админские поля из ответа? Нет — они нужны, чтобы клиент видел статус услуги.
+
+    return Response.json({ ok: true, settings });
+
   } catch (err) {
-    return Response.json(
-      { ok: false, error: { ru: err.message, en: err.message } },
-      { status: 500 }
-    );
+    console.error('Settings GET error:', err);
+    return error('Ошибка сервера', 'Server error', 500);
   }
 }
 
-export async function onRequestPut({ request, env }) {
+// ============================================
+// PUT — сохранить настройки
+// ============================================
+export async function onRequestPut(context) {
+  const { request, env } = context;
+
   try {
-    const payload = getPayload(request);
-    if (!payload) return unauthorized();
+    const user = await getUserFromToken(request, env);
+    if (!user) {
+      return error('Не авторизован', 'Unauthorized', 401);
+    }
 
-    const b = await request.json();
+    // ⚠️ Проверка статуса аккаунта
+    const client = await env.radar_group_db.prepare(
+      'SELECT account_status FROM clients WHERE id = ?'
+    ).bind(user.clientId).first();
 
-    // ⚠️ Клиент может менять ТОЛЬКО:
-    // — промпт
-    // — свой Telegram (token + admin_id)
-    // — свой email
-    // — свой Google Sheets URL
-    // — виджет
-    // — лимит
-    // — вкл/выкл каналов
-    // НЕ может: ai_api_key, ai_provider, ai_base_url, industry, services, webhook_*
+    if (!client || client.account_status !== 'approved') {
+      return Response.json({
+        ok: false,
+        error: {
+          ru: 'Аккаунт на проверке. Сохранение недоступно.',
+          en: 'Account pending approval. Saving unavailable.'
+        },
+        account_status: client ? client.account_status : 'unknown'
+      }, { status: 403 });
+    }
+
+    // ⚠️ Проверка, какие услуги включены
+    const current = await env.radar_group_db.prepare(
+      `SELECT widget_enabled, bot_enabled FROM settings WHERE client_id = ?`
+    ).bind(user.clientId).first();
+
+    if (!current) {
+      return error('Настройки не найдены', 'Settings not found', 404);
+    }
+
+    const body = await request.json();
+    const clean = {};
+
+    // ⚠️ 1. Убираем админские поля
+    for (const key of Object.keys(body)) {
+      if (ADMIN_ONLY_FIELDS.includes(key)) continue;
+      clean[key] = body[key];
+    }
+
+    // ⚠️ 2. Оставляем только те поля, к которым у клиента есть доступ
+    const allowed = [];
+
+    if (current.widget_enabled === 1) {
+      allowed.push(...CLIENT_FIELDS_WIDGET);
+    }
+    if (current.bot_enabled === 1) {
+      allowed.push(...CLIENT_FIELDS_BOT);
+    }
+
+    const filtered = {};
+    for (const key of Object.keys(clean)) {
+      if (allowed.includes(key)) {
+        filtered[key] = clean[key];
+      }
+    }
+
+    if (Object.keys(filtered).length === 0) {
+      return error('Нет данных для сохранения', 'No data to save', 400);
+    }
+
+    // ⚠️ Валидация промптов
+    if (filtered.prompt_ru !== undefined && filtered.prompt_ru) {
+      const len = String(filtered.prompt_ru).length;
+      if (len < 200 || len > 4000) {
+        return error('Промпт: 200–4000 символов', 'Prompt: 200–4000 chars', 400);
+      }
+    }
+    if (filtered.prompt_en !== undefined && filtered.prompt_en) {
+      const len = String(filtered.prompt_en).length;
+      if (len < 200 || len > 4000) {
+        return error('Prompt EN: 200–4000 chars', 'Prompt EN: 200–4000 chars', 400);
+      }
+    }
+    if (filtered.bot_prompt_ru !== undefined && filtered.bot_prompt_ru) {
+      const len = String(filtered.bot_prompt_ru).length;
+      if (len < 200 || len > 8000) {
+        return error('Промпт бота: 200–8000 символов', 'Bot prompt: 200–8000 chars', 400);
+      }
+    }
+    if (filtered.bot_prompt_en !== undefined && filtered.bot_prompt_en) {
+      const len = String(filtered.bot_prompt_en).length;
+      if (len < 200 || len > 8000) {
+        return error('Bot prompt EN: 200–8000 chars', 'Bot prompt EN: 200–8000 chars', 400);
+      }
+    }
+
+    // ⚠️ UPDATE — динамически по полям
+    const fields = Object.keys(filtered);
+    const values = Object.values(filtered);
+    const setClause = fields.map(f => `${f} = ?`).join(', ');
+
     await env.radar_group_db.prepare(
-      `UPDATE settings SET
-         prompt_ru = COALESCE(?, prompt_ru),
-         prompt_en = COALESCE(?, prompt_en),
-         telegram_token = COALESCE(?, telegram_token),
-         telegram_admin_id = COALESCE(?, telegram_admin_id),
-         notification_email = COALESCE(?, notification_email),
-         sheets_url = COALESCE(?, sheets_url),
-         widget_color = COALESCE(?, widget_color),
-         widget_title_ru = COALESCE(?, widget_title_ru),
-         widget_title_en = COALESCE(?, widget_title_en),
-         widget_welcome_ru = COALESCE(?, widget_welcome_ru),
-         widget_welcome_en = COALESCE(?, widget_welcome_en),
-         max_daily_requests = COALESCE(?, max_daily_requests),
-         channel_telegram_enabled = COALESCE(?, channel_telegram_enabled),
-         channel_sheets_enabled = COALESCE(?, channel_sheets_enabled),
-         channel_webhook_enabled = COALESCE(?, channel_webhook_enabled),
-         channel_email_enabled = COALESCE(?, channel_email_enabled),
-         updated_at = unixepoch()
+      `UPDATE settings SET ${setClause}, updated_at = unixepoch()
        WHERE client_id = ?`
-    ).bind(
-      b.prompt_ru !== undefined ? b.prompt_ru : null,
-      b.prompt_en !== undefined ? b.prompt_en : null,
-      b.telegram_token !== undefined ? b.telegram_token : null,
-      b.telegram_admin_id !== undefined ? b.telegram_admin_id : null,
-      b.notification_email !== undefined ? b.notification_email : null,
-      b.sheets_url !== undefined ? b.sheets_url : null,
-      b.widget_color !== undefined ? b.widget_color : null,
-      b.widget_title_ru !== undefined ? b.widget_title_ru : null,
-      b.widget_title_en !== undefined ? b.widget_title_en : null,
-      b.widget_welcome_ru !== undefined ? b.widget_welcome_ru : null,
-      b.widget_welcome_en !== undefined ? b.widget_welcome_en : null,
-      b.max_daily_requests !== undefined ? b.max_daily_requests : null,
-      b.channel_telegram_enabled !== undefined ? (b.channel_telegram_enabled ? 1 : 0) : null,
-      b.channel_sheets_enabled !== undefined ? (b.channel_sheets_enabled ? 1 : 0) : null,
-      b.channel_webhook_enabled !== undefined ? (b.channel_webhook_enabled ? 1 : 0) : null,
-      b.channel_email_enabled !== undefined ? (b.channel_email_enabled ? 1 : 0) : null,
-      payload.clientId
-    ).run();
+    ).bind(...values, user.clientId).run();
 
-    return Response.json({ ok: true });
+    return Response.json({ ok: true, updated: fields.length });
+
   } catch (err) {
-    return Response.json(
-      { ok: false, error: { ru: err.message, en: err.message } },
-      { status: 500 }
-    );
+    console.error('Settings PUT error:', err);
+    return error('Ошибка сервера', 'Server error', 500);
   }
 }
 
-function getPayload(request) {
+// ─── helpers ───
+
+function error(ru, en, status = 400) {
+  return Response.json({ ok: false, error: { ru, en } }, { status });
+}
+
+function base64UrlDecode(str) {
+  str = str.replace(/-/g, '+').replace(/_/g, '/');
+  while (str.length % 4) str += '=';
+  const binary = atob(str);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+
+async function getUserFromToken(request, env) {
   const auth = request.headers.get('Authorization') || '';
-  const token = auth.replace('Bearer ', '');
+  const token = auth.replace('Bearer ', '').trim();
   if (!token) return null;
+
+  const parts = token.split('.');
+  if (parts.length !== 3) return null;
+
+  const [header, payload, signature] = parts;
+  const data = `${header}.${payload}`;
+
+  const key = await crypto.subtle.importKey(
+    'raw', new TextEncoder().encode(env.JWT_SECRET),
+    { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']
+  );
+
+  const sigBytes = Uint8Array.from(
+    atob(signature.replace(/-/g, '+').replace(/_/g, '/')),
+    c => c.charCodeAt(0)
+  );
+
+  const valid = await crypto.subtle.verify(
+    'HMAC', key, sigBytes, new TextEncoder().encode(data)
+  );
+  if (!valid) return null;
+
   try {
-    const parts = token.split('.');
-    if (parts.length !== 3) return null;
-    const p = parts[1].replace(/-/g, '+').replace(/_/g, '/');
-    return JSON.parse(atob(p));
-  } catch (e) {
+    const payloadObj = JSON.parse(base64UrlDecode(payload));
+    if (payloadObj.exp && payloadObj.exp < Math.floor(Date.now() / 1000)) {
+      return null;
+    }
+    return payloadObj;
+  } catch {
     return null;
   }
-}
-
-function unauthorized() {
-  return Response.json(
-    { ok: false, error: { ru: 'Не авторизован', en: 'Unauthorized' } },
-    { status: 401 }
-  );
 }

@@ -1,5 +1,6 @@
 // ============================================
 // POST /api/auth/register — регистрация клиента
+// Новый клиент создаётся с account_status = 'pending'
 // ============================================
 
 export async function onRequestPost(context) {
@@ -33,16 +34,24 @@ export async function onRequestPost(context) {
     const passwordHash = await hashPassword(password);
 
     await env.radar_group_db.batch([
+      // ⚠️ account_status = 'pending' — клиент заблокирован до одобрения
       env.radar_group_db.prepare(
-        'INSERT INTO clients (id, name, email, company, api_key) VALUES (?, ?, ?, ?, ?)'
+        `INSERT INTO clients 
+         (id, name, email, company, api_key, account_status) 
+         VALUES (?, ?, ?, ?, ?, 'pending')`
       ).bind(clientId, name, email.toLowerCase(), company || null, apiKey),
 
       env.radar_group_db.prepare(
-        'INSERT INTO users (id, client_id, email, password_hash, role) VALUES (?, ?, ?, ?, ?)'
+        `INSERT INTO users 
+         (id, client_id, email, password_hash, role) 
+         VALUES (?, ?, ?, ?, ?)`
       ).bind(userId, clientId, email.toLowerCase(), passwordHash, 'client'),
 
+      // ⚠️ widget_enabled = 0, bot_enabled = 0 — ничего не включено
       env.radar_group_db.prepare(
-        'INSERT INTO settings (client_id) VALUES (?)'
+        `INSERT INTO settings 
+         (client_id, widget_enabled, bot_enabled) 
+         VALUES (?, 0, 0)`
       ).bind(clientId)
     ]);
 

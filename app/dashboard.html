@@ -14,6 +14,50 @@
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/app/sidebar.css">
   <link rel="stylesheet" href="/app/dashboard.css">
+  <style>
+    .pending-banner {
+      padding: 24px 28px;
+      background: linear-gradient(135deg, rgba(255, 200, 0, 0.1) 0%, rgba(255, 0, 128, 0.05) 100%);
+      border: 2px solid rgba(255, 200, 0, 0.4);
+      border-radius: var(--radius);
+      margin-bottom: 24px;
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+    }
+    .pending-banner-icon {
+      flex-shrink: 0;
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: rgba(255, 200, 0, 0.15);
+      border: 1px solid rgba(255, 200, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFC800;
+      font-size: 26px;
+    }
+    .pending-banner-text h2 {
+      font-size: 18px;
+      font-weight: 800;
+      color: #FFC800;
+      margin-bottom: 8px;
+    }
+    .pending-banner-text p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin-bottom: 6px;
+    }
+    .pending-banner-text p strong { color: var(--text); }
+    .pending-banner-text a {
+      color: var(--cyan);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .pending-banner-text a:hover { text-decoration: underline; }
+  </style>
 </head>
 <body>
 
@@ -40,9 +84,13 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
         <span>Оплаты</span>
       </a>
-      <a href="/app/settings.html" class="sidebar-link">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/></svg>
-        <span>Настройки</span>
+      <a href="/app/widget.html" class="sidebar-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 10h.01"/><path d="M16 10h.01"/><path d="M12 16a4 4 0 0 0 4-4"/></svg>
+        <span>Виджет</span>
+      </a>
+      <a href="/app/bot.html" class="sidebar-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/></svg>
+        <span>Telegram-бот</span>
       </a>
       <a href="/app/integration.html" class="sidebar-link">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
@@ -65,6 +113,20 @@
         <span id="userName">Клиент</span>
       </div>
     </header>
+
+    <div class="pending-banner" id="pendingBanner" style="display:none;">
+      <div class="pending-banner-icon">⏳</div>
+      <div class="pending-banner-text">
+        <h2>Аккаунт на проверке</h2>
+        <p>
+          Ваш аккаунт ожидает подтверждения от менеджера <strong>Radar Group</strong>.
+          Настройки и услуги станут доступны после одобрения.
+        </p>
+        <p>
+          📧 Свяжитесь с нами: <a href="mailto:pitarongroup@gmail.com">pitarongroup@gmail.com</a>
+        </p>
+      </div>
+    </div>
 
     <section class="stats-grid">
       <div class="stat-card">
@@ -136,6 +198,30 @@
     window.location.href = '/app/login.html';
   }
 
+  async function checkAccountStatus() {
+    try {
+      const res = await fetch('/api/settings', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+
+      if (res.status === 403) {
+        const data = await res.json();
+        if (data.account_status === 'pending' || data.account_status === 'suspended') {
+          document.getElementById('pendingBanner').style.display = 'flex';
+          document.querySelectorAll('a[href*="widget"], a[href*="bot"], a[href*="integration"]').forEach(el => {
+            el.style.opacity = '0.4';
+            el.style.pointerEvents = 'none';
+          });
+        }
+        return false;
+      }
+      return true;
+    } catch (err) {
+      console.error('Status check error:', err);
+      return true;
+    }
+  }
+
   async function loadDashboard() {
     try {
       const res = await fetch('/api/dashboard/stats', {
@@ -193,7 +279,20 @@
     }[ch]));
   }
 
-  loadDashboard();
+  (async function init() {
+    const isApproved = await checkAccountStatus();
+    if (isApproved) {
+      loadDashboard();
+    } else {
+      document.getElementById('leadsTable').innerHTML = `
+        <tr>
+          <td colspan="4" class="empty-state">
+            Данные появятся после одобрения аккаунта
+          </td>
+        </tr>
+      `;
+    }
+  })();
 </script>
 
 </body>

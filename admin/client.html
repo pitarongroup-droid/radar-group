@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#08080F">
   <meta name="robots" content="noindex, nofollow">
-  <title>Админ — Карточка клиента</title>
+  <title>Клиент — Админ</title>
   <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,142 +14,11 @@
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/app/dashboard.css">
   <link rel="stylesheet" href="/admin/admin.css">
-
-  <style>
-    .client-form { max-width: 900px; }
-    .form-section {
-      background: var(--bg-elevated, #0F0F18);
-      border: 1px solid var(--border, rgba(255,255,255,.08));
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 20px;
-    }
-    .form-section-title {
-      font-size: 16px;
-      font-weight: 800;
-      margin: 0 0 18px;
-      letter-spacing: -.01em;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .form-section-title svg { width: 20px; height: 20px; color: var(--cyan, #00F0FF); }
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 14px;
-    }
-    .form-row.single { grid-template-columns: 1fr; }
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .form-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-muted, #8a8aa0);
-      text-transform: uppercase;
-      letter-spacing: .06em;
-    }
-    .form-input, .form-select, .form-textarea {
-      background: rgba(255,255,255,.03);
-      border: 1px solid var(--border, rgba(255,255,255,.1));
-      border-radius: 10px;
-      padding: 11px 14px;
-      color: var(--text, #fff);
-      font-size: 14px;
-      font-family: inherit;
-      transition: .2s;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    .form-input:focus, .form-select:focus, .form-textarea:focus {
-      outline: none;
-      border-color: var(--cyan, #00F0FF);
-      background: rgba(0, 240, 255, .04);
-    }
-    .form-textarea { min-height: 100px; resize: vertical; font-family: 'SF Mono', Consolas, monospace; font-size: 13px; line-height: 1.5; }
-    .form-actions {
-      display: flex;
-      gap: 12px;
-      justify-content: flex-end;
-      margin-top: 8px;
-      margin-bottom: 40px;
-    }
-    .btn-secondary {
-      background: rgba(255,255,255,.05);
-      border: 1px solid var(--border, rgba(255,255,255,.1));
-      color: var(--text, #fff);
-      padding: 12px 22px;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      transition: .2s;
-    }
-    .btn-secondary:hover { background: rgba(255,255,255,.1); }
-    .api-key-box {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      background: rgba(0, 240, 255, .05);
-      border: 1px solid rgba(0, 240, 255, .2);
-      border-radius: 10px;
-      padding: 12px 14px;
-      font-family: 'SF Mono', Consolas, monospace;
-      font-size: 13px;
-      color: var(--cyan, #00F0FF);
-      word-break: break-all;
-    }
-    .api-key-box button {
-      background: rgba(0, 240, 255, .1);
-      border: 1px solid rgba(0, 240, 255, .3);
-      color: var(--cyan, #00F0FF);
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: .2s;
-    }
-    .api-key-box button:hover { background: rgba(0, 240, 255, .2); }
-    .toast {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      left: 24px;
-      max-width: 400px;
-      margin-left: auto;
-      background: var(--bg-elevated, #0F0F18);
-      border: 1px solid var(--cyan, #00F0FF);
-      color: var(--text, #fff);
-      padding: 14px 20px;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      box-shadow: 0 8px 24px rgba(0, 240, 255, .2);
-      transform: translateY(100px);
-      opacity: 0;
-      transition: .3s;
-      z-index: 1000;
-    }
-    .toast.show { transform: translateY(0); opacity: 1; }
-    .toast.error { border-color: #FF3B6B; box-shadow: 0 8px 24px rgba(255, 59, 107, .2); }
-
-    @media (max-width: 640px) {
-      .form-row { grid-template-columns: 1fr; }
-      .form-actions { flex-direction: column-reverse; }
-      .form-actions > * { width: 100%; justify-content: center; }
-    }
-  </style>
 </head>
 <body class="page-client">
 
 <div class="admin-layout">
 
-  <!-- ============ SIDEBAR ============ -->
   <aside class="admin-sidebar">
     <a href="/admin/dashboard.html" class="admin-sidebar-logo">
       <img src="/images/logo.webp" alt="Radar" width="32" height="32">
@@ -181,621 +50,671 @@
     </div>
   </aside>
 
-  <!-- ============ MAIN ============ -->
   <main class="admin-main">
 
     <header class="admin-header">
-      <h1 class="admin-header-title" id="pageTitle">Новый клиент</h1>
-      <div class="admin-header-actions">
-        <a href="/admin/clients.html" class="btn btn-secondary">← К списку</a>
+      <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+        <a href="/admin/clients.html" class="btn btn-outline" style="padding:8px 14px; font-size:13px;">← Назад</a>
+        <h1 class="admin-header-title" id="pageTitle">Клиент</h1>
+      </div>
+      <div class="admin-header-actions" id="headerActions" style="display:none;">
+        <button class="btn btn-primary" onclick="saveAll()">💾 Сохранить всё</button>
       </div>
     </header>
 
-    <form class="client-form" id="clientForm">
+    <div id="loadingBlock" class="dash-section" style="text-align:center; padding:60px 20px;">
+      <div class="spinner" style="width:32px; height:32px;"></div>
+      <div style="margin-top:16px; color:var(--text-muted);">Загрузка клиента...</div>
+    </div>
 
-      <!-- ===== ОСНОВНОЕ ===== -->
-      <section class="form-section">
-        <h2 class="form-section-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          Основное
-        </h2>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Имя клиента *</label>
-            <input class="form-input" name="name" required placeholder="СТО Иванов">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Email *</label>
-            <input class="form-input" name="email" type="email" required placeholder="client@example.com">
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Компания</label>
-            <input class="form-input" name="company" placeholder="ИП Иванов">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Сайт</label>
-            <input class="form-input" name="site_url" placeholder="https://example.com">
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Язык</label>
-            <div class="pill-group">
-              <label class="pill">
-                <input type="radio" name="language" value="ru" checked>
-                <span>🇷🇺 RU</span>
-              </label>
-              <label class="pill">
-                <input type="radio" name="language" value="en">
-                <span>🇬🇧 EN</span>
-              </label>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Валюта</label>
-            <div class="pill-group">
-              <label class="pill">
-                <input type="radio" name="currency" value="USD" checked>
-                <span>$ USD</span>
-              </label>
-              <label class="pill">
-                <input type="radio" name="currency" value="RUB">
-                <span>₽ RUB</span>
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">План</label>
-            <div class="pill-group">
-              <label class="pill">
-                <input type="radio" name="plan" value="basic" checked>
-                <span>Basic</span>
-              </label>
-              <label class="pill">
-                <input type="radio" name="plan" value="standard">
-                <span>Standard</span>
-              </label>
-              <label class="pill">
-                <input type="radio" name="plan" value="turnkey">
-                <span>Turnkey</span>
-              </label>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Статус</label>
-            <div class="pill-group">
-              <label class="pill">
-                <input type="radio" name="status" value="active" checked>
-                <span>🟢 Активен</span>
-              </label>
-              <label class="pill">
-                <input type="radio" name="status" value="trial">
-                <span>🟡 Trial</span>
-              </label>
-              <label class="pill">
-                <input type="radio" name="status" value="suspended">
-                <span>🔴 Блок</span>
-              </label>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===== API-КЛЮЧ ===== -->
-      <section class="form-section" id="apiKeySection" style="display:none;">
-        <h2 class="form-section-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
-          API-ключ для виджета
-        </h2>
-        <div class="api-key-box">
-          <span id="apiKeyText">—</span>
-          <button type="button" onclick="copyApiKey()">📋 Копировать</button>
-        </div>
-        <div class="form-hint" style="margin-top:8px;">
-          Вставьте этот код на сайт клиента:
-        </div>
-        <div class="api-key-box" style="margin-top:6px;">
-          <span id="embedCode">&lt;script src="https://radar-group.org/widget.js" data-key="..." async&gt;&lt;/script&gt;</span>
-          <button type="button" onclick="copyEmbed()">📋 Копировать</button>
-        </div>
-      </section>
-
-      <!-- ===== НИША И УСЛУГИ ===== -->
-      <section class="form-section">
-        <h2 class="form-section-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-          Ниша и услуги
-        </h2>
-
-        <div class="form-group" style="margin-bottom:14px;">
-          <label class="form-label">Ниша клиента</label>
-          <div class="pill-group">
-            <label class="pill"><input type="radio" name="industry" value="Автосервис" checked><span>Автосервис</span></label>
-            <label class="pill"><input type="radio" name="industry" value="Салон красоты"><span>Салон</span></label>
-            <label class="pill"><input type="radio" name="industry" value="Клиника"><span>Клиника</span></label>
-            <label class="pill"><input type="radio" name="industry" value="Юридические услуги"><span>Юристы</span></label>
-            <label class="pill"><input type="radio" name="industry" value="Онлайн-школа"><span>Онлайн</span></label>
-            <label class="pill"><input type="radio" name="industry" value="Магазин"><span>Магазин</span></label>
-            <label class="pill"><input type="radio" name="industry" value="other"><span>Другое</span></label>
-          </div>
-          <div class="form-hint">
-            💡 <strong>Что это:</strong> сфера клиента. Используется для авто-промпта, если клиент не заполнил свой.
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Услуги и цены</label>
-          <textarea class="form-textarea" name="services" 
-            placeholder="Замена масла — от 50$&#10;Диагностика — 30$&#10;Шиномонтаж — 25$&#10;Работаем Пн-Сб 9:00-20:00&#10;Адрес: Минск, ул. Ленина 15"></textarea>
-          <div class="form-hint">
-            💡 <strong>Что это:</strong> список услуг клиента, который ИИ будет называть посетителям.
-            <details class="hint-details">
-              <summary>📖 Формат</summary>
-              <ul>
-                <li>Одна услуга — одна строка</li>
-                <li>Формат: <code>Название — цена</code></li>
-                <li>Можно добавить часы работы и адрес</li>
-              </ul>
-            </details>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===== AI-ПРОВАЙДЕР ===== -->
-      <section class="form-section">
-        <h2 class="form-section-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M8 10h.01"/><path d="M16 10h.01"/><path d="M12 16a4 4 0 0 0 4-4"/></svg>
-          AI-провайдер
-        </h2>
-
-        <div class="form-group" style="margin-bottom:14px;">
-          <label class="form-label">Провайдер</label>
-          <div class="pill-group">
-            <label class="pill"><input type="radio" name="ai_provider" value="proxyapi" checked><span>ProxyAPI</span></label>
-            <label class="pill"><input type="radio" name="ai_provider" value="openai"><span>OpenAI</span></label>
-            <label class="pill"><input type="radio" name="ai_provider" value="claude"><span>Claude</span></label>
-            <label class="pill"><input type="radio" name="ai_provider" value="gemini"><span>Gemini</span></label>
-            <label class="pill"><input type="radio" name="ai_provider" value="deepseek"><span>DeepSeek</span></label>
-          </div>
-          <div class="form-hint">
-            💡 <strong>Что это:</strong> через какого провайдера работать.
-            <details class="hint-details">
-              <summary>📖 Какой выбрать</summary>
-              <ul>
-                <li><strong>ProxyAPI</strong> — РФ, оплата картой, дороже OpenAI на 20%</li>
-                <li><strong>OpenAI</strong> — напрямую, нужна зарубежная карта</li>
-                <li><strong>Claude</strong> — Anthropic, качество выше</li>
-                <li><strong>Gemini</strong> — Google, есть бесплатный тариф</li>
-                <li><strong>DeepSeek</strong> — Китай, самый дешёвый</li>
-              </ul>
-            </details>
-          </div>
-        </div>
-
-        <div class="form-group" style="margin-bottom:14px;">
-          <label class="form-label">AI API Key</label>
-          <input class="form-input" name="ai_api_key" placeholder="sk-..." autocomplete="off">
-          <div class="form-hint">
-            💡 <strong>Что это:</strong> ключ клиента. Если пусто — используется ваш общий ключ платформы.
-            <details class="hint-details">
-              <summary>📖 Как получить</summary>
-              <ul>
-                <li><strong>ProxyAPI:</strong> личный кабинет → Ключи API</li>
-                <li><strong>OpenAI:</strong> platform.openai.com → API Keys</li>
-                <li><strong>Claude:</strong> console.anthropic.com → API Keys</li>
-                <li><strong>Gemini:</strong> aistudio.google.com → Get API Key</li>
-                <li><strong>DeepSeek:</strong> platform.deepseek.com → API Keys</li>
-              </ul>
-            </details>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">API Base URL (опционально)</label>
-          <input class="form-input" name="ai_base_url" placeholder="https://api.proxyapi.ru/v1/chat/completions" autocomplete="off">
-          <div class="form-hint">
-            💡 Оставьте пустым — будет использован URL по умолчанию для выбранного провайдера.
-          </div>
-        </div>
-      </section>
-
-      <!-- ===== КАНАЛЫ ЛИДОВ ===== -->
-      <section class="form-section">
-        <h2 class="form-section-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-          Каналы лидов
-        </h2>
-
-        <!-- TELEGRAM -->
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Telegram Bot Token</label>
-            <input class="form-input" name="telegram_token" placeholder="123456:ABC-DEF..." autocomplete="off">
-            <div class="form-hint">
-              💡 Токен бота. <a href="https://t.me/BotFather" target="_blank">@BotFather</a> → /newbot.
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Telegram Admin ID</label>
-            <input class="form-input" name="telegram_admin_id" placeholder="123456789" autocomplete="off">
-            <div class="form-hint">
-              💡 chat_id клиента. <a href="https://t.me/userinfobot" target="_blank">@userinfobot</a>.
-            </div>
-          </div>
-        </div>
-
-        <!-- SHEETS -->
-        <div class="form-group" style="margin-bottom:14px;">
-          <label class="form-label">Google Sheets URL (Apps Script)</label>
-          <input class="form-input" name="sheets_url" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="off">
-          <div class="form-hint">
-            💡 URL веб-приложения Google Sheets. Клиент создаёт за 5 минут.
-          </div>
-        </div>
-
-        <!-- WEBHOOK -->
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Webhook URL (CRM)</label>
-            <input class="form-input" name="webhook_url" placeholder="https://..." autocomplete="off">
-            <div class="form-hint">💡 Bitrix24 / amoCRM / HubSpot.</div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Webhook Secret</label>
-            <input class="form-input" name="webhook_secret" placeholder="shared secret" autocomplete="off">
-            <div class="form-hint">💡 Для HMAC-SHA256 подписи.</div>
-          </div>
-        </div>
-
-        <!-- EMAIL -->
-        <div class="form-group" style="margin-bottom:14px;">
-          <label class="form-label">Notification Email</label>
-          <input class="form-input" name="notification_email" type="email" placeholder="owner@example.com">
-        </div>
-
-        <!-- КОНТРОЛЬ (только админ) -->
-        <div class="form-group">
-          <label class="form-label">🔒 Контроль каналов (только админ)</label>
-          <div class="admin-toggles">
-            <label class="admin-toggle">
-              <input type="checkbox" name="admin_allow_telegram" checked>
-              <span>Разрешить Telegram</span>
-            </label>
-            <label class="admin-toggle">
-              <input type="checkbox" name="admin_allow_sheets" checked>
-              <span>Разрешить Google Sheets</span>
-            </label>
-            <label class="admin-toggle">
-              <input type="checkbox" name="admin_allow_webhook" checked>
-              <span>Разрешить Webhook (CRM)</span>
-            </label>
-            <label class="admin-toggle">
-              <input type="checkbox" name="admin_allow_email" checked>
-              <span>Разрешить Email</span>
-            </label>
-          </div>
-          <div class="form-hint">
-            💡 Если снять галку — канал не работает, даже если клиент его включил.
-          </div>
-        </div>
-      </section>
-
-      <!-- ===== ПРОМПТЫ ===== -->
-      <section class="form-section">
-        <h2 class="form-section-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          Промпт ИИ-менеджера
-        </h2>
-
-        <div class="form-group" style="margin-bottom:14px;">
-          <label class="form-label">Промпт RU</label>
-          <textarea class="form-textarea" name="prompt_ru" id="promptRu" maxlength="4000" 
-            placeholder="Ты — менеджер компании ..."></textarea>
-          <div class="form-hint">
-            💡 <strong>Что это:</strong> инструкция для ИИ. Если пусто — используется авто-промпт из ниши и услуг.
-            <div class="counter-row"><span id="counterRu">0</span> / 4000</div>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Prompt EN</label>
-          <textarea class="form-textarea" name="prompt_en" id="promptEn" maxlength="4000"
-            placeholder="You are a manager at ..."></textarea>
-          <div class="form-hint">
-            <div class="counter-row"><span id="counterEn">0</span> / 4000</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===== ВИДЖЕТ ===== -->
-      <section class="form-section">
-        <h2 class="form-section-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-          Виджет
-        </h2>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Заголовок RU</label>
-            <input class="form-input" name="widget_title_ru" value="ИИ-менеджер">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Заголовок EN</label>
-            <input class="form-input" name="widget_title_en" value="AI Manager">
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Приветствие RU</label>
-            <input class="form-input" name="widget_welcome_ru" value="Здравствуйте! Чем помочь?">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Приветствие EN</label>
-            <input class="form-input" name="widget_welcome_en" value="Hello! How can I help?">
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Цвет виджета</label>
-            <input class="form-input" name="widget_color" type="color" value="#00F0FF" style="height:44px; padding:6px;">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Лимит запросов/день</label>
-            <input class="form-input" name="max_daily_requests" type="number" value="1000">
-          </div>
-        </div>
-      </section>
-
-      <!-- ===== КНОПКИ ===== -->
-      <div class="form-actions">
-        <a href="/admin/clients.html" class="btn btn-secondary">Отмена</a>
-        <button type="submit" class="btn btn-primary" id="submitBtn">💾 Сохранить</button>
+    <div id="errorBlock" class="dash-section" style="display:none; text-align:center; padding:60px 20px;">
+      <div style="font-size:48px; margin-bottom:12px;">⚠️</div>
+      <div style="font-size:16px; color:var(--text); font-weight:600;" id="errorText">Клиент не найден</div>
+      <div style="margin-top:16px;">
+        <a href="/admin/clients.html" class="btn btn-primary">← К списку клиентов</a>
       </div>
+    </div>
 
-    </form>
+    <div id="clientContent" style="display:none;">
+
+      <!-- 🔒 ДОСТУП -->
+      <section class="dash-section">
+        <div class="dash-section-header">
+          <h2 class="dash-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Доступ и услуги
+          </h2>
+        </div>
+
+        <div class="settings-form">
+
+          <div class="form-row">
+            <label class="form-label">Статус аккаунта</label>
+            <select class="form-select" id="accountStatus">
+              <option value="pending">⏳ pending — на проверке (заблокирован)</option>
+              <option value="approved">✅ approved — одобрен</option>
+              <option value="suspended">⛔ suspended — заблокирован</option>
+            </select>
+            <div class="form-hint">
+              ⚠️ Пока статус не «approved» — клиент не может войти в кабинет и сохранять настройки.
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Услуги</label>
+            <div class="admin-toggles">
+              <label class="admin-toggle">
+                <input type="checkbox" id="widgetEnabled">
+                <span>🌐 Виджет на сайт</span>
+              </label>
+              <label class="admin-toggle">
+                <input type="checkbox" id="botEnabled">
+                <span>🤖 Telegram-бот (VPS)</span>
+              </label>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 👤 ДАННЫЕ КЛИЕНТА -->
+      <section class="dash-section">
+        <div class="dash-section-header">
+          <h2 class="dash-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            Данные клиента
+          </h2>
+        </div>
+
+        <div class="settings-form">
+
+          <div class="form-row">
+            <label class="form-label">Имя / название</label>
+            <input class="form-input" type="text" id="clientName" maxlength="100">
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Email</label>
+            <input class="form-input" type="email" id="clientEmail" maxlength="150">
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Телефон</label>
+            <input class="form-input" type="text" id="clientPhone" maxlength="30">
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Компания</label>
+            <input class="form-input" type="text" id="clientCompany" maxlength="150">
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Сайт</label>
+            <input class="form-input" type="text" id="clientSiteUrl" maxlength="200" placeholder="https://...">
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Язык интерфейса</label>
+            <select class="form-select" id="clientLanguage">
+              <option value="ru">RU</option>
+              <option value="en">EN</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Валюта</label>
+            <select class="form-select" id="clientCurrency">
+              <option value="USD">$ USD</option>
+              <option value="EUR">€ EUR</option>
+              <option value="BYN">Br BYN</option>
+              <option value="RUB">₽ RUB</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">План</label>
+            <select class="form-select" id="clientPlan">
+              <option value="basic">basic</option>
+              <option value="standard">standard</option>
+              <option value="premium">premium</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">API-ключ виджета</label>
+            <div class="key-block">
+              <code class="key-value" id="clientApiKey">—</code>
+              <button class="btn btn-outline" onclick="copyApiKey()" style="flex-shrink:0;">Копировать</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 🤖 БОТ: TELEGRAM + WEBHOOK -->
+      <section class="dash-section">
+        <div class="dash-section-header">
+          <h2 class="dash-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/></svg>
+            Telegram-бот клиента
+          </h2>
+        </div>
+
+        <div class="settings-form">
+
+          <div class="form-row">
+            <label class="form-label">Bot Token</label>
+            <input class="form-input" type="text" id="botTelegramToken" placeholder="123456:ABC..." autocomplete="off">
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Telegram Admin ID</label>
+            <input class="form-input" type="text" id="botTelegramAdminId" placeholder="873975856">
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Webhook (управление)</label>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="btn btn-outline" onclick="setupWebhook()" style="flex:1; min-width:160px;">
+                🔗 Установить webhook
+              </button>
+              <button class="btn btn-outline" onclick="deleteWebhook()" style="flex:1; min-width:160px; border-color:var(--magenta); color:var(--magenta);">
+                🗑 Удалить webhook
+              </button>
+            </div>
+            <div class="form-hint" id="webhookStatus">
+              💡 Webhook нужен, чтобы Telegram отправлял сообщения на VPS-бота.<br>
+              ⚠️ Перед установкой — убедись, что клиент дал Bot Token и указал Admin ID.
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+              <input type="checkbox" id="botRemindersEnabled" style="width:18px; height:18px; accent-color:var(--cyan);">
+              <span style="font-size:14px; font-weight:600;">Включить напоминания (4 стадии)</span>
+            </label>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Часы работы</label>
+            <select class="form-select" id="botWorkHours">
+              <option value="always">Круглосуточно</option>
+              <option value="9-20">09:00–20:00</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Лимит запросов в день</label>
+            <input class="form-input" type="number" id="botMaxDaily" min="0" max="100000" value="1000">
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 🌐 ВИДЖЕТ: ПРОМПТ + AI -->
+      <section class="dash-section">
+        <div class="dash-section-header">
+          <h2 class="dash-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 10h.01"/><path d="M16 10h.01"/><path d="M12 16a4 4 0 0 0 4-4"/></svg>
+            Настройки виджета
+          </h2>
+        </div>
+
+        <div class="settings-form">
+
+          <div class="form-row">
+            <label class="form-label">Промпт RU</label>
+            <textarea class="form-textarea" id="widgetPromptRu" style="min-height:160px;" maxlength="4000"></textarea>
+            <div class="counter-row"><span id="counterWidgetPrompt">0</span> / 4000</div>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Ниша</label>
+            <input class="form-input" type="text" id="widgetIndustry" maxlength="100">
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Услуги и цены</label>
+            <textarea class="form-textarea" id="widgetServices" style="min-height:100px;" maxlength="2000"></textarea>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">AI-провайдер</label>
+            <select class="form-select" id="aiProvider">
+              <option value="proxyapi">ProxyAPI</option>
+              <option value="openai">OpenAI</option>
+              <option value="claude">Claude</option>
+              <option value="gemini">Gemini</option>
+              <option value="deepseek">DeepSeek</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">AI API Key</label>
+            <input class="form-input" type="text" id="aiApiKey" placeholder="sk-...">
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">AI Base URL</label>
+            <input class="form-input" type="text" id="aiBaseUrl" placeholder="https://...">
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Заголовок виджета (RU)</label>
+            <input class="form-input" type="text" id="widgetTitleRu" maxlength="50">
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Приветствие (RU)</label>
+            <textarea class="form-textarea" id="widgetWelcomeRu" maxlength="300" style="min-height:80px;"></textarea>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Цвет кнопки</label>
+            <div class="color-picker-row">
+              <input class="form-input color-input" type="color" id="widgetColor" value="#00F0FF">
+              <input class="form-input" type="text" id="widgetColorText" value="#00F0FF" maxlength="7">
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 🤖 БОТ: ПРОМПТ + AI -->
+      <section class="dash-section">
+        <div class="dash-section-header">
+          <h2 class="dash-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/></svg>
+            Настройки Telegram-бота
+          </h2>
+        </div>
+
+        <div class="settings-form">
+
+          <div class="form-row">
+            <label class="form-label">Промпт бота (RU)</label>
+            <textarea class="form-textarea" id="botPromptRu" style="min-height:200px;" maxlength="8000"></textarea>
+            <div class="counter-row"><span id="counterBotPrompt">0</span> / 8000</div>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Ниша бота</label>
+            <input class="form-input" type="text" id="botIndustry" maxlength="100">
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Услуги бота</label>
+            <textarea class="form-textarea" id="botServices" style="min-height:100px;" maxlength="2000"></textarea>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">AI-провайдер для бота</label>
+            <select class="form-select" id="botAiProvider">
+              <option value="proxyapi">ProxyAPI</option>
+              <option value="openai">OpenAI</option>
+              <option value="claude">Claude</option>
+              <option value="gemini">Gemini</option>
+              <option value="deepseek">DeepSeek</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">AI API Key для бота</label>
+            <input class="form-input" type="text" id="botAiApiKey" placeholder="sk-...">
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">AI Base URL для бота</label>
+            <input class="form-input" type="text" id="botAiBaseUrl" placeholder="https://...">
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 💾 СОХРАНИТЬ -->
+      <section class="dash-section" style="text-align:center;">
+        <button class="btn btn-primary btn-large" onclick="saveAll()" style="padding:16px 40px; font-size:15px;">
+          💾 Сохранить все изменения
+        </button>
+        <div id="saveStatus" class="form-status" style="margin-top:16px;"></div>
+      </section>
+
+    </div>
 
   </main>
 
 </div>
 
-<div class="toast" id="toast">Сохранено!</div>
+<style>
+  .key-block {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 12px 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+  }
+  .key-value {
+    flex: 1;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: var(--cyan);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+  .color-picker-row { display: flex; gap: 10px; align-items: center; }
+  .color-input { width: 60px; height: 44px; padding: 4px; cursor: pointer; flex-shrink: 0; }
+  .color-picker-row .form-input:not(.color-input) { flex: 1; }
+  .form-select {
+    width: 100%;
+    padding: 11px 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: var(--transition);
+  }
+  .form-select:focus {
+    border-color: var(--cyan);
+    background: var(--bg-hover);
+    box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.12);
+  }
+</style>
 
 <script>
 const token = localStorage.getItem('token');
-const user = JSON.parse(localStorage.getItem('user') || '{}');
-if (!token || user.role !== 'admin') {
+const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+if (!token || currentUser.role !== 'admin') {
   window.location.href = '/app/login.html';
 }
 
-const urlParams = new URLSearchParams(window.location.search);
-const clientId = urlParams.get('id');
-const isEdit = !!clientId;
+const params = new URLSearchParams(location.search);
+const clientId = params.get('id');
 
-const form = document.getElementById('clientForm');
-const pageTitle = document.getElementById('pageTitle');
-const submitBtn = document.getElementById('submitBtn');
-
-// Счётчики промптов
-const promptRu = document.getElementById('promptRu');
-const promptEn = document.getElementById('promptEn');
-const counterRu = document.getElementById('counterRu');
-const counterEn = document.getElementById('counterEn');
-
-promptRu.addEventListener('input', () => {
-  const len = promptRu.value.length;
-  counterRu.textContent = len;
-  counterRu.parentElement.classList.toggle('warn', len > 3600);
-});
-promptEn.addEventListener('input', () => {
-  const len = promptEn.value.length;
-  counterEn.textContent = len;
-  counterEn.parentElement.classList.toggle('warn', len > 3600);
-});
-
-function setRadio(name, value) {
-  const radio = form.querySelector(`input[name="${name}"][value="${value}"]`);
-  if (radio) radio.checked = true;
-}
-
-function setCheckbox(name, checked) {
-  const cb = form.querySelector(`input[name="${name}"]`);
-  if (cb) cb.checked = !!checked;
-}
-
-async function loadClient() {
-  if (!isEdit) return;
-
-  pageTitle.textContent = 'Карточка клиента';
-  submitBtn.textContent = '💾 Сохранить изменения';
-
-  try {
-    const cRes = await fetch('/api/admin/clients/' + clientId, {
-      headers: { 'Authorization': 'Bearer ' + token }
-    });
-    const cData = await cRes.json();
-    if (!cData.ok) throw new Error(cData.error?.ru || 'Клиент не найден');
-
-    const c = cData.client;
-    form.name.value = c.name || '';
-    form.email.value = c.email || '';
-    form.company.value = c.company || '';
-    form.site_url.value = c.site_url || '';
-
-    setRadio('language', c.language || 'ru');
-    setRadio('currency', c.currency || 'USD');
-    setRadio('plan', c.plan || 'basic');
-    setRadio('status', c.status || 'active');
-
-    const sRes = await fetch('/api/admin/settings?client_id=' + clientId, {
-      headers: { 'Authorization': 'Bearer ' + token }
-    });
-    const sData = await sRes.json();
-
-    if (sData.ok && sData.settings) {
-      const s = sData.settings;
-
-      // Промпты
-      form.prompt_ru.value = s.prompt_ru || '';
-      form.prompt_en.value = s.prompt_en || '';
-      counterRu.textContent = (s.prompt_ru || '').length;
-      counterEn.textContent = (s.prompt_en || '').length;
-
-      // Ниша + услуги
-      setRadio('industry', s.industry || 'other');
-      form.services.value = s.services || '';
-
-      // AI
-      setRadio('ai_provider', s.ai_provider || 'proxyapi');
-      form.ai_api_key.value = s.ai_api_key || '';
-      form.ai_base_url.value = s.ai_base_url || '';
-
-      // Каналы
-      form.telegram_token.value = s.telegram_token || '';
-      form.telegram_admin_id.value = s.telegram_admin_id || '';
-      form.sheets_url.value = s.sheets_url || '';
-      form.webhook_url.value = s.webhook_url || '';
-      form.webhook_secret.value = s.webhook_secret || '';
-      form.notification_email.value = s.notification_email || '';
-
-      // Контроль админа
-      setCheckbox('admin_allow_telegram', s.admin_allow_telegram !== 0);
-      setCheckbox('admin_allow_sheets', s.admin_allow_sheets !== 0);
-      setCheckbox('admin_allow_webhook', s.admin_allow_webhook !== 0);
-      setCheckbox('admin_allow_email', s.admin_allow_email !== 0);
-
-      // Виджет
-      form.widget_title_ru.value = s.widget_title_ru || 'ИИ-менеджер';
-      form.widget_title_en.value = s.widget_title_en || 'AI Manager';
-      form.widget_welcome_ru.value = s.widget_welcome_ru || 'Здравствуйте! Чем помочь?';
-      form.widget_welcome_en.value = s.widget_welcome_en || 'Hello! How can I help?';
-      form.widget_color.value = s.widget_color || '#00F0FF';
-      form.max_daily_requests.value = s.max_daily_requests || 1000;
-    }
-
-    if (c.api_key) {
-      document.getElementById('apiKeySection').style.display = 'block';
-      document.getElementById('apiKeyText').textContent = c.api_key;
-      document.getElementById('embedCode').textContent =
-        '<script src="https://radar-group.org/widget.js" data-key="' + c.api_key + '" async><\/script>';
-    }
-  } catch (err) {
-    console.error(err);
-    showToast('Ошибка загрузки: ' + err.message, true);
-  }
-}
-
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  submitBtn.disabled = true;
-  submitBtn.textContent = '⏳ Сохранение...';
-
-  try {
-    const data = Object.fromEntries(new FormData(form));
-
-    // Checkbox → 0/1
-    data.channel_telegram_enabled = 1;
-    data.channel_sheets_enabled = data.sheets_url ? 1 : 0;
-    data.channel_webhook_enabled = data.webhook_url ? 1 : 0;
-    data.channel_email_enabled = data.notification_email ? 1 : 0;
-
-    data.admin_allow_telegram = form.querySelector('[name="admin_allow_telegram"]').checked ? 1 : 0;
-    data.admin_allow_sheets = form.querySelector('[name="admin_allow_sheets"]').checked ? 1 : 0;
-    data.admin_allow_webhook = form.querySelector('[name="admin_allow_webhook"]').checked ? 1 : 0;
-    data.admin_allow_email = form.querySelector('[name="admin_allow_email"]').checked ? 1 : 0;
-
-    if (isEdit) {
-      const cRes = await fetch('/api/admin/clients/' + clientId, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + token
-        },
-        body: JSON.stringify(data)
-      });
-      const cData = await cRes.json();
-      if (!cData.ok) throw new Error(cData.error?.ru || 'Ошибка клиента');
-
-      data.client_id = clientId;
-      const sRes = await fetch('/api/admin/settings', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + token
-        },
-        body: JSON.stringify(data)
-      });
-      const sData = await sRes.json();
-      if (!sData.ok) throw new Error(sData.error?.ru || 'Ошибка настроек');
-
-      showToast('✅ Сохранено!');
-    } else {
-      const cRes = await fetch('/api/admin/clients', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + token
-        },
-        body: JSON.stringify(data)
-      });
-      const cData = await cRes.json();
-      if (!cData.ok) throw new Error(cData.error?.ru || 'Ошибка создания');
-
-      document.getElementById('apiKeySection').style.display = 'block';
-      document.getElementById('apiKeyText').textContent = cData.api_key;
-      document.getElementById('embedCode').textContent =
-        '<script src="https://radar-group.org/widget.js" data-key="' + cData.api_key + '" async><\/script>';
-
-      window.history.replaceState(null, '', '?id=' + cData.id);
-
-      showToast('✅ Клиент создан! Скопируйте API-ключ.');
-      submitBtn.textContent = '💾 Сохранить изменения';
-      pageTitle.textContent = 'Карточка клиента';
-    }
-  } catch (err) {
-    console.error(err);
-    showToast('❌ ' + err.message, true);
-  } finally {
-    submitBtn.disabled = false;
-    if (isEdit || document.getElementById('apiKeySection').style.display === 'block') {
-      submitBtn.textContent = '💾 Сохранить изменения';
-    } else {
-      submitBtn.textContent = '💾 Создать';
-    }
-  }
-});
-
-function copyApiKey() {
-  navigator.clipboard.writeText(document.getElementById('apiKeyText').textContent);
-  showToast('📋 API-ключ скопирован');
-}
-
-function copyEmbed() {
-  navigator.clipboard.writeText(document.getElementById('embedCode').textContent);
-  showToast('📋 Код виджета скопирован');
-}
-
-function showToast(msg, isError = false) {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.className = 'toast show' + (isError ? ' error' : '');
-  setTimeout(() => toast.classList.remove('show'), 3000);
-}
+let clientData = null;
+let settingsData = null;
 
 function logout() {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
   document.cookie = 'token=; path=/; max-age=0';
   window.location.href = '/app/login.html';
+}
+
+async function loadClient() {
+  if (!clientId) {
+    showError('Не указан ID клиента');
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/admin/clients/${clientId}`, {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json();
+
+    if (!data.ok) {
+      showError(data.error?.ru || 'Ошибка загрузки');
+      return;
+    }
+
+    clientData = data.client;
+    settingsData = data.settings || {};
+
+    renderClient();
+    document.getElementById('loadingBlock').style.display = 'none';
+    document.getElementById('clientContent').style.display = 'block';
+    document.getElementById('headerActions').style.display = 'flex';
+
+  } catch (err) {
+    console.error('Load client error:', err);
+    showError('Ошибка сети: ' + err.message);
+  }
+}
+
+function showError(msg) {
+  document.getElementById('loadingBlock').style.display = 'none';
+  document.getElementById('errorBlock').style.display = 'block';
+  document.getElementById('errorText').textContent = msg;
+}
+
+function renderClient() {
+  const c = clientData;
+  const s = settingsData;
+
+  document.getElementById('pageTitle').textContent = c.name || 'Клиент';
+
+  document.getElementById('accountStatus').value = c.account_status || 'pending';
+  document.getElementById('widgetEnabled').checked = s.widget_enabled === 1;
+  document.getElementById('botEnabled').checked = s.bot_enabled === 1;
+
+  document.getElementById('clientName').value = c.name || '';
+  document.getElementById('clientEmail').value = c.email || '';
+  document.getElementById('clientPhone').value = c.phone || '';
+  document.getElementById('clientCompany').value = c.company || '';
+  document.getElementById('clientSiteUrl').value = c.site_url || '';
+  document.getElementById('clientLanguage').value = c.language || 'ru';
+  document.getElementById('clientCurrency').value = c.currency || 'USD';
+  document.getElementById('clientPlan').value = c.plan || 'basic';
+  document.getElementById('clientApiKey').textContent = c.api_key || '—';
+
+  document.getElementById('botTelegramToken').value = s.bot_telegram_token || s.telegram_token || '';
+  document.getElementById('botTelegramAdminId').value = s.bot_telegram_admin_id || s.telegram_admin_id || '';
+  document.getElementById('botRemindersEnabled').checked = s.bot_reminders_enabled === 1;
+  document.getElementById('botWorkHours').value = s.bot_work_hours || 'always';
+  document.getElementById('botMaxDaily').value = s.bot_max_daily || 1000;
+
+  document.getElementById('widgetPromptRu').value = s.prompt_ru || '';
+  document.getElementById('widgetIndustry').value = s.industry || '';
+  document.getElementById('widgetServices').value = s.services || '';
+  document.getElementById('aiProvider').value = s.ai_provider || 'proxyapi';
+  document.getElementById('aiApiKey').value = s.ai_api_key || '';
+  document.getElementById('aiBaseUrl').value = s.ai_base_url || '';
+  document.getElementById('widgetTitleRu').value = s.widget_title_ru || 'ИИ-менеджер';
+  document.getElementById('widgetWelcomeRu').value = s.widget_welcome_ru || 'Здравствуйте! Чем помочь?';
+  document.getElementById('widgetColor').value = s.widget_color || '#00F0FF';
+  document.getElementById('widgetColorText').value = s.widget_color || '#00F0FF';
+
+  document.getElementById('botPromptRu').value = s.bot_prompt_ru || '';
+  document.getElementById('botIndustry').value = s.bot_industry || '';
+  document.getElementById('botServices').value = s.bot_services || '';
+  document.getElementById('botAiProvider').value = s.bot_ai_provider || 'proxyapi';
+  document.getElementById('botAiApiKey').value = s.bot_ai_api_key || '';
+  document.getElementById('botAiBaseUrl').value = s.bot_ai_base_url || '';
+
+  updateCounter('widgetPromptRu', 'counterWidgetPrompt');
+  updateCounter('botPromptRu', 'counterBotPrompt');
+}
+
+function updateCounter(inputId, counterId) {
+  const input = document.getElementById(inputId);
+  const counter = document.getElementById(counterId);
+  if (!input || !counter) return;
+  counter.textContent = input.value.length;
+}
+
+['widgetPromptRu', 'botPromptRu'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener('input', () => {
+      const counterId = id === 'widgetPromptRu' ? 'counterWidgetPrompt' : 'counterBotPrompt';
+      updateCounter(id, counterId);
+    });
+  }
+});
+
+const colorInput = document.getElementById('widgetColor');
+const colorText = document.getElementById('widgetColorText');
+colorInput.addEventListener('input', () => {
+  colorText.value = colorInput.value.toUpperCase();
+});
+colorText.addEventListener('input', () => {
+  const val = colorText.value.trim();
+  if (/^#[0-9A-Fa-f]{6}$/.test(val)) colorInput.value = val;
+});
+
+function copyApiKey() {
+  const key = document.getElementById('clientApiKey').textContent.trim();
+  if (!key || key === '—') return;
+  navigator.clipboard.writeText(key).then(() => {
+    showStatus('✅ API-ключ скопирован', 'success');
+  });
+}
+
+async function saveAll() {
+  const status = document.getElementById('saveStatus');
+  status.className = 'form-status';
+  status.textContent = 'Сохраняем...';
+
+  const clientPayload = {
+    name: document.getElementById('clientName').value.trim(),
+    email: document.getElementById('clientEmail').value.trim(),
+    phone: document.getElementById('clientPhone').value.trim(),
+    company: document.getElementById('clientCompany').value.trim(),
+    site_url: document.getElementById('clientSiteUrl').value.trim(),
+    language: document.getElementById('clientLanguage').value,
+    currency: document.getElementById('clientCurrency').value,
+    plan: document.getElementById('clientPlan').value,
+    account_status: document.getElementById('accountStatus').value,
+    widget_enabled: document.getElementById('widgetEnabled').checked ? 1 : 0,
+    bot_enabled: document.getElementById('botEnabled').checked ? 1 : 0
+  };
+
+  try {
+    const res1 = await fetch(`/api/admin/clients/${clientId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(clientPayload)
+    });
+    const data1 = await res1.json();
+    if (!data1.ok) throw new Error(data1.error?.ru || 'Ошибка сохранения клиента');
+
+    const settingsPayload = {
+      client_id: clientId,
+      bot_telegram_token: document.getElementById('botTelegramToken').value.trim(),
+      bot_telegram_admin_id: document.getElementById('botTelegramAdminId').value.trim() || null,
+      bot_reminders_enabled: document.getElementById('botRemindersEnabled').checked ? 1 : 0,
+      bot_work_hours: document.getElementById('botWorkHours').value,
+      bot_max_daily: parseInt(document.getElementById('botMaxDaily').value) || 1000,
+      prompt_ru: document.getElementById('widgetPromptRu').value,
+      industry: document.getElementById('widgetIndustry').value.trim(),
+      services: document.getElementById('widgetServices').value.trim(),
+      ai_provider: document.getElementById('aiProvider').value,
+      ai_api_key: document.getElementById('aiApiKey').value.trim(),
+      ai_base_url: document.getElementById('aiBaseUrl').value.trim(),
+      widget_title_ru: document.getElementById('widgetTitleRu').value.trim(),
+      widget_welcome_ru: document.getElementById('widgetWelcomeRu').value.trim(),
+      widget_color: document.getElementById('widgetColor').value,
+      bot_prompt_ru: document.getElementById('botPromptRu').value,
+      bot_industry: document.getElementById('botIndustry').value.trim(),
+      bot_services: document.getElementById('botServices').value.trim(),
+      bot_ai_provider: document.getElementById('botAiProvider').value,
+      bot_ai_api_key: document.getElementById('botAiApiKey').value.trim(),
+      bot_ai_base_url: document.getElementById('botAiBaseUrl').value.trim()
+    };
+
+    const res2 = await fetch('/api/admin/settings', {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(settingsPayload)
+    });
+    const data2 = await res2.json();
+    if (!data2.ok) throw new Error(data2.error?.ru || 'Ошибка сохранения настроек');
+
+    showStatus('✅ Все изменения сохранены', 'success');
+
+  } catch (err) {
+    console.error('Save error:', err);
+    showStatus('❌ ' + err.message, 'error');
+  }
+}
+
+async function setupWebhook() {
+  const status = document.getElementById('webhookStatus');
+  const btn = event.target;
+  btn.disabled = true;
+  btn.textContent = '⏳ Устанавливаем...';
+
+  try {
+    const res = await fetch('/api/admin/setup-webhook', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ client_id: clientId })
+    });
+    const data = await res.json();
+
+    if (data.ok) {
+      status.innerHTML = `✅ <strong>Webhook установлен:</strong><br><code style="color:var(--cyan);">${data.webhook_url}</code>`;
+      status.style.color = 'var(--cyan)';
+    } else {
+      status.innerHTML = `❌ <strong>Ошибка:</strong> ${data.error?.ru || 'неизвестно'}`;
+      status.style.color = 'var(--magenta)';
+    }
+  } catch (err) {
+    status.innerHTML = `❌ Ошибка сети: ${err.message}`;
+    status.style.color = 'var(--magenta)';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🔗 Установить webhook';
+  }
+}
+
+async function deleteWebhook() {
+  const status = document.getElementById('webhookStatus');
+  const btn = event.target;
+  btn.disabled = true;
+  btn.textContent = '⏳ Удаляем...';
+
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${document.getElementById('botTelegramToken').value.trim()}/deleteWebhook`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ drop_pending_updates: true })
+    });
+    const data = await res.json();
+
+    if (data.ok) {
+      status.innerHTML = `✅ Webhook удалён.`;
+      status.style.color = 'var(--cyan)';
+    } else {
+      status.innerHTML = `❌ Ошибка: ${data.description || 'неизвестно'}`;
+      status.style.color = 'var(--magenta)';
+    }
+  } catch (err) {
+    status.innerHTML = `❌ Ошибка сети: ${err.message}`;
+    status.style.color = 'var(--magenta)';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🗑 Удалить webhook';
+  }
+}
+
+function showStatus(msg, type) {
+  const status = document.getElementById('saveStatus');
+  status.textContent = msg;
+  status.className = 'form-status ' + (type || '');
+  if (type === 'error') status.style.color = 'var(--magenta)';
+  else if (type === 'success') status.style.color = 'var(--cyan)';
+  setTimeout(() => {
+    status.textContent = '';
+    status.className = 'form-status';
+  }, 4000);
 }
 
 loadClient();

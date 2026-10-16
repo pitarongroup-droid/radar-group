@@ -1,5 +1,6 @@
 // ============================================
 // POST /api/auth/login — вход
+// Проверяет account_status (approved / pending / suspended)
 // ============================================
 
 export async function onRequestPost(context) {
@@ -25,10 +26,40 @@ export async function onRequestPost(context) {
       return error('Неверный email или пароль', 'Invalid email or password', 401);
     }
 
+    // ⚠️ Проверка статуса аккаунта
     const client = await env.radar_group_db.prepare(
-      'SELECT name FROM clients WHERE id = ?'
+      'SELECT name, account_status FROM clients WHERE id = ?'
     ).bind(user.client_id).first();
 
+    if (!client) {
+      return error('Аккаунт не найден', 'Account not found', 404);
+    }
+
+    const status = client.account_status || 'pending';
+
+    if (status === 'pending') {
+      return Response.json({
+        ok: false,
+        error: {
+          ru: 'Аккаунт на проверке. Свяжитесь с менеджером Radar Group.',
+          en: 'Account pending approval. Please contact Radar Group manager.'
+        },
+        account_status: 'pending'
+      }, { status: 403 });
+    }
+
+    if (status === 'suspended') {
+      return Response.json({
+        ok: false,
+        error: {
+          ru: 'Аккаунт заблокирован. Обратитесь в поддержку.',
+          en: 'Account suspended. Please contact support.'
+        },
+        account_status: 'suspended'
+      }, { status: 403 });
+    }
+
+    // status === 'approved' — пускаем
     await env.radar_group_db.prepare(
       'UPDATE users SET last_login = unixepoch() WHERE id = ?'
     ).bind(user.id).run();
@@ -37,7 +68,7 @@ export async function onRequestPost(context) {
       userId: user.id,
       clientId: user.client_id,
       role: user.role,
-      name: client?.name || 'Клиент'
+      name: client.name || 'Клиент'
     }, env.JWT_SECRET);
 
     return Response.json({
@@ -47,7 +78,7 @@ export async function onRequestPost(context) {
         id: user.id,
         clientId: user.client_id,
         email: user.email,
-        name: client?.name || 'Клиент',
+        name: client.name || 'Клиент',
         role: user.role
       }
     });
