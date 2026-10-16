@@ -64,9 +64,12 @@
   <main class="app-main">
     <header class="app-header">
       <h1 class="app-header-title">🤖 Настройки Telegram-бота</h1>
-      <div class="app-header-user">
-        <div class="app-header-user-avatar" id="userAvatar">?</div>
-        <span id="userName">Клиент</span>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <a href="/app/help.html" class="app-help-btn" title="База знаний">?</a>
+        <div class="app-header-user">
+          <div class="app-header-user-avatar" id="userAvatar">?</div>
+          <span id="userName">Клиент</span>
+        </div>
       </div>
     </header>
 
@@ -116,7 +119,6 @@
                   <li>Придумайте имя и username</li>
                   <li>Скопируйте токен</li>
                 </ol>
-                <a href="https://t.me/BotFather" target="_blank" class="hint-link">🔗 Открыть @BotFather</a>
               </details>
             </div>
           </div>
@@ -403,10 +405,6 @@ async function loadSettings() {
 
     if (s.bot_enabled !== 1) {
       document.getElementById('serviceDisabled').style.display = 'block';
-      document.querySelectorAll('a[href*="bot"]').forEach(el => {
-        el.style.opacity = '0.4';
-        el.style.pointerEvents = 'none';
-      });
       return;
     }
 

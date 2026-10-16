@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#08080F">
+  <meta name="robots" content="noindex, nofollow">
+  <title>База знаний — Radar Group</title>
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"></noscript>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/app/sidebar.css">
+  <link rel="stylesheet" href="/app/dashboard.css">
+</head>
+<body>
+
+<div class="app-layout">
+  <aside class="sidebar">
+    <a href="/app/dashboard.html" class="sidebar-logo">
+      <img src="/images/logo.webp" alt="Radar Group" width="32" height="32">
+      <span class="sidebar-logo-text">RADAR</span>
+    </a>
+    <nav class="sidebar-nav">
+      <a href="/app/dashboard.html" class="sidebar-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+        <span>Дашборд</span>
+      </a>
+      <a href="/app/dialogs.html" class="sidebar-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span>Диалоги</span>
+      </a>
+      <a href="/app/reports.html" class="sidebar-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg>
+        <span>Отчёты</span>
+      </a>
+      <a href="/app/billing.html" class="sidebar-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        <span>Оплаты</span>
+      </a>
+      <a href="/app/widget.html" class="sidebar-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 10h.01"/><path d="M16 10h.01"/><path d="M12 16a4 4 0 0 0 4-4"/></svg>
+        <span>Виджет</span>
+      </a>
+      <a href="/app/bot.html" class="sidebar-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/></svg>
+        <span>Telegram-бот</span>
+      </a>
+      <a href="/app/integration.html" class="sidebar-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        <span>Интеграция</span>
+      </a>
+      <a href="/app/help.html" class="sidebar-link active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>
+        <span>База знаний</span>
+      </a>
+    </nav>
+    <div class="sidebar-bottom">
+      <button class="sidebar-logout" onclick="logout()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Выйти</span>
+      </button>
+    </div>
+  </aside>
+
+  <main class="app-main">
+    <header class="app-header">
+      <h1 class="app-header-title">📚 База знаний</h1>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div class="app-header-user">
+          <div class="app-header-user-avatar" id="userAvatar">?</div>
+          <span id="userName">Клиент</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="dash-section" style="padding: 20px;">
+      <div class="kb-search-wrap">
+        <svg class="kb-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="M21 21l-4.35-4.35"/>
+        </svg>
+        <input
+          type="search"
+          id="kbSearch"
+          class="kb-search"
+          placeholder="Поиск: токен, промпт, лиды, webhook, виджет..."
+          autocomplete="off"
+        >
+        <button class="kb-search-clear" id="kbClear" style="display:none;" aria-label="Очистить">✕</button>
+      </div>
+      <div class="kb-stats" id="kbStats"></div>
+    </section>
+
+    <div id="kbContent"></div>
+
+    <section class="dash-section" id="kbEmpty" style="display:none; text-align:center; padding:50px 20px;">
+      <div style="font-size:48px; margin-bottom:12px;">🔍</div>
+      <div style="font-size:16px; font-weight:700; color:var(--text); margin-bottom:8px;">
+        Ничего не найдено
+      </div>
+      <div style="color:var(--text-muted); line-height:1.6; max-width:400px; margin:0 auto;">
+        Попробуйте другие слова. Если не нашли ответ — напишите нам:
+        <div style="margin-top:12px;">
+          📧 <a href="mailto:pitarongroup@gmail.com" style="color:var(--cyan);">pitarongroup@gmail.com</a><br>
+          💬 <a href="https://t.me/my_ai_TGAgency_bot" target="_blank" style="color:var(--cyan);">Telegram-поддержка</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="dash-section" style="text-align:center; background:var(--gradient-soft); border-color:var(--border-strong);">
+      <div style="font-size:15px; font-weight:700; color:var(--text); margin-bottom:8px;">
+        Не нашли ответ?
+      </div>
+      <div style="font-size:14px; color:var(--text-muted); line-height:1.6; margin-bottom:16px;">
+        Напишите нам — ответим в течение часа
+      </div>
+      <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+        <a href="https://t.me/my_ai_TGAgency_bot" target="_blank" class="btn btn-primary" style="padding:12px 24px;">
+          💬 Telegram
+        </a>
+        <a href="mailto:pitarongroup@gmail.com" class="btn btn-outline" style="padding:12px 24px;">
+          📧 Email
+        </a>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<style>
+  .kb-search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .kb-search-icon {
+    position: absolute;
+    left: 16px;
+    width: 20px;
+    height: 20px;
+    color: var(--text-dim);
+    pointer-events: none;
+    transition: color 0.2s;
+  }
+  .kb-search {
+    width: 100%;
+    padding: 14px 44px 14px 48px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 15px;
+    outline: none;
+    transition: var(--transition);
+  }
+  .kb-search:focus {
+    border-color: var(--cyan);
+    background: var(--bg-hover);
+    box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.12);
+  }
+  .kb-search-wrap:focus-within .kb-search-icon {
+    color: var(--cyan);
+  }
+  .kb-search::placeholder {
+    color: var(--text-dim);
+  }
+  .kb-search-clear {
+    position: absolute;
+    right: 12px;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    font-size: 16px;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .kb-search-clear:hover {
+    color: var(--cyan);
+    background: var(--cyan-soft);
+  }
+  .kb-stats {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--text-dim);
+    min-height: 16px;
+  }
+
+  .kb-category {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 14px;
+    overflow: hidden;
+    transition: var(--transition);
+  }
+  .kb-category:hover {
+    border-color: var(--border-strong);
+  }
+  .kb-cat-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 22px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: var(--transition);
+  }
+  .kb-cat-header:hover {
+    background: var(--bg-hover);
+  }
+  .kb-cat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--cyan-soft);
+    border: 1px solid rgba(0, 240, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .kb-cat-title {
+    flex: 1;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .kb-cat-count {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-dim);
+    padding: 3px 10px;
+    background: var(--bg);
+    border-radius: 100px;
+    margin-right: 4px;
+  }
+  .kb-cat-arrow {
+    width: 20px;
+    height: 20px;
+    color: var(--text-dim);
+    transition: transform 0.3s ease;
+  }
+  .kb-category.open .kb-cat-arrow {
+    transform: rotate(180deg);
+    color: var(--cyan);
+  }
+
+  .kb-questions {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+    border-top: 1px solid transparent;
+  }
+  .kb-category.open .kb-questions {
+    max-height: 10000px;
+    border-top-color: var(--border);
+  }
+
+  .kb-question {
+    border-bottom: 1px solid var(--border);
+  }
+  .kb-question:last-child {
+    border-bottom: none;
+  }
+  .kb-q-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 22px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: var(--transition);
+  }
+  .kb-q-head:hover {
+    background: var(--bg-hover);
+  }
+  .kb-q-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .kb-q-text {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .kb-q-plus {
+    width: 20px;
+    height: 20px;
+    color: var(--text-dim);
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .kb-question.open .kb-q-plus {
+    transform: rotate(45deg);
+    color: var(--cyan);
+  }
+
+  .kb-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+    background: var(--bg);
+  }
+  .kb-question.open .kb-answer {
+    max-height: 4000px;
+  }
+  .kb-answer-inner {
+    padding: 4px 22px 20px 56px;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+  .kb-answer-inner p {
+    margin-bottom: 10px;
+  }
+  .kb-answer-inner ol, .kb-answer-inner ul {
+    margin: 8px 0 12px;
+    padding-left: 20px;
+  }
+  .kb-answer-inner li {
+    margin-bottom: 6px;
+  }
+  .kb-answer-inner strong {
+    color: var(--text);
+    font-weight: 700;
+  }
+  .kb-answer-inner code {
+    background: rgba(0, 240, 255, 0.08);
+    border: 1px solid rgba(0, 240, 255, 0.15);
+    color: var(--cyan);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+  }
+  .kb-answer-inner a {
+    color: var(--cyan);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .kb-answer-inner a:hover {
+    text-decoration: underline;
+  }
+  .kb-answer-inner .kb-tip {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: rgba(0, 240, 255, 0.06);
+    border-left: 3px solid var(--cyan);
+    border-radius: 6px;
+    font-size: 13px;
+  }
+  .kb-answer-inner .kb-warn {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: rgba(255, 200, 0, 0.06);
+    border-left: 3px solid #FFC800;
+    border-radius: 6px;
+    font-size: 13px;
+  }
+
+  mark.kb-hl {
+    background: rgba(255, 200, 0, 0.3);
+    color: inherit;
+    padding: 0 2px;
+    border-radius: 2px;
+  }
+
+  @media (max-width: 640px) {
+    .kb-cat-header { padding: 14px 16px; gap: 10px; }
+    .kb-cat-icon { width: 34px; height: 34px; font-size: 17px; }
+    .kb-cat-title { font-size: 14px; }
+    .kb-cat-count { font-size: 11px; padding: 2px 8px; }
+    .kb-q-head { padding: 14px 16px; gap: 10px; }
+    .kb-q-text { font-size: 13px; }
+    .kb-answer-inner { padding: 4px 16px 16px 44px; font-size: 13px; }
+    .kb-search { font-size: 16px; }
+  }
+</style>
+
+<script>
+const token = localStorage.getItem('token');
+if (!token) window.location.href = '/app/login.html';
+
+try {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  if (user.name) {
+    document.getElementById('userName').textContent = user.name;
+    document.getElementById('userAvatar').textContent = user.name.charAt(0).toUpperCase();
+  }
+} catch (e) {}
+
+function logout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  document.cookie = 'token=; path=/; max-age=0';
+  window.location.href = '/app/login.html';
+}
+
+const KB = [
+  {
+    icon: '🚀',
+    title: 'Начало работы',
+    questions: [
+      {
+        q: 'Как начать пользоваться сервисом?',
+        a: `<p>После регистрации аккаунт переходит в статус <strong>«На проверке»</strong>. Менеджер Radar Group вручную проверяет заявку и одобряет доступ.</p>
+            <p>Как только доступ одобрен:</p>
+            <ol>
+              <li>Войдите в кабинет — увидите полное меню</li>
+              <li>Настройте виджет в разделе <strong>«Виджет»</strong></li>
+              <li>Или подключите Telegram-бота в разделе <strong>«Telegram-бот»</strong></li>
+              <li>Вставьте код виджета на сайт — из раздела <strong>«Интеграция»</strong></li>
+            </ol>
+            <div class="kb-tip">💡 Обычно одобрение занимает 1–2 часа в рабочее время.</div>`
+      },
+      {
+        q: 'Почему мой аккаунт «На проверке»?',
+        a: `<p>Аккаунт <strong>«На проверке»</strong> — это защита от спама и неоплаченного использования. Пока статус не <code>approved</code>, вы не можете:</p>
+            <ul>
+              <li>Менять настройки виджета и бота</li>
+              <li>Получать API-ключ</li>
+              <li>Вставлять код виджета на сайт</li>
+            </ul>
+            <p>Что делать: свяжитесь с менеджером — контакты в баннере вверху дашборда.</p>
+            <div class="kb-warn">⚠️ Если аккаунт <strong>«Заблокирован»</strong> — обратитесь в поддержку.</div>`
+      },
+      {
+        q: 'Как изменить пароль или email?',
+        a: `<p>Пока смена пароля и email — через поддержку. Напишите на <a href="mailto:pitarongroup@gmail.com">pitarongroup@gmail.com</a> или в Telegram.</p>
+            <div class="kb-tip">💡 Функция самостоятельной смены пароля появится позже.</div>`
+      }
+    ]
+  },
+  {
+    icon: '🌐',
+    title: 'Виджет на сайт',
+    questions: [
+      {
+        q: 'Что такое виджет и как он работает?',
+        a: `<p><strong>Виджет</strong> — это ИИ-менеджер в виде чат-кружка на вашем сайте. Посетители пишут ему — он отвечает, квалифицирует, собирает контакт и передаёт вам лид.</p>
+            <p>Работает 24/7. Не требует вашего участия. Отвечает на вопросы о продукте, ценах, услугах.</p>`
+      },
+      {
+        q: 'Как вставить виджет на сайт?',
+        a: `<p>Откройте раздел <strong>«Интеграция»</strong> в кабинете:</p>
+            <ol>
+              <li>Скопируйте ваш API-ключ</li>
+              <li>Скопируйте код виджета</li>
+              <li>Вставьте его перед закрывающим тегом <code>&lt;/body&gt;</code></li>
+            </ol>
+            <p>Инструкции для конкретных платформ (WordPress, Tilda, Bitrix) — на той же странице.</p>
+            <div class="kb-tip">💡 После вставки обновите сайт и проверьте — кружок виджета появится в правом нижнем углу.</div>`
+      },
+      {
+        q: 'Что писать в промпт виджета?',
+        a: `<p><strong>Промпт</strong> — это инструкция для ИИ: как он должен общаться с вашими клиентами. Минимум 200 символов, максимум 4000.</p>
+            <p>Что обязательно указать:</p>
+            <ol>
+              <li>Название компании</li>
+              <li>Услуги и цены</li>
+              <li>Что ИИ должен узнать у клиента</li>
+              <li>Как отвечать на «дорого», «подумаю»</li>
+            </ol>
+            <div class="kb-tip">💡 В разделе «Виджет» есть кнопка «Что вписать» — подробный гайд.</div>`
+      },
+      {
+        q: 'Как поменять цвет, заголовок, приветствие виджета?',
+        a: `<p>Всё в разделе <strong>«Виджет»</strong> → секция «🎨 Внешний вид виджета»:</p>
+            <ul>
+              <li><strong>Заголовок</strong> — что видно в шапке виджета</li>
+              <li><strong>Приветствие</strong> — первое сообщение клиенту</li>
+              <li><strong>Цвет кнопки</strong> — цвет кружка на сайте</li>
+            </ul>
+            <p>Изменения применяются мгновенно после сохранения.</p>`
+      },
+      {
+        q: 'Можно ли использовать свой AI-ключ для виджета?',
+        a: `<p>Да. В разделе «Виджет» → секция «🧠 ИИ и промпт»:</p>
+            <ol>
+              <li>Выберите AI-провайдера (OpenAI, ProxyAPI, Claude, Gemini, DeepSeek)</li>
+              <li>Вставьте свой AI API Key</li>
+              <li>Если нужен — укажите Base URL</li>
+            </ol>
+            <p>Если оставить пусто — используется ключ Radar Group.</p>
+            <div class="kb-tip">💡 Свой ключ — если хотите платить AI-провайдеру напрямую.</div>`
+      }
+    ]
+  },
+  {
+    icon: '🤖',
+    title: 'Telegram-бот',
+    questions: [
+      {
+        q: 'Чем Telegram-бот отличается от виджета?',
+        a: `<p>Это <strong>два разных продукта</strong>, у каждого своя настройка:</p>
+            <ul>
+              <li><strong>Виджет</strong> — на вашем сайте. Для посетителей сайта.</li>
+              <li><strong>Telegram-бот</strong> — отдельный бот в Telegram. Для тех, кто пишет в мессенджер.</li>
+            </ul>
+            <p>Можно использовать оба одновременно. Или только один.</p>`
+      },
+      {
+        q: 'Как создать Telegram-бота и получить токен?',
+        a: `<p>Пошагово:</p>
+            <ol>
+              <li>Откройте <a href="https://t.me/BotFather" target="_blank">@BotFather</a> в Telegram</li>
+              <li>Напишите команду <code>/newbot</code></li>
+              <li>Придумайте имя бота (то, что видят пользователи)</li>
+              <li>Придумайте username (должен заканчиваться на <code>_bot</code>)</li>
+              <li>BotFather пришлёт токен вида <code>123456:ABC-DEF...</code></li>
+              <li>Скопируйте токен и вставьте в поле <strong>Bot Token</strong> в разделе «Telegram-бот»</li>
+            </ol>
+            <div class="kb-warn">⚠️ Никому не показывайте токен — это доступ к боту.</div>`
+      },
+      {
+        q: 'Что такое Admin ID и где его взять?',
+        a: `<p><strong>Admin ID</strong> — это ваш личный Telegram ID, куда бот будет присылать уведомления о новых лидах.</p>
+            <p>Как узнать:</p>
+            <ol>
+              <li>Откройте <a href="https://t.me/userinfobot" target="_blank">@userinfobot</a></li>
+              <li>Нажмите <code>Start</code></li>
+              <li>Скопируйте ваш ID (набор цифр, например <code>873975856</code>)</li>
+              <li>Вставьте в поле <strong>Admin ID</strong></li>
+            </ol>
+            <div class="kb-tip">💡 Не забудьте написать <code>/start</code> своему боту — иначе он не сможет присылать уведомления.</div>`
+      },
+      {
+        q: 'Как включить напоминания (4 стадии дожима)?',
+        a: `<p>В разделе «Telegram-бот» → секция «⚙️ Рабочие настройки» → поставьте галку <strong>«Включить напоминания»</strong>.</p>
+            <p>Что произойдёт:</p>
+            <ul>
+              <li>Клиент ушёл думать — бот напомнит через 15 минут</li>
+              <li>Не ответил — напомнит через 1 час</li>
+              <li>Молчит — через 24 часа</li>
+              <li>Всё ещё молчит — через 48 часов</li>
+            </ul>
+            <p>Все напоминания мягкие, без давления.</p>`
+      },
+      {
+        q: 'Что делать, если бот не отвечает?',
+        a: `<p>Проверьте по порядку:</p>
+            <ol>
+              <li><strong>Bot Token</strong> — правильно ли вставлен?</li>
+              <li><strong>Admin ID</strong> — ваш ID указан?</li>
+              <li>Вы написали боту <code>/start</code>?</li>
+              <li>В админке нажали <strong>«🔗 Установить webhook»</strong>?</li>
+              <li>Услуга <strong>«Telegram-бот»</strong> включена в вашем аккаунте?</li>
+            </ol>
+            <p>Если всё верно — напишите в поддержку.</p>
+            <div class="kb-warn">⚠️ Webhook устанавливает админ Radar Group — после вашего сохранения настроек.</div>`
+      }
+    ]
+  },
+  {
+    icon: '📬',
+    title: 'Каналы лидов',
+    questions: [
+      {
+        q: 'Куда будут приходить лиды?',
+        a: `<p>У вас <strong>4 канала</strong>, включайте любые:</p>
+            <ul>
+              <li><strong>📱 Telegram</strong> — самый быстрый</li>
+              <li><strong>📊 Google Sheets</strong> — таблица с историей</li>
+              <li><strong>🔗 Webhook</strong> — для CRM (Bitrix24, amoCRM, HubSpot)</li>
+              <li><strong>📧 Email</strong> — дубль на почту</li>
+            </ul>
+            <p>У каждого канала — свои настройки. Включите галку и заполните поля.</p>`
+      },
+      {
+        q: 'Как настроить Telegram для лидов?',
+        a: `<p>Два варианта:</p>
+            <ul>
+              <li>Для <strong>виджета</strong>: раздел «Виджет» → «Куда присылать лиды» → Telegram</li>
+              <li>Для <strong>бота</strong>: раздел «Telegram-бот» → «Куда присылать лиды из бота» → Telegram</li>
+            </ul>
+            <p>Впишите Bot Token и Admin ID. Готово.</p>`
+      },
+      {
+        q: 'Как подключить Google Sheets?',
+        a: `<p>Пошагово (5 минут):</p>
+            <ol>
+              <li>Создайте <a href="https://sheets.new" target="_blank">новую таблицу Google Sheets</a></li>
+              <li>Расширения → Apps Script</li>
+              <li>Удалите код и вставьте скрипт-обработчик (есть в подсказке в кабинете)</li>
+              <li>Развернуть → Новое развёртывание → Веб-приложение</li>
+              <li>Запуск от имени: <strong>Я</strong></li>
+              <li>Доступ: <strong>Все</strong></li>
+              <li>Скопируйте URL и вставьте в поле <strong>Sheets URL</strong></li>
+            </ol>
+            <div class="kb-tip">💡 Полная инструкция — в подсказке рядом с полем.</div>`
+      },
+      {
+        q: 'Как настроить Webhook для CRM?',
+        a: `<p>Впишите <strong>URL</strong> вебхука из вашей CRM и <strong>Secret</strong> (любая строка).</p>
+            <p>Мы будем отправлять POST на ваш URL с подписью <code>X-Radar-Signature</code> (HMAC-SHA256).</p>
+            <p>Где взять URL:</p>
+            <ul>
+              <li><strong>Bitrix24:</strong> Настройки → Интеграции → Входящий вебхук</li>
+              <li><strong>amoCRM:</strong> Настройки → Интеграции → Создать вебхук</li>
+              <li><strong>HubSpot:</strong> Настройки → Private Apps → Webhook</li>
+            </ul>`
+      }
+    ]
+  },
+  {
+    icon: '💰',
+    title: 'Оплаты и тарифы',
+    questions: [
+      {
+        q: 'Сколько стоит виджет?',
+        a: `<p><strong>Виджет на сайт</strong> — от 200 BYN/мес.</p>
+            <p>Что входит:</p>
+            <ul>
+              <li>ИИ-менеджер на вашем сайте</li>
+              <li>Приём заявок 24/7</li>
+              <li>Отработка возражений</li>
+              <li>Уведомления в Telegram, Email, Sheets, CRM</li>
+              <li>Личный кабинет</li>
+            </ul>`
+      },
+      {
+        q: 'Сколько стоит Telegram-бот?',
+        a: `<p><strong>Telegram-бот</strong> — отдельный тариф. Точную стоимость уточняйте у менеджера.</p>
+            <p>Включает всё то же, что и виджет, плюс:</p>
+            <ul>
+              <li>FSM-сценарий квалификации</li>
+              <li>4 стадии дожима</li>
+              <li>Тихие часы</li>
+              <li>Лимит запросов в день</li>
+            </ul>`
+      },
+      {
+        q: 'Как оплатить подписку?',
+        a: `<p>Раздел <strong>«Оплаты»</strong> в кабинете покажет:</p>
+            <ul>
+              <li>Ваш текущий тариф</li>
+              <li>Дату следующего списания</li>
+              <li>Историю платежей</li>
+            </ul>
+            <p>Оплата — через менеджера. Реквизиты пришлёт в Telegram или на email.</p>`
+      }
+    ]
+  },
+  {
+    icon: '🔒',
+    title: 'Безопасность и данные',
+    questions: [
+      {
+        q: 'Кто видит мои диалоги с клиентами?',
+        a: `<p>Только вы. Диалоги хранятся в защищённой базе (Cloudflare D1), привязаны к вашему <code>client_id</code>.</p>
+            <p>Radar Group имеет технический доступ для поддержки, но не использует данные клиентов в коммерческих целях.</p>`
+      },
+      {
+        q: 'Можно ли удалить все данные?',
+        a: `<p>Да. Напишите в поддержку — удалим все ваши данные:</p>
+            <ul>
+              <li>Диалоги</li>
+              <li>Сообщения</li>
+              <li>Настройки</li>
+              <li>Аккаунт</li>
+            </ul>
+            <p>После удаления доступ восстановить невозможно.</p>`
+      },
+      {
+        q: 'Безопасен ли мой API-ключ?',
+        a: `<p>Да. API-ключ:</p>
+            <ul>
+              <li>Хранится в зашифрованной базе</li>
+              <li>Используется только для связи виджета с нашими серверами</li>
+              <li>Виден только вам в разделе «Интеграция»</li>
+            </ul>
+            <div class="kb-warn">⚠️ Не публикуйте API-ключ в открытом доступе.</div>`
+      }
+    ]
+  }
+];
+
+let currentQuery = '';
+const contentEl = document.getElementById('kbContent');
+const emptyEl = document.getElementById('kbEmpty');
+const statsEl = document.getElementById('kbStats');
+
+function normalize(s) {
+  return String(s).toLowerCase().replace(/ё/g, 'е');
+}
+
+function highlight(text, query) {
+  if (!query) return text;
+  const safeQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp(`(${safeQuery})`, 'gi');
+  return text.replace(re, '<mark class="kb-hl">$1</mark>');
+}
+
+function render(filter = '') {
+  const q = normalize(filter.trim());
+  const hasQuery = q.length >= 2;
+
+  let totalShown = 0;
+  const html = [];
+
+  KB.forEach((cat, catIdx) => {
+    const matchedQuestions = [];
+
+    cat.questions.forEach((item, qIdx) => {
+      const haystack = normalize(item.q + ' ' + item.a.replace(/<[^>]+>/g, ' '));
+      const isMatch = !hasQuery || haystack.includes(q);
+
+      if (isMatch) {
+        matchedQuestions.push({ ...item, originalIdx: qIdx });
+      }
+    });
+
+    if (matchedQuestions.length === 0) return;
+
+    totalShown += matchedQuestions.length;
+
+    const isOpen = hasQuery ? 'open' : '';
+
+    html.push(`
+      <div class="kb-category ${isOpen}" data-cat="${catIdx}">
+        <div class="kb-cat-header" onclick="toggleCategory(this)">
+          <div class="kb-cat-icon">${cat.icon}</div>
+          <div class="kb-cat-title">${highlight(cat.title, filter)}</div>
+          <div class="kb-cat-count">${matchedQuestions.length}</div>
+          <svg class="kb-cat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="kb-questions">
+          ${matchedQuestions.map((item, idx) => `
+            <div class="kb-question ${hasQuery ? 'open' : ''}">
+              <div class="kb-q-head" onclick="toggleQuestion(this)">
+                <div class="kb-q-num">${idx + 1}</div>
+                <div class="kb-q-text">${highlight(item.q, filter)}</div>
+                <svg class="kb-q-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              </div>
+              <div class="kb-answer">
+                <div class="kb-answer-inner">${highlight(item.a, filter)}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `);
+  });
+
+  contentEl.innerHTML = html.join('');
+
+  if (totalShown === 0) {
+    emptyEl.style.display = 'block';
+    statsEl.textContent = '';
+  } else {
+    emptyEl.style.display = 'none';
+    statsEl.textContent = hasQuery
+      ? `Найдено: ${totalShown} ${plural(totalShown, 'ответ', 'ответа', 'ответов')}`
+      : `Всего: ${totalShown} ${plural(totalShown, 'вопрос', 'вопроса', 'вопросов')} в ${KB.length} ${plural(KB.length, 'категории', 'категориях', 'категориях')}`;
+  }
+}
+
+function plural(n, one, few, many) {
+  const mod10 = n % 10, mod100 = n % 100;
+  if (mod10 === 1 && mod100 !== 11) return one;
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return few;
+  return many;
+}
+
+function toggleCategory(headerEl) {
+  const cat = headerEl.closest('.kb-category');
+  cat.classList.toggle('open');
+}
+
+function toggleQuestion(headEl) {
+  const q = headEl.closest('.kb-question');
+  q.classList.toggle('open');
+}
+
+const searchInput = document.getElementById('kbSearch');
+const clearBtn = document.getElementById('kbClear');
+
+let debounceTimer = null;
+
+searchInput.addEventListener('input', (e) => {
+  const val = e.target.value;
+  clearBtn.style.display = val ? 'flex' : 'none';
+
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    currentQuery = val;
+    render(val);
+  }, 150);
+});
+
+clearBtn.addEventListener('click', () => {
+  searchInput.value = '';
+  clearBtn.style.display = 'none';
+  currentQuery = '';
+  render('');
+  searchInput.focus();
+});
+
+render('');
+</script>
+
+</body>
+</html>

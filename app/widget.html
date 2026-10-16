@@ -64,13 +64,15 @@
   <main class="app-main">
     <header class="app-header">
       <h1 class="app-header-title">🌐 Настройки виджета</h1>
-      <div class="app-header-user">
-        <div class="app-header-user-avatar" id="userAvatar">?</div>
-        <span id="userName">Клиент</span>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <a href="/app/help.html" class="app-help-btn" title="База знаний">?</a>
+        <div class="app-header-user">
+          <div class="app-header-user-avatar" id="userAvatar">?</div>
+          <span id="userName">Клиент</span>
+        </div>
       </div>
     </header>
 
-    <!-- Заглушка «на проверке» -->
     <div id="accessBlocked" style="display:none;">
       <div class="dash-section" style="text-align:center; padding:40px 20px;">
         <div style="font-size:48px; margin-bottom:12px;">⏳</div>
@@ -82,7 +84,6 @@
       </div>
     </div>
 
-    <!-- Заглушка «услуга выключена» -->
     <div id="serviceDisabled" style="display:none;">
       <div class="dash-section" style="text-align:center; padding:40px 20px;">
         <div style="font-size:48px; margin-bottom:12px;">🔒</div>
@@ -94,10 +95,8 @@
       </div>
     </div>
 
-    <!-- Контент -->
     <div id="widgetContent" style="display:none;">
 
-      <!-- AI + ПРОМПТ -->
       <section class="dash-section">
         <div class="dash-section-header">
           <h2 class="dash-section-title">
@@ -167,7 +166,6 @@
         </div>
       </section>
 
-      <!-- ВИДЖЕТ-СТИЛЬ -->
       <section class="dash-section">
         <div class="dash-section-header">
           <h2 class="dash-section-title">
@@ -199,7 +197,6 @@
         </div>
       </section>
 
-      <!-- КАНАЛЫ УВЕДОМЛЕНИЙ -->
       <section class="dash-section">
         <div class="dash-section-header">
           <h2 class="dash-section-title">
@@ -210,7 +207,6 @@
 
         <div class="settings-form">
 
-          <!-- TELEGRAM -->
           <div class="form-group">
             <div class="channel-header">
               <label class="channel-toggle">
@@ -222,17 +218,6 @@
               <div class="form-row">
                 <label class="form-label">Bot Token</label>
                 <input class="form-input" type="text" id="telegramToken" placeholder="123456:ABC-DEF..." autocomplete="off">
-                <div class="form-hint">
-                  💡 <strong>Что это:</strong> токен вашего бота.
-                  <details class="hint-details">
-                    <summary>📖 Как получить</summary>
-                    <ol>
-                      <li>Откройте <a href="https://t.me/BotFather" target="_blank">@BotFather</a></li>
-                      <li>Напишите <code>/newbot</code></li>
-                      <li>Скопируйте токен</li>
-                    </ol>
-                  </details>
-                </div>
               </div>
               <div class="form-row">
                 <label class="form-label">Admin ID (ваш chat_id)</label>
@@ -244,7 +229,6 @@
             </div>
           </div>
 
-          <!-- GOOGLE SHEETS -->
           <div class="form-group">
             <div class="channel-header">
               <label class="channel-toggle">
@@ -260,7 +244,6 @@
             </div>
           </div>
 
-          <!-- WEBHOOK -->
           <div class="form-group">
             <div class="channel-header">
               <label class="channel-toggle">
@@ -280,7 +263,6 @@
             </div>
           </div>
 
-          <!-- EMAIL -->
           <div class="form-group">
             <div class="channel-header">
               <label class="channel-toggle">
@@ -299,7 +281,6 @@
         </div>
       </section>
 
-      <!-- СОХРАНИТЬ -->
       <section class="dash-section" style="text-align:center;">
         <button class="btn btn-primary btn-large" onclick="saveWidget()" style="padding:16px 40px;">
           💾 Сохранить виджет
@@ -366,7 +347,6 @@ function logout() {
   window.location.href = '/app/login.html';
 }
 
-// Счётчик промпта
 const promptRu = document.getElementById('promptRu');
 const counterRu = document.getElementById('counterRu');
 promptRu.addEventListener('input', () => {
@@ -375,7 +355,6 @@ promptRu.addEventListener('input', () => {
   counterRu.parentElement.classList.toggle('warn', len > 3600);
 });
 
-// Синхронизация цветов
 const colorInput = document.getElementById('widgetColor');
 const colorText = document.getElementById('widgetColorText');
 colorInput.addEventListener('input', () => {
@@ -386,7 +365,6 @@ colorText.addEventListener('input', () => {
   if (/^#[0-9A-Fa-f]{6}$/.test(val)) colorInput.value = val;
 });
 
-// ЗАГРУЗКА
 async function loadSettings() {
   try {
     const res = await fetch('/api/settings', {
@@ -411,16 +389,11 @@ async function loadSettings() {
 
     if (s.widget_enabled !== 1) {
       document.getElementById('serviceDisabled').style.display = 'block';
-      document.querySelectorAll('a[href*="widget"]').forEach(el => {
-        el.style.opacity = '0.4';
-        el.style.pointerEvents = 'none';
-      });
       return;
     }
 
     document.getElementById('widgetContent').style.display = 'block';
 
-    // AI + промпт
     promptRu.value = s.prompt_ru || '';
     counterRu.textContent = (s.prompt_ru || '').length;
     document.getElementById('industry').value = s.industry || '';
@@ -429,13 +402,11 @@ async function loadSettings() {
     document.getElementById('aiApiKey').value = s.ai_api_key || '';
     document.getElementById('aiBaseUrl').value = s.ai_base_url || '';
 
-    // Виджет стиль
     document.getElementById('widgetTitleRu').value = s.widget_title_ru || 'ИИ-менеджер';
     document.getElementById('widgetWelcomeRu').value = s.widget_welcome_ru || 'Здравствуйте! Чем помочь?';
     document.getElementById('widgetColor').value = s.widget_color || '#00F0FF';
     document.getElementById('widgetColorText').value = s.widget_color || '#00F0FF';
 
-    // Каналы
     document.getElementById('chTelegram').checked = s.channel_telegram_enabled === 1;
     document.getElementById('chSheets').checked = s.channel_sheets_enabled === 1;
     document.getElementById('chWebhook').checked = s.channel_webhook_enabled === 1;
@@ -452,7 +423,6 @@ async function loadSettings() {
   }
 }
 
-// СОХРАНЕНИЕ
 async function saveWidget() {
   const status = document.getElementById('saveStatus');
   status.className = 'form-status';

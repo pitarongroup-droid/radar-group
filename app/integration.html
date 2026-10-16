@@ -64,14 +64,17 @@
   <main class="app-main">
     <header class="app-header">
       <h1 class="app-header-title">Интеграция</h1>
-      <div class="app-header-user">
-        <div class="app-header-user-avatar" id="userAvatar">?</div>
-        <span id="userName">Клиент</span>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <a href="/app/help.html" class="app-help-btn" title="База знаний">?</a>
+        <div class="app-header-user">
+          <div class="app-header-user-avatar" id="userAvatar">?</div>
+          <span id="userName">Клиент</span>
+        </div>
       </div>
     </header>
 
     <div id="loadingBlock" class="dash-section" style="text-align:center; padding:60px 20px;">
-      <div class="spinner" style="width:32px; height:32px; display:inline-block; border:2px solid rgba(0,240,255,.2); border-top-color:#00F0FF; border-radius:50%; animation:spin .8s linear infinite;"></div>
+      <div style="width:32px; height:32px; display:inline-block; border:2px solid rgba(0,240,255,.2); border-top-color:#00F0FF; border-radius:50%; animation:spin .8s linear infinite;"></div>
       <div style="margin-top:16px; color:var(--text-muted);">Загрузка...</div>
     </div>
 
@@ -319,7 +322,6 @@ async function loadData() {
   const loadingBlock = document.getElementById('loadingBlock');
 
   try {
-    // 1. Проверяем настройки
     const res = await fetch('/api/settings', {
       headers: { 'Authorization': 'Bearer ' + token }
     });
@@ -342,18 +344,15 @@ async function loadData() {
 
     const s = data.settings || {};
 
-    // ⚠️ Если услуга виджета выключена — не показываем API-ключ и код
     if (s.widget_enabled !== 1) {
       loadingBlock.style.display = 'none';
       document.getElementById('widgetDisabled').style.display = 'block';
       return;
     }
 
-    // Показываем контент
     loadingBlock.style.display = 'none';
     document.getElementById('integrationContent').style.display = 'block';
 
-    // 2. API-ключ из localStorage (кладётся при регистрации/логине)
     const userData = JSON.parse(localStorage.getItem('user') || '{}');
     const apiKey = userData.apiKey || userData.api_key || null;
 
