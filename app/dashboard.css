@@ -7,6 +7,7 @@
   min-width: 0;
   padding: 32px 40px;
   max-width: 100%;
+  overflow-x: hidden;
 }
 
 .app-header {
@@ -47,6 +48,7 @@
   color: #FFFFFF;
   font-weight: 800;
   font-size: 12px;
+  flex-shrink: 0;
 }
 
 /* ===== STAT CARDS ===== */
@@ -105,10 +107,7 @@
   margin-bottom: 6px;
 }
 
-.stat-card-meta {
-  font-size: 12px;
-  color: var(--text-dim);
-}
+.stat-card-meta { font-size: 12px; color: var(--text-dim); }
 
 /* ===== SECTION ===== */
 .dash-section {
@@ -136,11 +135,7 @@
   gap: 8px;
 }
 
-.dash-section-title svg {
-  width: 18px;
-  height: 18px;
-  color: var(--cyan);
-}
+.dash-section-title svg { width: 18px; height: 18px; color: var(--cyan); }
 
 .dash-section-action {
   font-size: 13px;
@@ -150,9 +145,7 @@
   transition: var(--transition);
 }
 
-.dash-section-action:hover {
-  color: var(--cyan-bright);
-}
+.dash-section-action:hover { color: var(--cyan-bright); }
 
 /* ===== ТАБЛИЦА ===== */
 .data-table {
@@ -178,9 +171,7 @@
   border-bottom: 1px solid var(--border);
 }
 
-.data-table tr:last-child td {
-  border-bottom: none;
-}
+.data-table tr:last-child td { border-bottom: none; }
 
 .data-table tr:hover td {
   background: var(--bg-hover);
@@ -195,6 +186,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  white-space: nowrap;
 }
 
 .badge-success { background: var(--cyan-soft); color: var(--cyan); }
@@ -224,7 +216,7 @@
 
 .chart-bar:hover { opacity: 0.8; }
 
-/* ===== ПУСТОЕ СОСТОЯНИЕ ===== */
+/* ===== ПУСТОЕ СОСТОЯНИЕ (десктоп) ===== */
 .empty-state {
   padding: 40px 20px;
   text-align: center;
@@ -250,7 +242,10 @@
    МОБИЛЬНАЯ ВЕРСИЯ (≤ 640px)
    ============================================ */
 @media (max-width: 640px) {
-  .app-main { padding: 20px 14px 100px; }
+  .app-main {
+    padding: 20px 14px calc(100px + env(safe-area-inset-bottom, 0px));
+    overflow-x: hidden;
+  }
 
   .app-header { margin-bottom: 20px; gap: 12px; }
   .app-header-title { font-size: 22px; }
@@ -274,6 +269,7 @@
   .form-textarea,
   .form-select {
     font-size: 16px !important;
+    touch-action: manipulation;
   }
 
   /* === КАРТОЧКИ === */
@@ -336,11 +332,49 @@
     justify-content: flex-end;
   }
 
-  /* Выравнивание */
   .data-table td .badge { margin-left: auto; }
 
+  /* === ПУСТОЕ СОСТОЯНИЕ === */
+  .data-table td.empty-state,
+  .data-table td[colspan] {
+    display: block !important;
+    text-align: center !important;
+    padding: 40px 20px !important;
+    justify-content: center !important;
+    background: transparent !important;
+    border: none !important;
+    margin: 0 !important;
+  }
+
+  .data-table td.empty-state::before,
+  .data-table td[colspan]::before {
+    content: none !important;
+  }
+
+  .data-table td.empty-state svg {
+    display: block;
+    margin: 0 auto 12px;
+    opacity: 0.5;
+    width: 48px;
+    height: 48px;
+  }
+
+  .data-table td.empty-state > div { text-align: center; }
+
+  /* Убираем hover */
   .data-table tr:hover td {
     background: transparent;
     color: inherit;
   }
+}
+
+/* ============================================
+   ОЧЕНЬ УЗКИЕ ЭКРАНЫ (≤ 360px)
+   ============================================ */
+@media (max-width: 360px) {
+  .stat-card { padding: 14px 12px; }
+  .stat-card-value { font-size: 20px; }
+  .stat-card-label { font-size: 10px; }
+
+  .app-header-title { font-size: 20px; }
 }

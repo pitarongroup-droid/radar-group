@@ -32,6 +32,8 @@
   text-decoration: none;
   margin-bottom: 32px;
   padding: 0 8px;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .sidebar-logo img {
@@ -70,6 +72,10 @@
   font-weight: 500;
   transition: var(--transition);
   position: relative;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .sidebar-link:hover {
@@ -122,6 +128,10 @@
   font-size: 14px;
   font-weight: 500;
   transition: var(--transition);
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .sidebar-bottom .sidebar-logout:hover {
@@ -158,6 +168,7 @@
     border-right: none;
     border-top: 1px solid var(--border);
     padding: 8px;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
     z-index: 100;
     flex-direction: row;
     gap: 4px;
@@ -180,6 +191,7 @@
     padding: 8px 4px;
     flex: 1;
     justify-content: center;
+    touch-action: manipulation;
   }
   .sidebar-link svg { width: 22px; height: 22px; }
   .sidebar-link.active::before { display: none; }
@@ -203,7 +215,22 @@
     justify-content: center;
     border-radius: 10px;
     flex-shrink: 0;
+    touch-action: manipulation;
   }
   .sidebar-bottom .sidebar-logout span { display: none; }
   .sidebar-bottom .sidebar-logout svg { width: 22px; height: 22px; }
+}
+
+/* ============================================
+   ОЧЕНЬ УЗКИЕ ЭКРАНЫ (≤ 360px)
+   ============================================ */
+@media (max-width: 360px) {
+  .sidebar-link {
+    font-size: 9px;
+    padding: 6px 2px;
+  }
+  .sidebar-link svg {
+    width: 20px;
+    height: 20px;
+  }
 }
