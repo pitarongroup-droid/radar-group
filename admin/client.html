@@ -95,9 +95,6 @@
               <option value="approved">✅ approved — одобрен</option>
               <option value="suspended">⛔ suspended — заблокирован</option>
             </select>
-            <div class="form-hint">
-              ⚠️ Пока статус не «approved» — клиент не может войти в кабинет и сохранять настройки.
-            </div>
           </div>
 
           <div class="form-row">
@@ -114,10 +111,27 @@
             </div>
           </div>
 
+          <div class="form-row">
+            <label class="form-label">Разрешить использовать ключ Radar Group</label>
+            <div class="admin-toggles" style="background: rgba(255, 200, 0, 0.05); border: 1px solid rgba(255, 200, 0, 0.25);">
+              <label class="admin-toggle">
+                <input type="checkbox" id="useRadarKeyWidget">
+                <span>🌐 Для виджета — если у клиента нет своего AI-ключа</span>
+              </label>
+              <label class="admin-toggle">
+                <input type="checkbox" id="useRadarKeyBot">
+                <span>🤖 Для Telegram-бота — если у клиента нет своего AI-ключа</span>
+              </label>
+            </div>
+            <div class="form-hint">
+              ⚠️ Если галка включена и у клиента нет своего ключа — используется ваш AI-ключ. Следите за расходами.
+            </div>
+          </div>
+
         </div>
       </section>
 
-      <!-- 👤 ДАННЫЕ КЛИЕНТА -->
+      <!-- 👤 ДАННЫЕ -->
       <section class="dash-section">
         <div class="dash-section-header">
           <h2 class="dash-section-title">
@@ -127,40 +141,33 @@
         </div>
 
         <div class="settings-form">
-
           <div class="form-row">
             <label class="form-label">Имя / название</label>
             <input class="form-input" type="text" id="clientName" maxlength="100">
           </div>
-
           <div class="form-row">
             <label class="form-label">Email</label>
             <input class="form-input" type="email" id="clientEmail" maxlength="150">
           </div>
-
           <div class="form-row">
             <label class="form-label">Телефон</label>
             <input class="form-input" type="text" id="clientPhone" maxlength="30">
           </div>
-
           <div class="form-row">
             <label class="form-label">Компания</label>
             <input class="form-input" type="text" id="clientCompany" maxlength="150">
           </div>
-
           <div class="form-row">
             <label class="form-label">Сайт</label>
             <input class="form-input" type="text" id="clientSiteUrl" maxlength="200" placeholder="https://...">
           </div>
-
           <div class="form-row">
-            <label class="form-label">Язык интерфейса</label>
+            <label class="form-label">Язык</label>
             <select class="form-select" id="clientLanguage">
               <option value="ru">RU</option>
               <option value="en">EN</option>
             </select>
           </div>
-
           <div class="form-row">
             <label class="form-label">Валюта</label>
             <select class="form-select" id="clientCurrency">
@@ -170,7 +177,6 @@
               <option value="RUB">₽ RUB</option>
             </select>
           </div>
-
           <div class="form-row">
             <label class="form-label">План</label>
             <select class="form-select" id="clientPlan">
@@ -179,7 +185,6 @@
               <option value="premium">premium</option>
             </select>
           </div>
-
           <div class="form-row">
             <label class="form-label">API-ключ виджета</label>
             <div class="key-block">
@@ -187,11 +192,10 @@
               <button class="btn btn-outline" onclick="copyApiKey()" style="flex-shrink:0;">Копировать</button>
             </div>
           </div>
-
         </div>
       </section>
 
-      <!-- 🤖 БОТ: TELEGRAM + WEBHOOK -->
+      <!-- 🤖 БОТ -->
       <section class="dash-section">
         <div class="dash-section-header">
           <h2 class="dash-section-title">
@@ -201,19 +205,16 @@
         </div>
 
         <div class="settings-form">
-
           <div class="form-row">
             <label class="form-label">Bot Token</label>
             <input class="form-input" type="text" id="botTelegramToken" placeholder="123456:ABC..." autocomplete="off">
           </div>
-
           <div class="form-row">
             <label class="form-label">Telegram Admin ID</label>
             <input class="form-input" type="text" id="botTelegramAdminId" placeholder="873975856">
           </div>
-
           <div class="form-row">
-            <label class="form-label">Webhook (управление)</label>
+            <label class="form-label">Webhook</label>
             <div style="display:flex; gap:10px; flex-wrap:wrap;">
               <button class="btn btn-outline" onclick="setupWebhook()" style="flex:1; min-width:160px;">
                 🔗 Установить webhook
@@ -223,18 +224,15 @@
               </button>
             </div>
             <div class="form-hint" id="webhookStatus">
-              💡 Webhook нужен, чтобы Telegram отправлял сообщения на VPS-бота.<br>
-              ⚠️ Перед установкой — убедись, что клиент дал Bot Token и указал Admin ID.
+              💡 Webhook нужен, чтобы Telegram отправлял сообщения на VPS-бота.
             </div>
           </div>
-
           <div class="form-row">
             <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
               <input type="checkbox" id="botRemindersEnabled" style="width:18px; height:18px; accent-color:var(--cyan);">
               <span style="font-size:14px; font-weight:600;">Включить напоминания (4 стадии)</span>
             </label>
           </div>
-
           <div class="form-row">
             <label class="form-label">Часы работы</label>
             <select class="form-select" id="botWorkHours">
@@ -243,16 +241,14 @@
               <option value="custom">Custom</option>
             </select>
           </div>
-
           <div class="form-row">
             <label class="form-label">Лимит запросов в день</label>
             <input class="form-input" type="number" id="botMaxDaily" min="0" max="100000" value="1000">
           </div>
-
         </div>
       </section>
 
-      <!-- 🌐 ВИДЖЕТ: ПРОМПТ + AI -->
+      <!-- 🌐 ВИДЖЕТ -->
       <section class="dash-section">
         <div class="dash-section-header">
           <h2 class="dash-section-title">
@@ -262,23 +258,19 @@
         </div>
 
         <div class="settings-form">
-
           <div class="form-row">
             <label class="form-label">Промпт RU</label>
             <textarea class="form-textarea" id="widgetPromptRu" style="min-height:160px;" maxlength="4000"></textarea>
             <div class="counter-row"><span id="counterWidgetPrompt">0</span> / 4000</div>
           </div>
-
           <div class="form-row">
             <label class="form-label">Ниша</label>
             <input class="form-input" type="text" id="widgetIndustry" maxlength="100">
           </div>
-
           <div class="form-row">
             <label class="form-label">Услуги и цены</label>
             <textarea class="form-textarea" id="widgetServices" style="min-height:100px;" maxlength="2000"></textarea>
           </div>
-
           <div class="form-row">
             <label class="form-label">AI-провайдер</label>
             <select class="form-select" id="aiProvider">
@@ -289,27 +281,22 @@
               <option value="deepseek">DeepSeek</option>
             </select>
           </div>
-
           <div class="form-row">
             <label class="form-label">AI API Key</label>
             <input class="form-input" type="text" id="aiApiKey" placeholder="sk-...">
           </div>
-
           <div class="form-row">
             <label class="form-label">AI Base URL</label>
             <input class="form-input" type="text" id="aiBaseUrl" placeholder="https://...">
           </div>
-
           <div class="form-row">
             <label class="form-label">Заголовок виджета (RU)</label>
             <input class="form-input" type="text" id="widgetTitleRu" maxlength="50">
           </div>
-
           <div class="form-row">
             <label class="form-label">Приветствие (RU)</label>
             <textarea class="form-textarea" id="widgetWelcomeRu" maxlength="300" style="min-height:80px;"></textarea>
           </div>
-
           <div class="form-row">
             <label class="form-label">Цвет кнопки</label>
             <div class="color-picker-row">
@@ -317,7 +304,6 @@
               <input class="form-input" type="text" id="widgetColorText" value="#00F0FF" maxlength="7">
             </div>
           </div>
-
         </div>
       </section>
 
@@ -326,28 +312,24 @@
         <div class="dash-section-header">
           <h2 class="dash-section-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/></svg>
-            Настройки Telegram-бота
+            Настройки Telegram-бота (промпт + AI)
           </h2>
         </div>
 
         <div class="settings-form">
-
           <div class="form-row">
             <label class="form-label">Промпт бота (RU)</label>
             <textarea class="form-textarea" id="botPromptRu" style="min-height:200px;" maxlength="8000"></textarea>
             <div class="counter-row"><span id="counterBotPrompt">0</span> / 8000</div>
           </div>
-
           <div class="form-row">
             <label class="form-label">Ниша бота</label>
             <input class="form-input" type="text" id="botIndustry" maxlength="100">
           </div>
-
           <div class="form-row">
             <label class="form-label">Услуги бота</label>
             <textarea class="form-textarea" id="botServices" style="min-height:100px;" maxlength="2000"></textarea>
           </div>
-
           <div class="form-row">
             <label class="form-label">AI-провайдер для бота</label>
             <select class="form-select" id="botAiProvider">
@@ -358,21 +340,17 @@
               <option value="deepseek">DeepSeek</option>
             </select>
           </div>
-
           <div class="form-row">
             <label class="form-label">AI API Key для бота</label>
             <input class="form-input" type="text" id="botAiApiKey" placeholder="sk-...">
           </div>
-
           <div class="form-row">
             <label class="form-label">AI Base URL для бота</label>
             <input class="form-input" type="text" id="botAiBaseUrl" placeholder="https://...">
           </div>
-
         </div>
       </section>
 
-      <!-- 💾 СОХРАНИТЬ -->
       <section class="dash-section" style="text-align:center;">
         <button class="btn btn-primary btn-large" onclick="saveAll()" style="padding:16px 40px; font-size:15px;">
           💾 Сохранить все изменения
@@ -494,6 +472,8 @@ function renderClient() {
   document.getElementById('accountStatus').value = c.account_status || 'pending';
   document.getElementById('widgetEnabled').checked = s.widget_enabled === 1;
   document.getElementById('botEnabled').checked = s.bot_enabled === 1;
+  document.getElementById('useRadarKeyWidget').checked = s.use_radar_ai_key_widget === 1;
+  document.getElementById('useRadarKeyBot').checked = s.use_radar_ai_key_bot === 1;
 
   document.getElementById('clientName').value = c.name || '';
   document.getElementById('clientEmail').value = c.email || '';
@@ -601,6 +581,8 @@ async function saveAll() {
 
     const settingsPayload = {
       client_id: clientId,
+      use_radar_ai_key_widget: document.getElementById('useRadarKeyWidget').checked ? 1 : 0,
+      use_radar_ai_key_bot: document.getElementById('useRadarKeyBot').checked ? 1 : 0,
       bot_telegram_token: document.getElementById('botTelegramToken').value.trim(),
       bot_telegram_admin_id: document.getElementById('botTelegramAdminId').value.trim() || null,
       bot_reminders_enabled: document.getElementById('botRemindersEnabled').checked ? 1 : 0,

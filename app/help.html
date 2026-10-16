@@ -82,13 +82,7 @@
           <circle cx="11" cy="11" r="8"/>
           <path d="M21 21l-4.35-4.35"/>
         </svg>
-        <input
-          type="search"
-          id="kbSearch"
-          class="kb-search"
-          placeholder="Поиск: токен, промпт, лиды, webhook, виджет..."
-          autocomplete="off"
-        >
+        <input type="search" id="kbSearch" class="kb-search" placeholder="Поиск: токен, промпт, лиды, webhook, виджет..." autocomplete="off">
         <button class="kb-search-clear" id="kbClear" style="display:none;" aria-label="Очистить">✕</button>
       </div>
       <div class="kb-stats" id="kbStats"></div>
@@ -98,9 +92,7 @@
 
     <section class="dash-section" id="kbEmpty" style="display:none; text-align:center; padding:50px 20px;">
       <div style="font-size:48px; margin-bottom:12px;">🔍</div>
-      <div style="font-size:16px; font-weight:700; color:var(--text); margin-bottom:8px;">
-        Ничего не найдено
-      </div>
+      <div style="font-size:16px; font-weight:700; color:var(--text); margin-bottom:8px;">Ничего не найдено</div>
       <div style="color:var(--text-muted); line-height:1.6; max-width:400px; margin:0 auto;">
         Попробуйте другие слова. Если не нашли ответ — напишите нам:
         <div style="margin-top:12px;">
@@ -111,19 +103,11 @@
     </section>
 
     <section class="dash-section" style="text-align:center; background:var(--gradient-soft); border-color:var(--border-strong);">
-      <div style="font-size:15px; font-weight:700; color:var(--text); margin-bottom:8px;">
-        Не нашли ответ?
-      </div>
-      <div style="font-size:14px; color:var(--text-muted); line-height:1.6; margin-bottom:16px;">
-        Напишите нам — ответим в течение часа
-      </div>
+      <div style="font-size:15px; font-weight:700; color:var(--text); margin-bottom:8px;">Не нашли ответ?</div>
+      <div style="font-size:14px; color:var(--text-muted); line-height:1.6; margin-bottom:16px;">Напишите нам — ответим в течение часа</div>
       <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-        <a href="https://t.me/my_ai_TGAgency_bot" target="_blank" class="btn btn-primary" style="padding:12px 24px;">
-          💬 Telegram
-        </a>
-        <a href="mailto:pitarongroup@gmail.com" class="btn btn-outline" style="padding:12px 24px;">
-          📧 Email
-        </a>
+        <a href="https://t.me/my_ai_TGAgency_bot" target="_blank" class="btn btn-primary" style="padding:12px 24px;">💬 Telegram</a>
+        <a href="mailto:pitarongroup@gmail.com" class="btn btn-outline" style="padding:12px 24px;">📧 Email</a>
       </div>
     </section>
 
@@ -131,269 +115,132 @@
 </div>
 
 <style>
-  .kb-search-wrap {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
+  .kb-search-wrap { position: relative; display: flex; align-items: center; }
   .kb-search-icon {
-    position: absolute;
-    left: 16px;
-    width: 20px;
-    height: 20px;
-    color: var(--text-dim);
-    pointer-events: none;
-    transition: color 0.2s;
+    position: absolute; left: 16px; width: 20px; height: 20px;
+    color: var(--text-dim); pointer-events: none; transition: color 0.2s;
   }
   .kb-search {
-    width: 100%;
-    padding: 14px 44px 14px 48px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--text);
-    font-family: inherit;
-    font-size: 15px;
-    outline: none;
+    width: 100%; padding: 14px 44px 14px 48px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); color: var(--text);
+    font-family: inherit; font-size: 15px; outline: none;
     transition: var(--transition);
   }
   .kb-search:focus {
-    border-color: var(--cyan);
-    background: var(--bg-hover);
+    border-color: var(--cyan); background: var(--bg-hover);
     box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.12);
   }
-  .kb-search-wrap:focus-within .kb-search-icon {
-    color: var(--cyan);
-  }
-  .kb-search::placeholder {
-    color: var(--text-dim);
-  }
+  .kb-search-wrap:focus-within .kb-search-icon { color: var(--cyan); }
+  .kb-search::placeholder { color: var(--text-dim); }
   .kb-search-clear {
-    position: absolute;
-    right: 12px;
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
-    background: transparent;
-    border: none;
-    color: var(--text-dim);
-    font-size: 16px;
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: absolute; right: 12px; width: 28px; height: 28px;
+    border-radius: 8px; background: transparent; border: none;
+    color: var(--text-dim); font-size: 16px; cursor: pointer;
+    transition: var(--transition); display: flex;
+    align-items: center; justify-content: center;
   }
-  .kb-search-clear:hover {
-    color: var(--cyan);
-    background: var(--cyan-soft);
-  }
-  .kb-stats {
-    margin-top: 10px;
-    font-size: 12px;
-    color: var(--text-dim);
-    min-height: 16px;
-  }
+  .kb-search-clear:hover { color: var(--cyan); background: var(--cyan-soft); }
+  .kb-stats { margin-top: 10px; font-size: 12px; color: var(--text-dim); min-height: 16px; }
 
   .kb-category {
-    background: var(--bg-elevated);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    margin-bottom: 14px;
-    overflow: hidden;
-    transition: var(--transition);
+    background: var(--bg-elevated); border: 1px solid var(--border);
+    border-radius: var(--radius); margin-bottom: 14px;
+    overflow: hidden; transition: var(--transition);
   }
-  .kb-category:hover {
-    border-color: var(--border-strong);
-  }
+  .kb-category:hover { border-color: var(--border-strong); }
   .kb-cat-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 18px 22px;
-    cursor: pointer;
-    user-select: none;
-    -webkit-user-select: none;
-    -webkit-tap-highlight-color: transparent;
+    display: flex; align-items: center; gap: 12px;
+    padding: 18px 22px; cursor: pointer; user-select: none;
+    -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
     transition: var(--transition);
   }
-  .kb-cat-header:hover {
-    background: var(--bg-hover);
-  }
+  .kb-cat-header:hover { background: var(--bg-hover); }
   .kb-cat-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    background: var(--cyan-soft);
-    border: 1px solid rgba(0, 240, 255, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    flex-shrink: 0;
+    width: 40px; height: 40px; border-radius: 12px;
+    background: var(--cyan-soft); border: 1px solid rgba(0, 240, 255, 0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
   }
-  .kb-cat-title {
-    flex: 1;
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--text);
-  }
+  .kb-cat-title { flex: 1; font-size: 16px; font-weight: 700; color: var(--text); }
   .kb-cat-count {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-dim);
-    padding: 3px 10px;
-    background: var(--bg);
-    border-radius: 100px;
-    margin-right: 4px;
+    font-size: 12px; font-weight: 600; color: var(--text-dim);
+    padding: 3px 10px; background: var(--bg);
+    border-radius: 100px; margin-right: 4px;
   }
   .kb-cat-arrow {
-    width: 20px;
-    height: 20px;
-    color: var(--text-dim);
+    width: 20px; height: 20px; color: var(--text-dim);
     transition: transform 0.3s ease;
   }
-  .kb-category.open .kb-cat-arrow {
-    transform: rotate(180deg);
-    color: var(--cyan);
-  }
+  .kb-category.open .kb-cat-arrow { transform: rotate(180deg); color: var(--cyan); }
 
   .kb-questions {
-    max-height: 0;
-    overflow: hidden;
+    max-height: 0; overflow: hidden;
     transition: max-height 0.4s ease;
     border-top: 1px solid transparent;
   }
-  .kb-category.open .kb-questions {
-    max-height: 10000px;
-    border-top-color: var(--border);
-  }
+  .kb-category.open .kb-questions { max-height: 10000px; border-top-color: var(--border); }
 
-  .kb-question {
-    border-bottom: 1px solid var(--border);
-  }
-  .kb-question:last-child {
-    border-bottom: none;
-  }
+  .kb-question { border-bottom: 1px solid var(--border); }
+  .kb-question:last-child { border-bottom: none; }
   .kb-q-head {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 16px 22px;
-    cursor: pointer;
-    user-select: none;
-    -webkit-user-select: none;
-    -webkit-tap-highlight-color: transparent;
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 16px 22px; cursor: pointer; user-select: none;
+    -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
     transition: var(--transition);
   }
-  .kb-q-head:hover {
-    background: var(--bg-hover);
-  }
+  .kb-q-head:hover { background: var(--bg-hover); }
   .kb-q-num {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    font-size: 11px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    margin-top: 2px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--bg); border: 1px solid var(--border);
+    color: var(--text-dim); font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 2px;
   }
-  .kb-q-text {
-    flex: 1;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text);
-    line-height: 1.5;
-  }
+  .kb-q-text { flex: 1; font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.5; }
   .kb-q-plus {
-    width: 20px;
-    height: 20px;
-    color: var(--text-dim);
-    transition: transform 0.3s ease;
-    flex-shrink: 0;
-    margin-top: 2px;
+    width: 20px; height: 20px; color: var(--text-dim);
+    transition: transform 0.3s ease; flex-shrink: 0; margin-top: 2px;
   }
-  .kb-question.open .kb-q-plus {
-    transform: rotate(45deg);
-    color: var(--cyan);
-  }
+  .kb-question.open .kb-q-plus { transform: rotate(45deg); color: var(--cyan); }
 
   .kb-answer {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s ease;
-    background: var(--bg);
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.4s ease; background: var(--bg);
   }
-  .kb-question.open .kb-answer {
-    max-height: 4000px;
-  }
+  .kb-question.open .kb-answer { max-height: 4000px; }
   .kb-answer-inner {
-    padding: 4px 22px 20px 56px;
-    font-size: 14px;
-    color: var(--text-muted);
-    line-height: 1.65;
+    padding: 4px 22px 20px 56px; font-size: 14px;
+    color: var(--text-muted); line-height: 1.65;
   }
-  .kb-answer-inner p {
-    margin-bottom: 10px;
-  }
+  .kb-answer-inner p { margin-bottom: 10px; }
   .kb-answer-inner ol, .kb-answer-inner ul {
-    margin: 8px 0 12px;
-    padding-left: 20px;
+    margin: 8px 0 12px; padding-left: 20px;
   }
-  .kb-answer-inner li {
-    margin-bottom: 6px;
-  }
-  .kb-answer-inner strong {
-    color: var(--text);
-    font-weight: 700;
-  }
+  .kb-answer-inner li { margin-bottom: 6px; }
+  .kb-answer-inner strong { color: var(--text); font-weight: 700; }
   .kb-answer-inner code {
     background: rgba(0, 240, 255, 0.08);
     border: 1px solid rgba(0, 240, 255, 0.15);
-    color: var(--cyan);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-family: 'Courier New', monospace;
-    font-size: 12px;
+    color: var(--cyan); padding: 2px 6px; border-radius: 4px;
+    font-family: 'Courier New', monospace; font-size: 12px;
   }
-  .kb-answer-inner a {
-    color: var(--cyan);
-    text-decoration: none;
-    font-weight: 600;
-  }
-  .kb-answer-inner a:hover {
-    text-decoration: underline;
-  }
+  .kb-answer-inner a { color: var(--cyan); text-decoration: none; font-weight: 600; }
+  .kb-answer-inner a:hover { text-decoration: underline; }
   .kb-answer-inner .kb-tip {
-    margin-top: 12px;
-    padding: 10px 14px;
+    margin-top: 12px; padding: 10px 14px;
     background: rgba(0, 240, 255, 0.06);
-    border-left: 3px solid var(--cyan);
-    border-radius: 6px;
-    font-size: 13px;
+    border-left: 3px solid var(--cyan); border-radius: 6px; font-size: 13px;
   }
   .kb-answer-inner .kb-warn {
-    margin-top: 12px;
-    padding: 10px 14px;
+    margin-top: 12px; padding: 10px 14px;
     background: rgba(255, 200, 0, 0.06);
-    border-left: 3px solid #FFC800;
-    border-radius: 6px;
-    font-size: 13px;
+    border-left: 3px solid #FFC800; border-radius: 6px; font-size: 13px;
   }
-
   mark.kb-hl {
     background: rgba(255, 200, 0, 0.3);
-    color: inherit;
-    padding: 0 2px;
-    border-radius: 2px;
+    color: inherit; padding: 0 2px; border-radius: 2px;
   }
-
   @media (max-width: 640px) {
     .kb-cat-header { padding: 14px 16px; gap: 10px; }
     .kb-cat-icon { width: 34px; height: 34px; font-size: 17px; }
@@ -510,8 +357,8 @@ const KB = [
               <li>Вставьте свой AI API Key</li>
               <li>Если нужен — укажите Base URL</li>
             </ol>
-            <p>Если оставить пусто — используется ключ Radar Group.</p>
-            <div class="kb-tip">💡 Свой ключ — если хотите платить AI-провайдеру напрямую.</div>`
+            <p><strong>Если оставить пусто — виджет не будет работать</strong>, пока менеджер Radar Group не подключит вам общий ключ.</p>
+            <div class="kb-tip">💡 Свой AI-ключ — вы платите AI-провайдеру напрямую. Если ключа нет — напишите менеджеру, он подключит общий ключ Radar (это отдельная опция).</div>`
       }
     ]
   },
@@ -529,6 +376,16 @@ const KB = [
             <p>Можно использовать оба одновременно. Или только один.</p>`
       },
       {
+        q: 'Нужен ли свой AI-ключ для бота?',
+        a: `<p>Да, для работы бота нужен AI-ключ. Есть два варианта:</p>
+            <ol>
+              <li><strong>Свой ключ</strong> — впишите в разделе «Telegram-бот» → «🧠 ИИ и промпт бота» → AI API Key</li>
+              <li><strong>Общий ключ Radar</strong> — напишите менеджеру, он подключит за вас</li>
+            </ol>
+            <p><strong>Если ключа нет — бот не отвечает на сообщения.</strong></p>
+            <div class="kb-warn">⚠️ Ключ Radar Group расходует наши деньги на каждый запрос — он подключается по договорённости и на определённых тарифах.</div>`
+      },
+      {
         q: 'Как создать Telegram-бота и получить токен?',
         a: `<p>Пошагово:</p>
             <ol>
@@ -537,7 +394,7 @@ const KB = [
               <li>Придумайте имя бота (то, что видят пользователи)</li>
               <li>Придумайте username (должен заканчиваться на <code>_bot</code>)</li>
               <li>BotFather пришлёт токен вида <code>123456:ABC-DEF...</code></li>
-              <li>Скопируйте токен и вставьте в поле <strong>Bot Token</strong> в разделе «Telegram-бот»</li>
+              <li>Скопируйте токен и вставьте в поле <strong>Bot Token</strong></li>
             </ol>
             <div class="kb-warn">⚠️ Никому не показывайте токен — это доступ к боту.</div>`
       },
@@ -574,9 +431,9 @@ const KB = [
               <li>Вы написали боту <code>/start</code>?</li>
               <li>В админке нажали <strong>«🔗 Установить webhook»</strong>?</li>
               <li>Услуга <strong>«Telegram-бот»</strong> включена в вашем аккаунте?</li>
+              <li><strong>AI-ключ</strong> — есть? Если нет — бот не отвечает.</li>
             </ol>
-            <p>Если всё верно — напишите в поддержку.</p>
-            <div class="kb-warn">⚠️ Webhook устанавливает админ Radar Group — после вашего сохранения настроек.</div>`
+            <p>Если всё верно — напишите в поддержку.</p>`
       }
     ]
   },
@@ -740,9 +597,7 @@ function render(filter = '') {
     });
 
     if (matchedQuestions.length === 0) return;
-
     totalShown += matchedQuestions.length;
-
     const isOpen = hasQuery ? 'open' : '';
 
     html.push(`
@@ -792,24 +647,20 @@ function plural(n, one, few, many) {
 }
 
 function toggleCategory(headerEl) {
-  const cat = headerEl.closest('.kb-category');
-  cat.classList.toggle('open');
+  headerEl.closest('.kb-category').classList.toggle('open');
 }
 
 function toggleQuestion(headEl) {
-  const q = headEl.closest('.kb-question');
-  q.classList.toggle('open');
+  headEl.closest('.kb-question').classList.toggle('open');
 }
 
 const searchInput = document.getElementById('kbSearch');
 const clearBtn = document.getElementById('kbClear');
-
 let debounceTimer = null;
 
 searchInput.addEventListener('input', (e) => {
   const val = e.target.value;
   clearBtn.style.display = val ? 'flex' : 'none';
-
   clearTimeout(debounceTimer);
   debounceTimer = setTimeout(() => {
     currentQuery = val;

@@ -1,8 +1,8 @@
 // ============================================
-// /api/admin/settings — полные настройки клиента (для АДМИНА)
+// /api/admin/settings — полные настройки клиента (АДМИН)
+// GET  — получить настройки
+// PUT  — сохранить (виджет + бот + AI + каналы + флаги ключа)
 // ⚠️ Проверяет role = admin
-// GET  — получить настройки клиента
-// PUT  — сохранить настройки (виджет + бот + AI + каналы)
 // ============================================
 
 export async function onRequestGet({ request, env }) {
@@ -57,7 +57,7 @@ export async function onRequestPut({ request, env }) {
       );
     }
 
-    // Убедимся, что запись settings существует
+    // Убедиться, что запись существует
     const existing = await env.radar_group_db.prepare(
       'SELECT client_id FROM settings WHERE client_id = ?'
     ).bind(b.client_id).first();
@@ -68,9 +68,7 @@ export async function onRequestPut({ request, env }) {
       ).bind(b.client_id).run();
     }
 
-    // ============================================
     // ВИДЖЕТ
-    // ============================================
     await env.radar_group_db.prepare(
       `UPDATE settings SET
          prompt_ru = COALESCE(?, prompt_ru),
@@ -101,6 +99,8 @@ export async function onRequestPut({ request, env }) {
          admin_allow_sheets = COALESCE(?, admin_allow_sheets),
          admin_allow_webhook = COALESCE(?, admin_allow_webhook),
          admin_allow_email = COALESCE(?, admin_allow_email),
+         use_radar_ai_key_widget = COALESCE(?, use_radar_ai_key_widget),
+         use_radar_ai_key_bot = COALESCE(?, use_radar_ai_key_bot),
          updated_at = unixepoch()
        WHERE client_id = ?`
     ).bind(
@@ -132,12 +132,12 @@ export async function onRequestPut({ request, env }) {
       b.admin_allow_sheets !== undefined ? (b.admin_allow_sheets ? 1 : 0) : null,
       b.admin_allow_webhook !== undefined ? (b.admin_allow_webhook ? 1 : 0) : null,
       b.admin_allow_email !== undefined ? (b.admin_allow_email ? 1 : 0) : null,
+      b.use_radar_ai_key_widget !== undefined ? (b.use_radar_ai_key_widget ? 1 : 0) : null,
+      b.use_radar_ai_key_bot !== undefined ? (b.use_radar_ai_key_bot ? 1 : 0) : null,
       b.client_id
     ).run();
 
-    // ============================================
-    // БОТ (20 новых полей)
-    // ============================================
+    // БОТ
     await env.radar_group_db.prepare(
       `UPDATE settings SET
          bot_prompt_ru = COALESCE(?, bot_prompt_ru),

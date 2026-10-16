@@ -19,9 +19,6 @@ function jsonResponse(data, status = 200) {
   return Response.json(data, { status, headers: CORS_HEADERS });
 }
 
-// ============================================
-// ДЕМО-ПРОМПТ ДЛЯ САЙТА RADAR GROUP (виджет на radar-group.org)
-// ============================================
 const FALLBACK_PROMPT_RU = `Ты — опытный ИИ-менеджер компании Radar Group. Живой продавец-консультант. Ты НЕ скрываешь, что ты ИИ.
 
 НАШИ УСЛУГИ:
@@ -75,27 +72,11 @@ const FALLBACK_PROMPT_EN = `You are an experienced AI Manager at Radar Group. A 
 OUR SERVICES:
 
 1. WEBSITE WIDGET — from 200 BYN/month
-   What's included:
-   — AI manager as a chat on your website
-   — 24/7 lead handling
-   — Objection handling
-   — 4 follow-up stages
-   — Notifications to Telegram, Email, Google Sheets, CRM
-   — Client dashboard
-   — Easy prompt setup
-   — Bitrix24 / amoCRM / HubSpot integration
-
 2. WEBSITE DEVELOPMENT:
    — One-page (landing) — from 500 BYN
-   — Multi-page (corporate) — from 1500 BYN
-   — Basic SEO included
-   — Google Analytics setup — extra
-   — Yandex.Metrica setup — extra
-   — Site conversion setup — extra
-
+   — Multi-page — from 1500 BYN
 3. BUNDLES:
    — Website + widget — 15% off
-   — Telegram bot + widget — separate plan
 
 STRICT FORMAT RULES:
 1. Each message — EXACTLY 2 blocks.
@@ -106,9 +87,6 @@ STRICT FORMAT RULES:
 
 TONE: live, friendly, polite.`;
 
-// ============================================
-// АВТО-ПРОМПТ ДЛЯ КЛИЕНТСКИХ ВИДЖЕТОВ
-// ============================================
 function buildAutoPrompt({ clientName, industry, services, lang }) {
   if (lang === 'en') {
     return `You are a manager at "${clientName}".
@@ -147,16 +125,10 @@ ${services ? `Услуги:\n${services}` : ''}
 ТОН: живой, дружелюбный, на «Вы».`;
 }
 
-// ============================================
-// CORS preflight
-// ============================================
 export async function onRequestOptions() {
   return new Response(null, { status: 204, headers: CORS_HEADERS });
 }
 
-// ============================================
-// POST — основной обработчик
-// ============================================
 export async function onRequestPost(context) {
   const { request, env } = context;
   const BOT_TOKEN = env.BOT_TOKEN;
@@ -168,7 +140,7 @@ export async function onRequestPost(context) {
     const { messages, contact, history, lang, api_key, dialog_id } = body;
     const langSafe = lang === 'en' ? 'en' : 'ru';
 
-    // === RATE LIMIT ===
+    // RATE LIMIT
     const ip = request.headers.get('cf-connecting-ip') || 'unknown';
     const now = Date.now();
     const record = RATE_LIMIT_MAP.get(ip) || { count: 0, resetAt: now + RATE_LIMIT_WINDOW_MS };
@@ -181,15 +153,14 @@ export async function onRequestPost(context) {
     RATE_LIMIT_MAP.set(ip, record);
 
     if (record.count > RATE_LIMIT_MAX) {
-      return jsonResponse(
-        { error: langSafe === 'en'
+      return jsonResponse({
+        error: langSafe === 'en'
           ? 'Too many messages. Please wait a couple of minutes 🙂'
-          : 'Слишком много сообщений. Подождите пару минут 🙂' },
-        429
-      );
+          : 'Слишком много сообщений. Подождите пару минут 🙂'
+      }, 429);
     }
 
-    // === НАЙТИ КЛИЕНТА ===
+    // НАЙТИ КЛИЕНТА
     let client = null;
     let settings = null;
     const isDemo = !api_key;
@@ -199,21 +170,15 @@ export async function onRequestPost(context) {
         `SELECT id, name, status FROM clients WHERE api_key = ?`
       ).bind(api_key).first();
 
-      if (!client) {
-        return jsonResponse({ error: 'Неверный API-ключ' }, 401);
-      }
-      if (client.status === 'suspended') {
-        return jsonResponse({ error: 'Виджет отключён' }, 403);
-      }
+      if (!client) return jsonResponse({ error: 'Неверный API-ключ' }, 401);
+      if (client.status === 'suspended') return jsonResponse({ error: 'Виджет отключён' }, 403);
 
       settings = await env.radar_group_db.prepare(
         `SELECT * FROM settings WHERE client_id = ?`
       ).bind(client.id).first();
     }
 
-    // ============================================
-    // ЛИД — отправка по всем включённым каналам
-    // ============================================
+    // ЛИД
     if (contact) {
       if (dialog_id && !isDemo) {
         await env.radar_group_db.prepare(
@@ -246,23 +211,18 @@ export async function onRequestPost(context) {
 
       let sent = false;
 
-      // 1. TELEGRAM
       const canTelegram = settings?.channel_telegram_enabled && settings?.admin_allow_telegram;
       if (canTelegram && settings?.telegram_token && settings?.telegram_admin_id) {
         try {
           await fetch(`https://api.telegram.org/bot${settings.telegram_token}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              chat_id: settings.telegram_admin_id,
-              text: leadText
-            })
+            body: JSON.stringify({ chat_id: settings.telegram_admin_id, text: leadText })
           });
           sent = true;
         } catch (e) { console.error('TG error:', e); }
       }
 
-      // 2. GOOGLE SHEETS
       const canSheets = settings?.channel_sheets_enabled && settings?.admin_allow_sheets;
       if (canSheets && settings?.sheets_url) {
         try {
@@ -281,17 +241,13 @@ export async function onRequestPost(context) {
         } catch (e) { console.error('Sheets error:', e); }
       }
 
-      // 3. WEBHOOK (CRM)
       const canWebhook = settings?.channel_webhook_enabled && settings?.admin_allow_webhook;
       if (canWebhook && settings?.webhook_url) {
         try {
           const payload = JSON.stringify({
-            event: 'lead.created',
-            lang: langSafe,
+            event: 'lead.created', lang: langSafe,
             timestamp: new Date().toISOString(),
-            client_id: client.id,
-            dialog_id: dialog_id,
-            source: 'widget',
+            client_id: client.id, dialog_id, source: 'widget',
             lead: { contact, message: history?.slice(-1)[0]?.content || '' }
           });
           await fetch(settings.webhook_url, {
@@ -306,13 +262,11 @@ export async function onRequestPost(context) {
         } catch (e) { console.error('Webhook error:', e); }
       }
 
-      // 4. EMAIL (заготовка)
       const canEmail = settings?.channel_email_enabled && settings?.admin_allow_email;
       if (canEmail && settings?.notification_email) {
         console.log('Email would be sent to:', settings.notification_email);
       }
 
-      // FALLBACK — если ни один канал не сработал → вам
       if (!sent && BOT_TOKEN && CHAT_ID) {
         await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
           method: 'POST',
@@ -324,16 +278,13 @@ export async function onRequestPost(context) {
       return jsonResponse({ ok: true });
     }
 
-    // ============================================
-    // ВЫБОР ПРОМПТА
-    // ============================================
+    // ПРОМПТ
     let SYSTEM_PROMPT;
 
     if (isDemo) {
       SYSTEM_PROMPT = langSafe === 'en' ? FALLBACK_PROMPT_EN : FALLBACK_PROMPT_RU;
     } else {
       const manualPrompt = langSafe === 'en' ? settings?.prompt_en : settings?.prompt_ru;
-
       if (manualPrompt && manualPrompt.trim().length >= 200) {
         SYSTEM_PROMPT = manualPrompt.trim();
       } else {
@@ -346,10 +297,21 @@ export async function onRequestPost(context) {
       }
     }
 
-    // ============================================
-    // AI-КЛЮЧ
-    // ============================================
-    const AI_KEY = isDemo ? FALLBACK_AI_KEY : (settings?.ai_api_key || null);
+    // ⚠️ AI-КЛЮЧ с учётом галки use_radar_ai_key_widget
+    let AI_KEY = null;
+
+    if (isDemo) {
+      AI_KEY = FALLBACK_AI_KEY;
+    } else {
+      // Свой ключ клиента — приоритет
+      if (settings?.ai_api_key) {
+        AI_KEY = settings.ai_api_key;
+      }
+      // Fallback на ключ Radar — только если админ разрешил
+      else if (settings?.use_radar_ai_key_widget === 1 && FALLBACK_AI_KEY) {
+        AI_KEY = FALLBACK_AI_KEY;
+      }
+    }
 
     if (!AI_KEY) {
       return jsonResponse({
@@ -359,36 +321,31 @@ export async function onRequestPost(context) {
       }, 503);
     }
 
-    // Создать диалог, если нужно
+    // СОЗДАТЬ ДИАЛОГ
     let activeDialogId = dialog_id;
     if (!activeDialogId && !isDemo) {
       activeDialogId = 'dlg_' + crypto.randomUUID().slice(0, 8);
       await env.radar_group_db.prepare(
-        `INSERT INTO dialogs (id, client_id, channel, status)
-         VALUES (?, ?, 'widget', 'active')`
+        `INSERT INTO dialogs (id, client_id, channel, status) VALUES (?, ?, 'widget', 'active')`
       ).bind(activeDialogId, client.id).run();
     }
 
-    // === УНИВЕРСАЛЬНЫЙ ВЫЗОВ AI ===
+    // AI
     const provider = isDemo ? 'proxyapi' : (settings?.ai_provider || 'proxyapi');
     const baseUrl = isDemo ? null : (settings?.ai_base_url || null);
 
     const reply = await callAI({
-      provider,
-      apiKey: AI_KEY,
-      baseUrl,
+      provider, apiKey: AI_KEY, baseUrl,
       systemPrompt: SYSTEM_PROMPT,
       messages: messages || []
     });
 
-    // === ЗАПИСЬ В БД ===
+    // ЗАПИСЬ
     if (activeDialogId && !isDemo) {
       const lastUserMsg = messages?.[messages.length - 1];
-
       if (lastUserMsg?.content) {
         await env.radar_group_db.prepare(
-          `INSERT INTO messages (id, dialog_id, role, content)
-           VALUES (?, ?, 'user', ?)`
+          `INSERT INTO messages (id, dialog_id, role, content) VALUES (?, ?, 'user', ?)`
         ).bind('msg_' + crypto.randomUUID().slice(0, 8), activeDialogId, lastUserMsg.content).run();
       }
 
@@ -400,11 +357,7 @@ export async function onRequestPost(context) {
 
     const contactReady = /инженер|engineer|менеджер|manager/i.test(reply);
 
-    return jsonResponse({
-      reply: reply.trim(),
-      contactReady,
-      dialog_id: activeDialogId
-    });
+    return jsonResponse({ reply: reply.trim(), contactReady, dialog_id: activeDialogId });
 
   } catch (err) {
     console.error('Chat error:', err);
@@ -412,20 +365,12 @@ export async function onRequestPost(context) {
   }
 }
 
-// ============================================
-// УНИВЕРСАЛЬНЫЙ ВЫЗОВ AI
-// ============================================
 async function callAI({ provider, apiKey, baseUrl, systemPrompt, messages }) {
-  if (provider === 'claude') {
-    return await callClaude({ apiKey, baseUrl, systemPrompt, messages });
-  }
-  if (provider === 'gemini') {
-    return await callGemini({ apiKey, baseUrl, systemPrompt, messages });
-  }
+  if (provider === 'claude') return await callClaude({ apiKey, baseUrl, systemPrompt, messages });
+  if (provider === 'gemini') return await callGemini({ apiKey, baseUrl, systemPrompt, messages });
   return await callOpenAI({ provider, apiKey, baseUrl, systemPrompt, messages });
 }
 
-// --- OpenAI-совместимые ---
 async function callOpenAI({ provider, apiKey, baseUrl, systemPrompt, messages }) {
   let url = baseUrl;
   if (!url) {
@@ -442,27 +387,19 @@ async function callOpenAI({ provider, apiKey, baseUrl, systemPrompt, messages })
     },
     body: JSON.stringify({
       model: 'gpt-4o-mini',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        ...messages
-      ],
-      temperature: 0.7,
-      max_tokens: 200,
-      frequency_penalty: 0.6,
-      presence_penalty: 0.6
+      messages: [{ role: 'system', content: systemPrompt }, ...messages],
+      temperature: 0.7, max_tokens: 200,
+      frequency_penalty: 0.6, presence_penalty: 0.6
     })
   });
 
   const data = await res.json();
   if (!res.ok) throw new Error(data.error?.message || 'AI error');
-
   return data.choices[0].message.content;
 }
 
-// --- Anthropic Claude ---
 async function callClaude({ apiKey, baseUrl, systemPrompt, messages }) {
   const url = baseUrl || 'https://api.anthropic.com/v1/messages';
-
   const res = await fetch(url, {
     method: 'POST',
     headers: {
@@ -472,19 +409,14 @@ async function callClaude({ apiKey, baseUrl, systemPrompt, messages }) {
     },
     body: JSON.stringify({
       model: 'claude-3-5-sonnet-20241022',
-      max_tokens: 200,
-      system: systemPrompt,
-      messages: messages
+      max_tokens: 200, system: systemPrompt, messages
     })
   });
-
   const data = await res.json();
   if (!res.ok) throw new Error(data.error?.message || 'Claude error');
-
   return data.content[0].text;
 }
 
-// --- Google Gemini ---
 async function callGemini({ apiKey, baseUrl, systemPrompt, messages }) {
   const defaultUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
   const url = baseUrl ? `${baseUrl}?key=${apiKey}` : defaultUrl;
@@ -503,14 +435,11 @@ async function callGemini({ apiKey, baseUrl, systemPrompt, messages }) {
       generationConfig: { temperature: 0.7, maxOutputTokens: 200 }
     })
   });
-
   const data = await res.json();
   if (!res.ok) throw new Error(data.error?.message || 'Gemini error');
-
   return data.candidates[0].content.parts[0].text;
 }
 
-// --- HMAC для webhook ---
 async function hmacSign(data, secret) {
   const key = await crypto.subtle.importKey(
     'raw', new TextEncoder().encode(secret),

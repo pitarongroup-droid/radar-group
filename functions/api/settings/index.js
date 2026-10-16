@@ -4,7 +4,6 @@
 // Проверяет account_status + widget_enabled/bot_enabled
 // ============================================
 
-// ⚠️ БЕЛЫЙ СПИСОК — что клиент МОЖЕТ менять сам
 const CLIENT_FIELDS_WIDGET = [
   'prompt_ru', 'prompt_en',
   'ai_provider', 'ai_api_key', 'ai_base_url',
@@ -35,7 +34,6 @@ const CLIENT_FIELDS_BOT = [
   'bot_work_hours', 'bot_reminders_enabled', 'bot_max_daily'
 ];
 
-// ⚠️ ЧЁРНЫЙ СПИСОК — что клиент НЕ может менять (только админ)
 const ADMIN_ONLY_FIELDS = [
   'account_status',
   'widget_enabled',
@@ -43,28 +41,23 @@ const ADMIN_ONLY_FIELDS = [
   'admin_allow_telegram',
   'admin_allow_sheets',
   'admin_allow_webhook',
-  'admin_allow_email'
+  'admin_allow_email',
+  'use_radar_ai_key_widget',
+  'use_radar_ai_key_bot'
 ];
 
-// ============================================
-// GET — отдать настройки
-// ============================================
 export async function onRequestGet(context) {
   const { request, env } = context;
 
   try {
     const user = await getUserFromToken(request, env);
-    if (!user) {
-      return error('Не авторизован', 'Unauthorized', 401);
-    }
+    if (!user) return error('Не авторизован', 'Unauthorized', 401);
 
     const client = await env.radar_group_db.prepare(
       'SELECT account_status FROM clients WHERE id = ?'
     ).bind(user.clientId).first();
 
-    if (!client) {
-      return error('Клиент не найден', 'Client not found', 404);
-    }
+    if (!client) return error('Клиент не найден', 'Client not found', 404);
 
     if (client.account_status !== 'approved') {
       return Response.json({
@@ -81,11 +74,7 @@ export async function onRequestGet(context) {
       `SELECT * FROM settings WHERE client_id = ?`
     ).bind(user.clientId).first();
 
-    if (!settings) {
-      return error('Настройки не найдены', 'Settings not found', 404);
-    }
-
-    // ⚠️ Убираем админские поля из ответа? Нет — они нужны, чтобы клиент видел статус услуги.
+    if (!settings) return error('Настройки не найдены', 'Settings not found', 404);
 
     return Response.json({ ok: true, settings });
 
@@ -95,19 +84,13 @@ export async function onRequestGet(context) {
   }
 }
 
-// ============================================
-// PUT — сохранить настройки
-// ============================================
 export async function onRequestPut(context) {
   const { request, env } = context;
 
   try {
     const user = await getUserFromToken(request, env);
-    if (!user) {
-      return error('Не авторизован', 'Unauthorized', 401);
-    }
+    if (!user) return error('Не авторизован', 'Unauthorized', 401);
 
-    // ⚠️ Проверка статуса аккаунта
     const client = await env.radar_group_db.prepare(
       'SELECT account_status FROM clients WHERE id = ?'
     ).bind(user.clientId).first();
@@ -123,33 +106,23 @@ export async function onRequestPut(context) {
       }, { status: 403 });
     }
 
-    // ⚠️ Проверка, какие услуги включены
     const current = await env.radar_group_db.prepare(
       `SELECT widget_enabled, bot_enabled FROM settings WHERE client_id = ?`
     ).bind(user.clientId).first();
 
-    if (!current) {
-      return error('Настройки не найдены', 'Settings not found', 404);
-    }
+    if (!current) return error('Настройки не найдены', 'Settings not found', 404);
 
     const body = await request.json();
     const clean = {};
 
-    // ⚠️ 1. Убираем админские поля
     for (const key of Object.keys(body)) {
       if (ADMIN_ONLY_FIELDS.includes(key)) continue;
       clean[key] = body[key];
     }
 
-    // ⚠️ 2. Оставляем только те поля, к которым у клиента есть доступ
     const allowed = [];
-
-    if (current.widget_enabled === 1) {
-      allowed.push(...CLIENT_FIELDS_WIDGET);
-    }
-    if (current.bot_enabled === 1) {
-      allowed.push(...CLIENT_FIELDS_BOT);
-    }
+    if (current.widget_enabled === 1) allowed.push(...CLIENT_FIELDS_WIDGET);
+    if (current.bot_enabled === 1) allowed.push(...CLIENT_FIELDS_BOT);
 
     const filtered = {};
     for (const key of Object.keys(clean)) {
@@ -162,7 +135,6 @@ export async function onRequestPut(context) {
       return error('Нет данных для сохранения', 'No data to save', 400);
     }
 
-    // ⚠️ Валидация промптов
     if (filtered.prompt_ru !== undefined && filtered.prompt_ru) {
       const len = String(filtered.prompt_ru).length;
       if (len < 200 || len > 4000) {
@@ -188,7 +160,6 @@ export async function onRequestPut(context) {
       }
     }
 
-    // ⚠️ UPDATE — динамически по полям
     const fields = Object.keys(filtered);
     const values = Object.values(filtered);
     const setClause = fields.map(f => `${f} = ?`).join(', ');
@@ -205,8 +176,6 @@ export async function onRequestPut(context) {
     return error('Ошибка сервера', 'Server error', 500);
   }
 }
-
-// ─── helpers ───
 
 function error(ru, en, status = 400) {
   return Response.json({ ok: false, error: { ru, en } }, { status });
@@ -249,9 +218,7 @@ async function getUserFromToken(request, env) {
 
   try {
     const payloadObj = JSON.parse(base64UrlDecode(payload));
-    if (payloadObj.exp && payloadObj.exp < Math.floor(Date.now() / 1000)) {
-      return null;
-    }
+    if (payloadObj.exp && payloadObj.exp < Math.floor(Date.now() / 1000)) return null;
     return payloadObj;
   } catch {
     return null;
