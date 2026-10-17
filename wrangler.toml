@@ -2,6 +2,10 @@ name = "radar-group"
 compatibility_date = "2024-10-01"
 pages_build_output_dir = "."
 
+[vars]
+BOT_HOST = "https://bot.radar-group.org"
+VPS_RELOAD_URL = "https://bot.radar-group.org/reload"
+
 [[d1_databases]]
 binding = "radar_group_db"
 database_name = "radar-group-db"
