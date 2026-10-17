@@ -140,6 +140,7 @@ export async function onRequestPut({ request, env }) {
     // БОТ
     await env.radar_group_db.prepare(
       `UPDATE settings SET
+         bot_greeting_ru = COALESCE(?, bot_greeting_ru),
          bot_prompt_ru = COALESCE(?, bot_prompt_ru),
          bot_prompt_en = COALESCE(?, bot_prompt_en),
          bot_ai_provider = COALESCE(?, bot_ai_provider),
@@ -163,6 +164,7 @@ export async function onRequestPut({ request, env }) {
          updated_at = unixepoch()
        WHERE client_id = ?`
     ).bind(
+      b.bot_greeting_ru ?? null,
       b.bot_prompt_ru ?? null,
       b.bot_prompt_en ?? null,
       b.bot_ai_provider ?? null,

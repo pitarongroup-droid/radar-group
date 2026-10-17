@@ -318,6 +318,11 @@
 
         <div class="settings-form">
           <div class="form-row">
+            <label class="form-label">Приветствие бота (текст команды /start)</label>
+            <textarea class="form-textarea" id="botGreetingRu" style="min-height:100px;" maxlength="2000"></textarea>
+            <div class="form-hint">Этот текст бот напишет первым, когда клиент нажмет /start</div>
+          </div>
+          <div class="form-row">
             <label class="form-label">Промпт бота (RU)</label>
             <textarea class="form-textarea" id="botPromptRu" style="min-height:200px;" maxlength="8000"></textarea>
             <div class="counter-row"><span id="counterBotPrompt">0</span> / 8000</div>
@@ -503,6 +508,7 @@ function renderClient() {
   document.getElementById('widgetColorText').value = s.widget_color || '#00F0FF';
 
   document.getElementById('botPromptRu').value = s.bot_prompt_ru || '';
+  document.getElementById('botGreetingRu').value = s.bot_greeting_ru || '';
   document.getElementById('botIndustry').value = s.bot_industry || '';
   document.getElementById('botServices').value = s.bot_services || '';
   document.getElementById('botAiProvider').value = s.bot_ai_provider || 'proxyapi';
@@ -598,6 +604,7 @@ async function saveAll() {
       widget_welcome_ru: document.getElementById('widgetWelcomeRu').value.trim(),
       widget_color: document.getElementById('widgetColor').value,
       bot_prompt_ru: document.getElementById('botPromptRu').value,
+      bot_greeting_ru: document.getElementById('botGreetingRu').value,
       bot_industry: document.getElementById('botIndustry').value.trim(),
       bot_services: document.getElementById('botServices').value.trim(),
       bot_ai_provider: document.getElementById('botAiProvider').value,
