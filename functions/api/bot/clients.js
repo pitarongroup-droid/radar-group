@@ -24,7 +24,7 @@ export async function onRequestGet({ request, env }) {
          s.bot_telegram_admin_id,
          s.bot_prompt_ru,
          s.bot_prompt_en,
-         s.bot_greeting_ru,  // <-- ДОБАВЛЕНО
+         s.bot_greeting_ru,
          s.bot_ai_provider,
          s.bot_ai_api_key,
          s.bot_ai_base_url,
