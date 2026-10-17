@@ -48,7 +48,7 @@ export async function onRequestGet({ request, env }) {
       telegram_admin_id: c.bot_telegram_admin_id,
       prompt_ru: c.bot_prompt_ru,
       prompt_en: c.bot_prompt_en,
-      greeting_ru: c.bot_greeting_ru, // <-- ДОБАВЛЕНО
+      greeting_ru: c.bot_greeting_ru,
       ai_provider: c.bot_ai_provider || 'proxyapi',
       ai_api_key: c.bot_ai_api_key,
       ai_base_url: c.bot_ai_base_url,
