@@ -2141,3 +2141,72 @@ body::before {
     padding-bottom: calc(12px + env(safe-area-inset-bottom, 0));
   }
 }
+/* ============================================
+   МИНИМАЛИСТИЧНЫЙ ПОДВАЛ ДЛЯ МОБИЛЬНЫХ
+   ============================================ */
+@media (max-width: 640px) {
+  
+  /* СКРЫВАЕМ ВСЕ КОЛОНКИ СО ССЫЛКАМИ НА ТЕЛЕФОНЕ */
+  .footer-columns {
+    display: none !important;
+  }
+
+  /* Делаем подвал компактным и центрируем всё */
+  .footer {
+    padding-top: 32px !important;
+    padding-bottom: 90px !important; /* Место для робота */
+    text-align: center !important;
+  }
+
+  .footer-main {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding-bottom: 0 !important;
+    border-bottom: none !important;
+  }
+
+  .footer-brand {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    max-width: 100% !important;
+    margin-bottom: 24px !important;
+  }
+
+  .footer-logo {
+    justify-content: center !important;
+    margin-bottom: 12px !important;
+  }
+
+  .footer-brand .footer-copy {
+    text-align: center !important;
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+  }
+
+  /* Нижняя часть (копирайт и иконка) */
+  .footer-bottom {
+    display: flex !important;
+    flex-direction: column-reverse !important; /* Иконка сверху, текст снизу */
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 16px !important;
+    padding-top: 0 !important;
+    border-top: none !important;
+  }
+
+  .footer-copy {
+    font-size: 12px !important;
+    text-align: center !important;
+  }
+
+  .footer-tg {
+    width: 44px !important;
+    height: 44px !important;
+    background: var(--bg-elevated) !important;
+    border: 1px solid var(--border-strong) !important;
+    border-radius: 12px !important;
+  }
+}
