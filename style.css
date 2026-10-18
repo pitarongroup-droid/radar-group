@@ -1,5 +1,5 @@
 /* ============================================
-   RADAR GROUP — Тёмная тема v6.2
+   RADAR GROUP — Тёмная тема v6.3 (Фикс меню)
    Мультиязычный сайт, компактная форма
    Скрытый скроллбар, без дёрганий
    ============================================ */
@@ -111,7 +111,7 @@ body::before {
   align-items: center;
   justify-content: space-between;
   padding: 14px 0;
-  gap: 24px;
+  gap: 20px;
 }
 
 .logo {
@@ -124,6 +124,7 @@ body::before {
   font-size: 18px;
   letter-spacing: 0.5px;
   transition: var(--transition);
+  flex-shrink: 0; /* Чтобы логотип не сжимался */
 }
 
 .logo img {
@@ -154,9 +155,19 @@ body::before {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  white-space: nowrap; /* Запрет переноса текста логотипа */
 }
 
-.nav { display: flex; gap: 28px; list-style: none; }
+.nav { 
+  display: flex; 
+  gap: 24px; 
+  list-style: none; 
+  align-items: center;
+}
+
+.nav > li {
+  position: relative;
+}
 
 .nav a {
   color: var(--text-muted);
@@ -166,9 +177,10 @@ body::before {
   transition: var(--transition);
   position: relative;
   padding: 4px 0;
+  white-space: nowrap;
 }
 
-.nav a::after {
+.nav > li > a::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -179,10 +191,72 @@ body::before {
   transition: width 0.3s ease;
 }
 
-.nav a:hover { color: var(--text); }
-.nav a:hover::after { width: 100%; }
+.nav > li > a:hover { color: var(--text); }
+.nav > li > a:hover::after { width: 100%; }
 
-.header-cta { display: flex; align-items: center; gap: 14px; }
+/* ===== ВЫПАДАЮЩЕЕ МЕНЮ ===== */
+.nav-item-dropdown {
+  position: relative;
+}
+
+.nav-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 8px 0;
+  min-width: 220px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+  
+  /* Скрываем меню */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  
+  /* Выстраиваем вертикально */
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px; /* Отступ от ссылки "Услуги" */
+}
+
+.nav-item-dropdown:hover .nav-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.nav-dropdown-menu a {
+  display: block;
+  padding: 12px 20px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.nav-dropdown-menu a::after {
+  display: none; /* Убираем линию подчеркивания для выпадающих пунктов */
+}
+
+.nav-dropdown-menu a:hover {
+  background: var(--bg-hover);
+  color: var(--cyan);
+  padding-left: 24px;
+}
+
+/* ===== ОСТАЛЬНЫЕ ЭЛЕМЕНТЫ ШАПКИ ===== */
+.header-cta { 
+  display: flex; 
+  align-items: center; 
+  gap: 12px; 
+  flex-shrink: 0;
+}
 
 /* ===== ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА ===== */
 .lang-switch {
@@ -275,7 +349,7 @@ body::before {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 13px 26px;
+  padding: 12px 22px;
   border-radius: var(--radius-sm);
   font-size: 14px;
   font-weight: 700;
@@ -370,7 +444,6 @@ body::before {
   50% { background-position: 100% 50%; }
 }
 
-/* ✅ ИЗМЕНЕНО: max-width: 800px — как у .section-header */
 .hero-sub {
   font-size: 16px;
   color: var(--text-muted);
@@ -1487,6 +1560,20 @@ body::before {
   background: var(--cyan-soft);
 }
 
+/* Подменю в мобильном меню */
+.mobile-submenu {
+  padding-left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.mobile-submenu a {
+  font-size: 14px;
+  padding: 10px 16px;
+}
+
 .mobile-menu .btn {
   width: 100%;
   margin-top: 8px;
@@ -1691,20 +1778,9 @@ body::before {
     height: 10px;
   }
 
-  .form-step-title {
-    font-size: 13px;
-  }
-
-  .form-step-num {
-    width: 22px;
-    height: 22px;
-    font-size: 11px;
-  }
-
-  .form-submit-hero {
-    padding: 16px 20px;
-    font-size: 14px;
-  }
+  .form-step-title { font-size: 13px; }
+  .form-step-num { width: 22px; height: 22px; font-size: 11px; }
+  .form-submit-hero { padding: 16px 20px; font-size: 14px; }
 }
 
 /* ============================================
@@ -1748,11 +1824,7 @@ body::before {
   border-bottom: 1px solid var(--border);
 }
 
-.chat-header-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
+.chat-header-info { display: flex; align-items: center; gap: 12px; }
 
 .chat-avatar {
   width: 40px;
@@ -1767,22 +1839,11 @@ body::before {
   box-shadow: 0 4px 14px rgba(0, 240, 255, 0.3);
 }
 
-.chat-avatar svg {
-  width: 22px;
-  height: 22px;
-}
+.chat-avatar svg { width: 22px; height: 22px; }
 
-.chat-header-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
+.chat-header-text { display: flex; flex-direction: column; gap: 2px; }
 
-.chat-header-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text);
-}
+.chat-header-title { font-size: 15px; font-weight: 700; color: var(--text); }
 
 .chat-header-status {
   font-size: 12px;
@@ -1832,10 +1893,7 @@ body::before {
   scrollbar-width: none;
 }
 
-.chat-body::-webkit-scrollbar {
-  width: 0;
-  display: none;
-}
+.chat-body::-webkit-scrollbar { width: 0; display: none; }
 
 .chat-message {
   max-width: 85%;
@@ -1901,11 +1959,7 @@ body::before {
   background: var(--bg);
 }
 
-.chat-form {
-  display: flex;
-  gap: 8px;
-  align-items: flex-end;
-}
+.chat-form { display: flex; gap: 8px; align-items: flex-end; }
 
 .chat-input {
   flex: 1;
@@ -1932,9 +1986,7 @@ body::before {
   box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.1);
 }
 
-.chat-input::placeholder {
-  color: var(--text-dim);
-}
+.chat-input::placeholder { color: var(--text-dim); }
 
 .chat-send {
   width: 44px;
@@ -1963,10 +2015,7 @@ body::before {
   transform: none;
 }
 
-.chat-send svg {
-  width: 18px;
-  height: 18px;
-}
+.chat-send svg { width: 18px; height: 18px; }
 
 .chat-note {
   text-align: center;
@@ -1977,10 +2026,7 @@ body::before {
   border-top: 1px solid var(--border);
 }
 
-.chat-note a {
-  color: var(--cyan);
-  text-decoration: none;
-}
+.chat-note a { color: var(--cyan); text-decoration: none; }
 
 @media (max-width: 640px) {
   .chat-widget {
@@ -1997,9 +2043,7 @@ body::before {
     z-index: 9999;
   }
 
-  .chat-body {
-    padding: 16px;
-  }
+  .chat-body { padding: 16px; }
 
   .chat-message {
     max-width: 90%;
