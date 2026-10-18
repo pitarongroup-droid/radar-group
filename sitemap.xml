@@ -4,60 +4,89 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://radar-group.org/</loc>
-    <lastmod>2026-10-10</lastmod>
+    <lastmod>2026-10-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://radar-group.org/en/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://radar-group.org/"/>
-    <image:image>
-      <image:loc>https://radar-group.org/images/og-image.jpg</image:loc>
-      <image:title>Radar Group — AI Sales Manager</image:title>
-    </image:image>
   </url>
   <url>
     <loc>https://radar-group.org/en/</loc>
-    <lastmod>2026-10-10</lastmod>
+    <lastmod>2026-10-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://radar-group.org/en/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://radar-group.org/"/>
   </url>
+  <!-- Услуги RU -->
+  <url>
+    <loc>https://radar-group.org/services-telegram-business.html</loc>
+    <lastmod>2026-10-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/services-telegram-business.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://radar-group.org/en/services-telegram-business.html"/>
+  </url>
+  <url>
+    <loc>https://radar-group.org/services-telegram-bot.html</loc>
+    <lastmod>2026-10-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/services-telegram-bot.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://radar-group.org/en/services-telegram-bot.html"/>
+  </url>
+  <url>
+    <loc>https://radar-group.org/services-widget.html</loc>
+    <lastmod>2026-10-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/services-widget.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://radar-group.org/en/services-widget.html"/>
+  </url>
+  <url>
+    <loc>https://radar-group.org/services-webdev.html</loc>
+    <lastmod>2026-10-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/services-webdev.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://radar-group.org/en/services-webdev.html"/>
+  </url>
+  <!-- Услуги EN -->
+  <url>
+    <loc>https://radar-group.org/en/services-telegram-business.html</loc>
+    <lastmod>2026-10-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://radar-group.org/en/services-telegram-bot.html</loc>
+    <lastmod>2026-10-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://radar-group.org/en/services-widget.html</loc>
+    <lastmod>2026-10-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://radar-group.org/en/services-webdev.html</loc>
+    <lastmod>2026-10-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <!-- Другие страницы -->
   <url>
     <loc>https://radar-group.org/cases.html</loc>
-    <lastmod>2026-10-10</lastmod>
+    <lastmod>2026-10-18</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/cases.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://radar-group.org/en/cases.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://radar-group.org/cases.html"/>
-  </url>
-  <url>
-    <loc>https://radar-group.org/en/cases.html</loc>
-    <lastmod>2026-10-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/cases.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://radar-group.org/en/cases.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://radar-group.org/cases.html"/>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://radar-group.org/about.html</loc>
-    <lastmod>2026-10-10</lastmod>
+    <lastmod>2026-10-18</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/about.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://radar-group.org/en/about.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://radar-group.org/about.html"/>
-  </url>
-  <url>
-    <loc>https://radar-group.org/en/about.html</loc>
-    <lastmod>2026-10-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/about.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://radar-group.org/en/about.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://radar-group.org/about.html"/>
+    <priority>0.7</priority>
   </url>
 </urlset>
