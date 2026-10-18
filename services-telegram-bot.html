@@ -35,7 +35,6 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="robot.css">
 
-  <!-- Schema.org: Service -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -45,19 +44,6 @@
     "description": "Разработка и обучение Telegram-бота, который ведет диалог как живой менеджер, отрабатывает возражения и собирает заявки 24/7.",
     "areaServed": ["BY", "RU", "KZ", "EU"],
     "serviceType": "AI Sales Telegram Bot"
-  }
-  </script>
-
-  <!-- Schema.org: BreadcrumbList -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://radar-group.org/" },
-      { "@type": "ListItem", "position": 2, "name": "Услуги", "item": "https://radar-group.org/#services" },
-      { "@type": "ListItem", "position": 3, "name": "Telegram-бот", "item": "https://radar-group.org/services-telegram-bot.html" }
-    ]
   }
   </script>
 </head>
@@ -124,8 +110,6 @@
 </aside>
 
 <main>
-
-  <!-- Хлебные крошки -->
   <div class="container" style="padding-top: 24px; font-size: 13px; color: var(--text-dim);">
     <a href="index.html" style="color: var(--text-dim); text-decoration: none;">Главная</a>
     <span style="margin: 0 6px;">/</span>
@@ -148,10 +132,7 @@
 
   <section class="section reveal" id="problem">
     <div class="container">
-      <div class="section-header">
-        <span class="section-label">Проблема</span>
-        <h2>Клиенты пишут, а вы не успеваете отвечать</h2>
-      </div>
+      <div class="section-header"><span class="section-label">Проблема</span><h2>Клиенты пишут, а вы не успеваете отвечать</h2></div>
       <div class="problem-notes">
         <div class="problem-note"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg><span>Клиент написал в 23:00, а вы узнали об этом только утром.</span></div>
         <div class="problem-note"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg><span>Вы в отпуске или за рулем, а сообщения копятся.</span></div>
@@ -162,10 +143,7 @@
 
   <section class="section reveal" id="how">
     <div class="container">
-      <div class="section-header">
-        <span class="section-label">Решение</span>
-        <h2>4 шага — и клиент у вас</h2>
-      </div>
+      <div class="section-header"><span class="section-label">Решение</span><h2>4 шага — и клиент у вас</h2></div>
       <div class="steps">
         <div class="step"><span class="step-num">01</span><h3>Создаете бота</h3><p>Получаете токен у @BotFather и передаете нам.</p></div>
         <div class="step"><span class="step-num">02</span><h3>Мы обучаем</h3><p>Изучаем ваш продукт, пишем промпт и настраиваем AI.</p></div>
@@ -177,10 +155,7 @@
 
   <section class="section reveal">
     <div class="container">
-      <div class="section-header">
-        <span class="section-label">Возможности</span>
-        <h2>Что умеет наш Telegram-бот</h2>
-      </div>
+      <div class="section-header"><span class="section-label">Возможности</span><h2>Что умеет наш Telegram-бот</h2></div>
       <div class="features-grid">
         <article class="feature-card"><div class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><h3>Знает продукт</h3><p>Ассортимент, характеристики, цены, преимущества. Отвечает как эксперт.</p></article>
         <article class="feature-card"><div class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg></div><h3>Отрабатывает возражения</h3><p>«Дорого», «Подумаю», «Не сейчас» — у него есть ответы.</p></article>
@@ -193,24 +168,14 @@
   <section class="section reveal" id="lead">
     <div class="container">
       <div class="section-header" style="text-align: center; max-width: 580px; margin: 0 auto 30px;">
-        <span class="section-label">Заявка</span>
-        <h2>Заказать Telegram-бота</h2>
+        <span class="section-label">Заявка</span><h2>Заказать Telegram-бота</h2>
         <p class="section-sub">Расскажите о вашем бизнесе — и мы покажем, как бот будет продавать ваш продукт.</p>
       </div>
       <div class="lead-form-wrap" style="max-width: 500px; margin: 0 auto;">
         <form class="lead-form" id="leadForm" novalidate>
-          <div class="form-row">
-            <label class="form-label">Как вас зовут? *</label>
-            <input class="form-input" type="text" name="name" placeholder="Иван" required maxlength="50">
-          </div>
-          <div class="form-row">
-            <label class="form-label">Telegram или телефон *</label>
-            <input class="form-input" type="tel" name="contact" placeholder="@username или телефон" required maxlength="30">
-          </div>
-          <div class="form-row">
-            <label class="form-label">Сфера деятельности / ниша (необязательно)</label>
-            <input class="form-input" type="text" name="industry" placeholder="Автосервис, стоматология, курсы..." maxlength="100">
-          </div>
+          <div class="form-row"><label class="form-label">Как вас зовут? *</label><input class="form-input" type="text" name="name" placeholder="Иван" required maxlength="50"></div>
+          <div class="form-row"><label class="form-label">Telegram или телефон *</label><input class="form-input" type="tel" name="contact" placeholder="@username или телефон" required maxlength="30"></div>
+          <div class="form-row"><label class="form-label">Сфера деятельности / ниша (необязательно)</label><input class="form-input" type="text" name="industry" placeholder="Автосервис, стоматология, курсы..." maxlength="100"></div>
           <input type="hidden" name="niche" value="Telegram-бот">
           <label class="form-checkbox-row"><input type="checkbox" name="agree" required><span class="form-checkbox-custom"></span><span>Согласен на обработку персональных данных</span></label>
           <button type="submit" class="btn btn-primary form-submit form-submit-hero">Получить консультацию</button>
@@ -219,28 +184,22 @@
       </div>
     </div>
   </section>
-
 </main>
 
-<!-- НОВЫЙ ФУТЕР С КОЛОНКАМИ -->
 <footer class="footer">
   <div class="container">
-
     <div class="footer-main">
       <div class="footer-brand">
         <a href="index.html" class="footer-logo" aria-label="Radar Group — на главную">
           <img src="/images/logo.webp" alt="Логотип Radar Group" width="36" height="36">
           <span class="logo-text">RADAR GROUP</span>
         </a>
-        <p class="footer-copy">
-          ИИ-менеджер, обученный под ваш продукт. Продаёт в Telegram и на сайте 24/7.
-        </p>
+        <p class="footer-copy">ИИ-менеджер, обученный под ваш продукт. Продаёт в Telegram и на сайте 24/7.</p>
       </div>
-
       <nav class="footer-columns" aria-label="Навигация в подвале">
         <div class="footer-col">
           <div class="footer-title">Услуги</div>
-          <ul class="footer-links footer-links-col">
+          <ul class="footer-links-col">
             <li><a href="services-telegram-business.html">Telegram Business</a></li>
             <li><a href="services-telegram-bot.html">Telegram-бот</a></li>
             <li><a href="services-widget.html">Виджет на сайт</a></li>
@@ -248,10 +207,9 @@
             <li><a href="services-crm.html">Интеграции с CRM</a></li>
           </ul>
         </div>
-
         <div class="footer-col">
           <div class="footer-title">Компания</div>
-          <ul class="footer-links footer-links-col">
+          <ul class="footer-links-col">
             <li><a href="index.html">Главная</a></li>
             <li><a href="cases.html">Кейсы</a></li>
             <li><a href="about.html">О технологии</a></li>
@@ -259,79 +217,40 @@
             <li><a href="/app/login.html">Войти в кабинет</a></li>
           </ul>
         </div>
-
         <div class="footer-col">
           <div class="footer-title">Документы</div>
-          <ul class="footer-links footer-links-col">
+          <ul class="footer-links-col">
             <li><a href="sitemap.xml">Карта сайта</a></li>
             <li><a href="privacy.html">Политика конфиденциальности</a></li>
           </ul>
         </div>
       </nav>
     </div>
-
     <div class="footer-bottom">
       <div class="footer-copy">© 2026 Radar Group. Все права защищены.</div>
-
-      <a href="https://t.me/my_ai_TGAgency_bot"
-         class="footer-tg"
-         target="_blank"
-         rel="noopener"
-         aria-label="Написать в Telegram">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm5.6 8.4l-2 9.4c-.1.6-.5.8-1 .5l-2.8-2.1-1.4 1.3c-.1.1-.3.2-.5.2l.2-2.9 5.3-4.8c.2-.2 0-.3-.4-.1l-6.6 4.1-2.8-.9c-.6-.2-.6-.6.1-.9l11-4.2c.5-.2 1 .1.9.4z"/>
-        </svg>
+      <a href="https://t.me/my_ai_TGAgency_bot" class="footer-tg" target="_blank" rel="noopener" aria-label="Написать в Telegram">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm5.6 8.4l-2 9.4c-.1.6-.5.8-1 .5l-2.8-2.1-1.4 1.3c-.1.1-.3.2-.5.2l.2-2.9 5.3-4.8c.2-.2 0-.3-.4-.1l-6.6 4.1-2.8-.9c-.6-.2-.6-.6.1-.9l11-4.2c.5-.2 1 .1.9.4z"/></svg>
       </a>
     </div>
-
   </div>
 </footer>
 
-<!-- ЧАТ-ВИДЖЕТ -->
 <div class="chat-widget" id="chatWidget" aria-hidden="true">
   <div class="chat-header">
     <div class="chat-header-info">
-      <div class="chat-avatar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
-          <path d="M8 10h.01"/>
-          <path d="M16 10h.01"/>
-          <path d="M12 16a4 4 0 0 0 4-4"/>
-        </svg>
-      </div>
-      <div class="chat-header-text">
-        <div class="chat-header-title">ИИ-менеджер</div>
-        <div class="chat-header-status">Онлайн</div>
-      </div>
+      <div class="chat-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M8 10h.01"/><path d="M16 10h.01"/><path d="M12 16a4 4 0 0 0 4-4"/></svg></div>
+      <div class="chat-header-text"><div class="chat-header-title">ИИ-менеджер</div><div class="chat-header-status">Онлайн</div></div>
     </div>
-    <button class="chat-close" id="chatClose" aria-label="Закрыть чат">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-        <path d="M18 6L6 18M6 6l12 12"/>
-      </svg>
-    </button>
+    <button class="chat-close" id="chatClose" aria-label="Закрыть чат"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
   </div>
-
-  <div class="chat-body" id="chatBody">
-    <div class="chat-message bot">
-      Здравствуйте! Я ИИ-менеджер Radar Group. Готов ответить на ваши вопросы о продукте, показать, как это работает, и рассчитать стоимость под вашу нишу. Чем помочь?
-    </div>
-  </div>
-
+  <div class="chat-body" id="chatBody"><div class="chat-message bot">Здравствуйте! Я ИИ-менеджер Radar Group. Готов ответить на ваши вопросы о продукте, показать, как это работает, и рассчитать стоимость под вашу нишу. Чем помочь?</div></div>
   <div class="chat-footer">
     <form class="chat-form" id="chatForm">
       <textarea class="chat-input" id="chatInput" placeholder="Напишите сообщение..." rows="1" maxlength="500"></textarea>
-      <button type="submit" class="chat-send" id="chatSend" aria-label="Отправить">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M22 2L11 13"/>
-          <path d="M22 2l-7 20-4-9-9-4 20-7z"/>
-        </svg>
-      </button>
+      <button type="submit" class="chat-send" id="chatSend" aria-label="Отправить"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
     </form>
   </div>
-
-  <div class="chat-note">
-    Демо-версия. Полную версию получите в <a href="https://t.me/my_ai_TGAgency_bot" target="_blank" rel="noopener">Telegram</a>
-  </div>
+  <div class="chat-note">Демо-версия. Полную версию получите в <a href="https://t.me/my_ai_TGAgency_bot" target="_blank" rel="noopener">Telegram</a></div>
 </div>
 
 <script src="script.js" defer></script>
