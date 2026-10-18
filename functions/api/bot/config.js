@@ -51,7 +51,7 @@ export async function onRequestGet({ request, env }) {
         // Промпты и приветствие
         prompt_ru: s.bot_prompt_ru,
         prompt_en: s.bot_prompt_en,
-        greeting_ru: s.bot_greeting_ru, // <-- ДОБАВЛЕНО
+        greeting_ru: s.bot_greeting_ru,
 
         // AI
         ai_provider: s.bot_ai_provider || 'proxyapi',
@@ -76,7 +76,11 @@ export async function onRequestGet({ request, env }) {
         sheets_url: s.bot_sheets_url,
         webhook_url: s.bot_webhook_url,
         webhook_secret: s.bot_webhook_secret,
-        notification_email: s.bot_notification_email
+        notification_email: s.bot_notification_email,
+
+        // Telegram Business
+        business_bot_enabled: s.business_bot_enabled === 1,
+        business_connection_id: s.business_connection_id
       }
     });
 

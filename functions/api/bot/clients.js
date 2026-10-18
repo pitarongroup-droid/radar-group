@@ -32,7 +32,9 @@ export async function onRequestGet({ request, env }) {
          s.bot_services,
          s.bot_work_hours,
          s.bot_reminders_enabled,
-         s.bot_max_daily
+         s.bot_max_daily,
+         s.business_bot_enabled,
+         s.business_connection_id
        FROM clients c
        JOIN settings s ON s.client_id = c.id
        WHERE c.account_status = 'approved'
@@ -56,7 +58,9 @@ export async function onRequestGet({ request, env }) {
       services: c.bot_services,
       work_hours: c.bot_work_hours || 'always',
       reminders_enabled: c.bot_reminders_enabled === 1,
-      max_daily: c.bot_max_daily || 1000
+      max_daily: c.bot_max_daily || 1000,
+      business_bot_enabled: c.business_bot_enabled === 1,
+      business_connection_id: c.business_connection_id
     }));
 
     return Response.json({
