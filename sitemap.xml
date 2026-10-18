@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://radar-group.org/</loc>
     <lastmod>2026-10-18</lastmod>
@@ -18,7 +17,6 @@
     <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://radar-group.org/en/"/>
   </url>
-  <!-- Услуги RU -->
   <url>
     <loc>https://radar-group.org/services-telegram-business.html</loc>
     <lastmod>2026-10-18</lastmod>
@@ -51,7 +49,6 @@
     <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/services-webdev.html"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://radar-group.org/en/services-webdev.html"/>
   </url>
-  <!-- Услуги EN -->
   <url>
     <loc>https://radar-group.org/en/services-telegram-business.html</loc>
     <lastmod>2026-10-18</lastmod>
@@ -76,7 +73,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
-  <!-- Другие страницы -->
   <url>
     <loc>https://radar-group.org/cases.html</loc>
     <lastmod>2026-10-18</lastmod>

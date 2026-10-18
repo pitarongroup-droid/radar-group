@@ -1,5 +1,5 @@
 /* ============================================
-   RADAR GROUP — Тёмная тема v6.3 (Фикс меню)
+   RADAR GROUP — Тёмная тема v6.5 (Фикс mask + Новый подвал)
    Мультиязычный сайт, компактная форма
    Скрытый скроллбар, без дёрганий
    ============================================ */
@@ -513,6 +513,7 @@ body::before {
   padding: 1px;
   background: var(--gradient);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   opacity: 0;
@@ -789,6 +790,7 @@ body::before {
   padding: 1px;
   background: var(--gradient);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   opacity: 0;
@@ -1364,7 +1366,7 @@ body::before {
 .cta-block p { color: var(--text-muted); font-size: 16px; max-width: 560px; margin: 0 auto 28px; position: relative; z-index: 1; }
 .cta-block .btn { position: relative; z-index: 1; }
 
-/* ===== ПОДВАЛ ===== */
+/* ===== ПОДВАЛ (НОВЫЙ С КОЛОНКАМИ) ===== */
 .footer {
   padding: 44px 0 32px;
   border-top: 1px solid var(--border);
@@ -1373,32 +1375,95 @@ body::before {
   z-index: 1;
 }
 
-.footer-inner {
+.footer-main {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  gap: 40px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
   flex-wrap: wrap;
-  gap: 20px;
 }
 
-.footer-copy { color: var(--text-dim); font-size: 13px; }
+.footer-brand {
+  max-width: 320px;
+  flex-shrink: 0;
+}
 
-.footer-links {
+.footer-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 800;
+  font-size: 16px;
+  margin-bottom: 14px;
+}
+
+.footer-logo img {
+  border-radius: 8px;
+  display: block;
+}
+
+.footer-brand .footer-copy {
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.footer-columns {
   display: flex;
-  gap: 20px;
-  list-style: none;
+  gap: 48px;
   flex-wrap: wrap;
-  align-items: center;
 }
 
-.footer-links a {
+.footer-col {
+  min-width: 150px;
+}
+
+.footer-title {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 14px;
+}
+
+.footer-links-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+}
+
+.footer-links-col a {
   color: var(--text-muted);
   text-decoration: none;
   font-size: 13px;
   transition: var(--transition);
+  display: inline-block;
 }
 
-.footer-links a:hover { color: var(--cyan); }
+.footer-links-col a:hover {
+  color: var(--cyan);
+  padding-left: 4px;
+}
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding-top: 22px;
+  flex-wrap: wrap;
+}
+
+.footer-copy { color: var(--text-dim); font-size: 13px; }
 
 .footer-tg {
   display: inline-flex;
@@ -1439,6 +1504,7 @@ body::before {
   padding: 1px;
   background: var(--gradient);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   opacity: 0;
@@ -1661,9 +1727,17 @@ body::before {
   .compare { grid-template-columns: 1fr; }
   .cta-block { padding: 44px 24px; }
   .case { padding: 24px 20px; }
-  .footer-inner { flex-direction: column; text-align: center; }
 
   .tg-link { width: 36px; height: 36px; }
+
+  /* Адаптив подвала */
+  .footer-main {
+    flex-direction: column;
+    gap: 28px;
+  }
+  .footer-columns {
+    gap: 28px;
+  }
 }
 
 @media (max-width: 720px) {
@@ -1729,6 +1803,18 @@ body::before {
   .case h3 { font-size: 17px; }
   .msg-role { width: 48px; font-size: 12px; }
   .msg { font-size: 13px; }
+
+  /* Адаптив нового подвала */
+  .footer-columns {
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
 
   .option-grid {
     grid-template-columns: 1fr;
