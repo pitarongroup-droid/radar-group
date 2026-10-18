@@ -34,32 +34,6 @@
 
   <link rel="stylesheet" href="../style.css">
   <link rel="stylesheet" href="../robot.css">
-
-  <!-- Schema.org: Service -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Service",
-    "name": "AI Manager CRM Integration",
-    "provider": { "@type": "Organization", "name": "Radar Group", "url": "https://radar-group.org" },
-    "description": "Setting up automatic lead transfer from the AI manager to CRM systems: Bitrix24, amoCRM, HubSpot.",
-    "areaServed": ["BY", "RU", "KZ", "EU"],
-    "serviceType": "CRM Integration"
-  }
-  </script>
-
-  <!-- Schema.org: BreadcrumbList -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://radar-group.org/en/" },
-      { "@type": "ListItem", "position": 2, "name": "Services", "item": "https://radar-group.org/en/#services" },
-      { "@type": "ListItem", "position": 3, "name": "CRM Integrations", "item": "https://radar-group.org/en/services-crm.html" }
-    ]
-  }
-  </script>
 </head>
 <body>
 
@@ -124,8 +98,6 @@
 </aside>
 
 <main>
-
-  <!-- Breadcrumbs -->
   <div class="container" style="padding-top: 24px; font-size: 13px; color: var(--text-dim);">
     <a href="index.html" style="color: var(--text-dim); text-decoration: none;">Home</a>
     <span style="margin: 0 6px;">/</span>
@@ -148,10 +120,7 @@
 
   <section class="section reveal" id="problem">
     <div class="container">
-      <div class="section-header">
-        <span class="section-label">Problem</span>
-        <h2>Manual data transfer kills conversion</h2>
-      </div>
+      <div class="section-header"><span class="section-label">Problem</span><h2>Manual data transfer kills conversion</h2></div>
       <div class="problem-notes">
         <div class="problem-note"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg><span>The manager forgot to copy the request from Telegram to the CRM.</span></div>
         <div class="problem-note"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg><span>The client left a contact, but it got lost in the chat history.</span></div>
@@ -162,10 +131,7 @@
 
   <section class="section reveal" id="how">
     <div class="container">
-      <div class="section-header">
-        <span class="section-label">Solution</span>
-        <h2>3 steps for setup</h2>
-      </div>
+      <div class="section-header"><span class="section-label">Solution</span><h2>3 steps for setup</h2></div>
       <div class="steps">
         <div class="step"><span class="step-num">01</span><h3>Get a webhook</h3><p>Create an incoming webhook or API key in your CRM settings.</p></div>
         <div class="step"><span class="step-num">02</span><h3>Pass it to us</h3><p>Send the URL and secret key in the Radar Group dashboard.</p></div>
@@ -176,10 +142,7 @@
 
   <section class="section reveal">
     <div class="container">
-      <div class="section-header">
-        <span class="section-label">Capabilities</span>
-        <h2>Systems we work with</h2>
-      </div>
+      <div class="section-header"><span class="section-label">Capabilities</span><h2>Systems we work with</h2></div>
       <div class="features-grid">
         <article class="feature-card"><div class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div><h3>Bitrix24</h3><p>Create leads, deals, and contacts. Pass custom fields.</p></article>
         <article class="feature-card"><div class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M8 12l2 2 4-4"/></svg></div><h3>amoCRM</h3><p>Automatically create notes with the full dialogue history.</p></article>
@@ -192,20 +155,13 @@
   <section class="section reveal" id="lead">
     <div class="container">
       <div class="section-header" style="text-align: center; max-width: 580px; margin: 0 auto 30px;">
-        <span class="section-label">Request</span>
-        <h2>Set up integration</h2>
+        <span class="section-label">Request</span><h2>Set up integration</h2>
         <p class="section-sub">Specify your CRM — we'll prepare instructions and help with setup.</p>
       </div>
       <div class="lead-form-wrap" style="max-width: 500px; margin: 0 auto;">
         <form class="lead-form" id="leadForm" novalidate>
-          <div class="form-row">
-            <label class="form-label">Your name? *</label>
-            <input class="form-input" type="text" name="name" placeholder="John" required maxlength="50">
-          </div>
-          <div class="form-row">
-            <label class="form-label">Telegram or phone *</label>
-            <input class="form-input" type="tel" name="contact" placeholder="@username or phone" required maxlength="30">
-          </div>
+          <div class="form-row"><label class="form-label">Your name? *</label><input class="form-input" type="text" name="name" placeholder="John" required maxlength="50"></div>
+          <div class="form-row"><label class="form-label">Telegram or phone *</label><input class="form-input" type="tel" name="contact" placeholder="@username or phone" required maxlength="30"></div>
           <div class="form-row">
             <label class="form-label">Which CRM do you use? *</label>
             <select class="form-select" name="niche" required>
@@ -224,7 +180,6 @@
       </div>
     </div>
   </section>
-
 </main>
 
 <footer class="footer">
@@ -235,14 +190,12 @@
           <img src="/images/logo.webp" alt="Radar Group logo" width="36" height="36">
           <span class="logo-text">RADAR GROUP</span>
         </a>
-        <p class="footer-copy">
-          AI Manager trained for your product. Sells in Telegram and on the website 24/7.
-        </p>
+        <p class="footer-copy">AI Manager trained for your product. Sells in Telegram and on the website 24/7.</p>
       </div>
       <nav class="footer-columns" aria-label="Footer navigation">
         <div class="footer-col">
           <div class="footer-title">Services</div>
-          <ul class="footer-links footer-links-col">
+          <ul class="footer-links-col">
             <li><a href="services-telegram-business.html">Telegram Business</a></li>
             <li><a href="services-telegram-bot.html">Telegram Bot</a></li>
             <li><a href="services-widget.html">Website Widget</a></li>
@@ -252,7 +205,7 @@
         </div>
         <div class="footer-col">
           <div class="footer-title">Company</div>
-          <ul class="footer-links footer-links-col">
+          <ul class="footer-links-col">
             <li><a href="index.html">Home</a></li>
             <li><a href="cases.html">Cases</a></li>
             <li><a href="about.html">Technology</a></li>
@@ -262,7 +215,7 @@
         </div>
         <div class="footer-col">
           <div class="footer-title">Documents</div>
-          <ul class="footer-links footer-links-col">
+          <ul class="footer-links-col">
             <li><a href="../sitemap.xml">Sitemap</a></li>
             <li><a href="privacy.html">Privacy Policy</a></li>
           </ul>

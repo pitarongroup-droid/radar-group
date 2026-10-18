@@ -18,27 +18,7 @@
   <link rel="alternate" hreflang="en" href="https://radar-group.org/en/cases.html">
   <link rel="alternate" hreflang="x-default" href="https://radar-group.org/cases.html">
 
-  <meta property="og:type" content="article">
-  <meta property="og:site_name" content="Radar Group">
-  <meta property="og:title" content="Cases: How AI Manager is trained for your product">
-  <meta property="og:description" content="6 scenarios of how AI Manager studies a client's product and sells it.">
-  <meta property="og:url" content="https://radar-group.org/en/cases.html">
-  <meta property="og:image" content="https://radar-group.org/images/og-image.jpg">
-  <meta property="og:locale" content="en_US">
-  <meta property="og:locale:alternate" content="ru_RU">
-
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Cases: How AI Manager is trained for your product">
-  <meta name="twitter:description" content="6 scenarios of training the bot for a specific niche.">
-  <meta name="twitter:image" content="https://radar-group.org/images/og-image.jpg">
-
   <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
-  <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
-  <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
-  <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#08080F">
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -55,30 +35,33 @@
       <img src="/images/logo.webp" alt="Radar Group logo" width="40" height="40">
       <span class="logo-text">RADAR GROUP</span>
     </a>
-
     <nav aria-label="Main menu">
       <ul class="nav">
+        <li class="nav-item-dropdown">
+          <a href="index.html#services" style="cursor:pointer; display:flex; align-items:center; gap:4px;">
+            Services
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </a>
+          <div class="nav-dropdown-menu">
+            <a href="services-telegram-business.html">Telegram Business</a>
+            <a href="services-telegram-bot.html">Telegram Bot</a>
+            <a href="services-widget.html">Website Widget</a>
+            <a href="services-webdev.html">Web Development</a>
+            <a href="services-crm.html">CRM Integrations</a>
+          </div>
+        </li>
         <li><a href="index.html#features">Features</a></li>
-        <li><a href="index.html#training">How we train</a></li>
         <li><a href="cases.html">Cases</a></li>
         <li><a href="about.html">Technology</a></li>
         <li><a href="#lead">Get a quote</a></li>
       </ul>
     </nav>
-
     <div class="header-cta">
-      <div class="lang-switch" role="group" aria-label="Language">
-        <a href="../cases.html">RU</a>
-        <a href="cases.html" class="active" aria-current="true">EN</a>
-      </div>
-      <a href="https://t.me/my_ai_TGAgency_bot" class="tg-link" target="_blank" rel="noopener" aria-label="Open Telegram">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm5.6 8.4l-2 9.4c-.1.6-.5.8-1 .5l-2.8-2.1-1.4 1.3c-.1.1-.3.2-.5.2l.2-2.9 5.3-4.8c.2-.2 0-.3-.4-.1l-6.6 4.1-2.8-.9c-.6-.2-.6-.6.1-.9l11-4.2c.5-.2 1 .1.9.4z"/></svg>
-      </a>
+      <div class="lang-switch"><a href="../cases.html">RU</a><a href="cases.html" class="active">EN</a></div>
+      <a href="https://t.me/my_ai_TGAgency_bot" class="tg-link" target="_blank" rel="noopener"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm5.6 8.4l-2 9.4c-.1.6-.5.8-1 .5l-2.8-2.1-1.4 1.3c-.1.1-.3.2-.5.2l.2-2.9 5.3-4.8c.2-.2 0-.3-.4-.1l-6.6 4.1-2.8-.9c-.6-.2-.6-.6.1-.9l11-4.2c.5-.2 1 .1.9.4z"/></svg></a>
       <a href="/en/app/login.html" class="btn btn-outline">Sign in</a>
-      <a href="#lead" class="btn btn-primary" target="_self">Discuss a project</a>
-      <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
+      <a href="#lead" class="btn btn-primary">Discuss a project</a>
+      <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
     </div>
   </div>
 </header>
@@ -86,243 +69,86 @@
 <div class="mobile-overlay" id="mobileOverlay"></div>
 <aside class="mobile-menu" id="mobileMenu" aria-hidden="true">
   <ul>
+    <li><a href="index.html">Home</a></li>
+    <li>
+      <span style="padding: 14px 16px; color: var(--text); font-weight: 700; display:block;">Services:</span>
+      <div class="mobile-submenu">
+        <a href="services-telegram-business.html">Telegram Business</a>
+        <a href="services-telegram-bot.html">Telegram Bot</a>
+        <a href="services-widget.html">Website Widget</a>
+        <a href="services-webdev.html">Web Development</a>
+        <a href="services-crm.html">CRM Integrations</a>
+      </div>
+    </li>
     <li><a href="index.html#features">Features</a></li>
-    <li><a href="index.html#training">How we train</a></li>
     <li><a href="cases.html">Cases</a></li>
     <li><a href="about.html">Technology</a></li>
     <li><a href="#lead">Get a quote</a></li>
     <li><a href="/en/app/login.html">Sign in</a></li>
   </ul>
   <a href="#lead" class="btn btn-primary" target="_self">Discuss a project</a>
-  <div class="mobile-lang">
-    <a href="../cases.html">RU</a>
-    <a href="cases.html" class="active">EN</a>
-  </div>
+  <div class="mobile-lang"><a href="../cases.html">RU</a><a href="cases.html" class="active">EN</a></div>
 </aside>
 
 <main>
-
 <section class="section" style="padding-top: 60px;">
   <div class="container">
     <div class="section-header">
-      <span class="section-label">Cases</span>
-      <h2>How AI Manager is trained for your product</h2>
-      <p class="section-sub">
-        Six examples. One mechanic: we study the product, audience and objections,
-        then train the bot — and it sells like your best salesperson.
-      </p>
+      <span class="section-label">Cases</span><h2>How AI Manager is trained for your product</h2>
+      <p class="section-sub">Six examples. One mechanic: we study the product, audience and objections, then train the bot — and it sells like your best salesperson.</p>
     </div>
 
     <article class="case reveal">
-      <div class="case-header">
-        <div class="case-num" aria-hidden="true">01</div>
-        <h3>Auto service</h3>
-      </div>
-      <div class="case-problem">
-        <strong>What we studied:</strong> car models, typical jobs, price ranges, timelines, warranty on work and parts. Frequent questions: "How much is an oil change?", "How long does it take?", "Do you give a warranty?"
-      </div>
+      <div class="case-header"><div class="case-num" aria-hidden="true">01</div><h3>Auto service</h3></div>
+      <div class="case-problem"><strong>What we studied:</strong> car models, typical jobs, price ranges, timelines, warranty on work and parts.</div>
       <div class="case-dialog">
         <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">how much is an oil change for a Camry?</span></div>
         <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">For a 2019 Camry — $120 including labor and filter if you use our oil. With your own — $40. What oil do you use? 🙂</span></div>
-        <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">my own, Mobil</span></div>
-        <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">Great, Mobil 1 works. Then $40 + filter $15. Want to book? 🙂</span></div>
-        <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">do you give a warranty?</span></div>
-        <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">Yes, on the work — one year. If anything goes wrong, we redo it for free. Book for Saturday? 🙂</span></div>
-        <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">ok</span></div>
-        <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">Perfect! Leave your number — the mechanic will confirm the time 🙂</span></div>
       </div>
       <div class="case-result"><strong>Result:</strong> the bot knows prices, warranty, answers "expensive" and books with full parameters.</div>
     </article>
 
     <article class="case reveal">
-      <div class="case-header">
-        <div class="case-num" aria-hidden="true">02</div>
-        <h3>Online school / Courses</h3>
-      </div>
-      <div class="case-problem">
-        <strong>What we studied:</strong> course programs, formats, duration, prices, installments, graduate reviews. Objections: "expensive", "let me think", "no time to study".
-      </div>
+      <div class="case-header"><div class="case-num" aria-hidden="true">02</div><h3>Online school / Courses</h3></div>
+      <div class="case-problem"><strong>What we studied:</strong> course programs, formats, duration, prices, installments, graduate reviews.</div>
       <div class="case-dialog">
         <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">I want to learn Python, how much?</span></div>
         <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">The course is 8 weeks, $300 or 4 payments of $80. The first trial lesson is free. Are you starting from scratch or already coding? 🙂</span></div>
-        <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">from scratch. but it's expensive for me</span></div>
-        <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">I get it 🙂 That's why we have installments — $80, like 2-3 coffees a week. And you can try the first 3 lessons before paying. Book a free trial? 🙂</span></div>
-        <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">ok</span></div>
-        <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">Great! Leave your number — the curator will reach out and pick a convenient time 🙂</span></div>
       </div>
       <div class="case-result"><strong>Result:</strong> "expensive" objection handled with installments and value, not a discount.</div>
     </article>
-
-    <article class="case reveal">
-      <div class="case-header">
-        <div class="case-num" aria-hidden="true">03</div>
-        <h3>Dental clinic</h3>
-      </div>
-      <div class="case-problem">
-        <strong>What we studied:</strong> services, prices, equipment, doctors, contraindications. Objections: "I'm scared", "expensive", "can it be cheaper".
-      </div>
-      <div class="case-dialog">
-        <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">severe toothache, can I come today?</span></div>
-        <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">I'm sorry 🙁 Upper or lower tooth? Sharp or dull pain? 🙂</span></div>
-        <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">lower right, sharp</span></div>
-        <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">Sounds like pulpitis. We have an urgent slot today at 6:30 PM and tomorrow at 10 AM. Exam with diagnostics — $25, treatment — from $80. Which works? 🙂</span></div>
-        <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">expensive, can it be cheaper?</span></div>
-        <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">I understand 🙂 If you wait, it can turn into extraction — that's already from $200. Right now we can fix it with treatment. Shall I book you for 6:30? 🙂</span></div>
-        <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">ok, book it</span></div>
-      </div>
-      <div class="case-result"><strong>Result:</strong> the bot answers "expensive" through value and urgency, not a discount.</div>
-    </article>
-
-    <article class="case reveal">
-      <div class="case-header">
-        <div class="case-num" aria-hidden="true">04</div>
-        <h3>Legal services</h3>
-      </div>
-      <div class="case-problem">
-        <strong>What we studied:</strong> case categories, court practice, timelines, fees. Objections: "what if we lose?", "how much will it cost?", "let me think".
-      </div>
-      <div class="case-dialog">
-        <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">my employer hasn't paid salary for 3 months, what should I do?</span></div>
-        <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">This is solvable. Are you officially employed? Do you have a contract, orders? 🙂</span></div>
-        <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">officially, I have a contract</span></div>
-        <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">Great. Then you can claim not only the debt, but also compensation for the delay. In practice, 85% of such cases are won. Consultation — $30, then we work on results. Leave a request? 🙂</span></div>
-        <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">what if we lose?</span></div>
-        <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">I understand your concern 🙂 If you have the contract and messages — that's enough evidence. Plus we can first assess the chances during a consultation, without paying for the case. Book you in? 🙂</span></div>
-      </div>
-      <div class="case-result"><strong>Result:</strong> "what if" objection closed through numbers and a safe first step.</div>
-    </article>
-
-    <article class="case reveal">
-      <div class="case-header">
-        <div class="case-num" aria-hidden="true">05</div>
-        <h3>Beauty salon / Barbershop</h3>
-      </div>
-      <div class="case-problem">
-        <strong>What we studied:</strong> price list, stylists, service duration, calendar slots. Objections: "expensive", "who is the stylist?", "can it be earlier".
-      </div>
-      <div class="case-dialog">
-        <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">how much is a haircut + beard?</span></div>
-        <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">Haircut $25, beard $15. Together $35 — you save $5. We have slots today at 7 PM and 8 PM. Which suits you? 🙂</span></div>
-        <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">who are the stylists?</span></div>
-        <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">At 7 PM — Alexey (10 years of experience, specializes in fades), at 8 PM — Dmitry (beard and classic). Who do you prefer? 🙂</span></div>
-        <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">Alexey, but I can't make 7</span></div>
-        <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">Alexey has tomorrow at 6 PM and 8:30 PM. Works? 🙂</span></div>
-      </div>
-      <div class="case-result"><strong>Result:</strong> the bot knows stylists and availability — and doesn't lose a client over a single "I can't make it".</div>
-    </article>
-
-    <article class="case reveal">
-      <div class="case-header">
-        <div class="case-num" aria-hidden="true">06</div>
-        <h3>Apartment renovation</h3>
-      </div>
-      <div class="case-problem">
-        <strong>What we studied:</strong> renovation types, square meters, price per m², timelines, warranty. Objections: "can it be cheaper?", "who will do it?", "what if something goes wrong?"
-      </div>
-      <div class="case-dialog">
-        <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">how much is renovation for a 60 sqm two-bedroom?</span></div>
-        <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">Cosmetic — from $3000, with replanning — from $5500. Timeline: 3-5 weeks. What exactly do you need? 🙂</span></div>
-        <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">cosmetic. can it be cheaper?</span></div>
-        <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">I understand 🙂 $3000 is turnkey, with materials and a 2-year warranty. If you do it without warranty with freelancers — about 30% cheaper, but if something goes wrong, you redo it at your own expense. Shall I book a measurement? The foreman will come and give an exact estimate 🙂</span></div>
-        <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">ok</span></div>
-      </div>
-      <div class="case-result"><strong>Result:</strong> the bot defends the price through warranty and risks, doesn't give in for free.</div>
-    </article>
-
   </div>
 </section>
 
 <section class="section" id="lead">
   <div class="container">
     <div class="section-header" style="text-align: center; max-width: 580px; margin-left: auto; margin-right: auto;">
-      <span class="section-label">Request</span>
-      <h2>Want the same for your niche?</h2>
-      <p class="section-sub">
-        Tell me about your product — I'll show you how the AI Manager will sell it.
-      </p>
+      <span class="section-label">Request</span><h2>Want the same for your niche?</h2>
+      <p class="section-sub">Tell me about your product — I'll show you how the AI Manager will sell it.</p>
     </div>
-
     <div class="lead-form-wrap">
       <form class="lead-form" id="leadForm" novalidate>
         <div class="form-step">
-          <div class="form-step-head">
-            <span class="form-step-num">1</span>
-            <span class="form-step-title">Contacts</span>
-          </div>
-          <div class="form-row">
-            <label class="form-label" for="leadName">Your name? *</label>
-            <input class="form-input" type="text" id="leadName" name="name" placeholder="John" required autocomplete="name" maxlength="50">
-          </div>
-          <div class="form-row">
-            <label class="form-label" for="leadContact">Telegram or phone *</label>
-            <input class="form-input" type="tel" id="leadContact" name="contact" placeholder="@username or phone" required autocomplete="tel" maxlength="30" inputmode="tel">
-          </div>
+          <div class="form-step-head"><span class="form-step-num">1</span><span class="form-step-title">Contacts</span></div>
+          <div class="form-row"><label class="form-label">Your name? *</label><input class="form-input" type="text" name="name" placeholder="John" required maxlength="50"></div>
+          <div class="form-row"><label class="form-label">Telegram or phone *</label><input class="form-input" type="tel" name="contact" placeholder="@username or phone" required maxlength="30"></div>
         </div>
-
         <div class="form-step">
-          <div class="form-step-head">
-            <span class="form-step-num">2</span>
-            <span class="form-step-title">Your niche</span>
-          </div>
-          <div class="option-grid" role="radiogroup" aria-label="Select your niche">
-            <label class="option-card">
-              <input type="radio" name="niche" value="Auto service" required>
-              <span class="option-card-inner">
-                <span class="option-card-text">Auto service</span>
-              </span>
-            </label>
-            <label class="option-card">
-              <input type="radio" name="niche" value="Online school">
-              <span class="option-card-inner">
-                <span class="option-card-text">Online school</span>
-              </span>
-            </label>
-            <label class="option-card">
-              <input type="radio" name="niche" value="Clinic">
-              <span class="option-card-inner">
-                <span class="option-card-text">Clinic</span>
-              </span>
-            </label>
-            <label class="option-card">
-              <input type="radio" name="niche" value="Legal services">
-              <span class="option-card-inner">
-                <span class="option-card-text">Legal</span>
-              </span>
-            </label>
-            <label class="option-card">
-              <input type="radio" name="niche" value="Beauty salon">
-              <span class="option-card-inner">
-                <span class="option-card-text">Beauty salon</span>
-              </span>
-            </label>
-            <label class="option-card">
-              <input type="radio" name="niche" value="Renovation">
-              <span class="option-card-inner">
-                <span class="option-card-text">Renovation</span>
-              </span>
-            </label>
-            <label class="option-card">
-              <input type="radio" name="niche" value="Other">
-              <span class="option-card-inner">
-                <span class="option-card-text">Other</span>
-              </span>
-            </label>
+          <div class="form-step-head"><span class="form-step-num">2</span><span class="form-step-title">Your niche</span></div>
+          <div class="option-grid" role="radiogroup">
+            <label class="option-card"><input type="radio" name="niche" value="Auto service" required><span class="option-card-inner"><span class="option-card-text">Auto service</span></span></label>
+            <label class="option-card"><input type="radio" name="niche" value="Online school"><span class="option-card-inner"><span class="option-card-text">Online school</span></span></label>
+            <label class="option-card"><input type="radio" name="niche" value="Clinic"><span class="option-card-inner"><span class="option-card-text">Clinic</span></span></label>
+            <label class="option-card"><input type="radio" name="niche" value="Other"><span class="option-card-inner"><span class="option-card-text">Other</span></span></label>
           </div>
         </div>
-
-        <label class="form-checkbox-row">
-          <input type="checkbox" name="agree" required>
-          <span class="form-checkbox-custom"></span>
-          <span>I agree to personal data processing</span>
-        </label>
-
+        <label class="form-checkbox-row"><input type="checkbox" name="agree" required><span class="form-checkbox-custom"></span><span>I agree to personal data processing</span></label>
         <button type="submit" class="btn btn-primary form-submit form-submit-hero">Get a demo for my niche</button>
-        <div class="form-status" id="formStatus" role="status" aria-live="polite"></div>
+        <div class="form-status" id="formStatus"></div>
       </form>
     </div>
   </div>
 </section>
-
 </main>
 
 <footer class="footer">
@@ -333,14 +159,12 @@
           <img src="/images/logo.webp" alt="Radar Group logo" width="36" height="36">
           <span class="logo-text">RADAR GROUP</span>
         </a>
-        <p class="footer-copy">
-          AI Manager trained for your product. Sells in Telegram and on the website 24/7.
-        </p>
+        <p class="footer-copy">AI Manager trained for your product. Sells in Telegram and on the website 24/7.</p>
       </div>
       <nav class="footer-columns" aria-label="Footer navigation">
         <div class="footer-col">
           <div class="footer-title">Services</div>
-          <ul class="footer-links footer-links-col">
+          <ul class="footer-links-col">
             <li><a href="services-telegram-business.html">Telegram Business</a></li>
             <li><a href="services-telegram-bot.html">Telegram Bot</a></li>
             <li><a href="services-widget.html">Website Widget</a></li>
@@ -350,7 +174,7 @@
         </div>
         <div class="footer-col">
           <div class="footer-title">Company</div>
-          <ul class="footer-links footer-links-col">
+          <ul class="footer-links-col">
             <li><a href="index.html">Home</a></li>
             <li><a href="cases.html">Cases</a></li>
             <li><a href="about.html">Technology</a></li>
@@ -360,7 +184,7 @@
         </div>
         <div class="footer-col">
           <div class="footer-title">Documents</div>
-          <ul class="footer-links footer-links-col">
+          <ul class="footer-links-col">
             <li><a href="../sitemap.xml">Sitemap</a></li>
             <li><a href="privacy.html">Privacy Policy</a></li>
           </ul>
