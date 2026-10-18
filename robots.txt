@@ -1,5 +1,9 @@
 User-agent: *
 Allow: /
+Disallow: /app/
+Disallow: /en/app/
+Disallow: /admin/
+Disallow: /api/
 Disallow: /404.html
 
 Sitemap: https://radar-group.org/sitemap.xml
