@@ -10,6 +10,62 @@ document.addEventListener('DOMContentLoaded', () => {
   const SCROLL_OFFSET = 80;
   const STATUS_TIMEOUT = 7000;
 
+  // ===== АВТО-ЗАМЕНА СТАРОГО ПОДВАЛА НА НОВЫЙ =====
+  const footerContainer = document.querySelector('.footer .container');
+  
+  // Проверяем, что подвал существует, и в нем НЕТ нового класса footer-main (значит он старый)
+  if (footerContainer && !footerContainer.querySelector('.footer-main')) {
+    const isEn = window.location.pathname.includes('/en/');
+    const prefix = isEn ? '../' : '';
+    
+    footerContainer.innerHTML = `
+      <div class="footer-main">
+        <div class="footer-brand">
+          <a href="index.html" class="footer-logo">
+            <img src="/images/logo.webp" alt="Radar Group" width="36" height="36">
+            <span class="logo-text">RADAR GROUP</span>
+          </a>
+          <p class="footer-copy">${isEn ? 'AI Manager trained for your product. Sells in Telegram and on the website 24/7.' : 'ИИ-менеджер, обученный под ваш продукт. Продаёт в Telegram и на сайте 24/7.'}</p>
+        </div>
+        <nav class="footer-columns">
+          <div class="footer-col">
+            <div class="footer-title">${isEn ? 'Services' : 'Услуги'}</div>
+            <ul class="footer-links-col">
+              <li><a href="services-telegram-business.html">Telegram Business</a></li>
+              <li><a href="services-telegram-bot.html">${isEn ? 'Telegram Bot' : 'Telegram-бот'}</a></li>
+              <li><a href="services-widget.html">${isEn ? 'Website Widget' : 'Виджет на сайт'}</a></li>
+              <li><a href="services-webdev.html">${isEn ? 'Web Development' : 'Создание сайтов'}</a></li>
+              <li><a href="services-crm.html">${isEn ? 'CRM Integrations' : 'Интеграции с CRM'}</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <div class="footer-title">${isEn ? 'Company' : 'Компания'}</div>
+            <ul class="footer-links-col">
+              <li><a href="index.html">${isEn ? 'Home' : 'Главная'}</a></li>
+              <li><a href="cases.html">${isEn ? 'Cases' : 'Кейсы'}</a></li>
+              <li><a href="about.html">${isEn ? 'Technology' : 'О технологии'}</a></li>
+              <li><a href="index.html#lead">${isEn ? 'Get a quote' : 'Оставить заявку'}</a></li>
+              <li><a href="/app/login.html">${isEn ? 'Sign in' : 'Войти в кабинет'}</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <div class="footer-title">${isEn ? 'Documents' : 'Документы'}</div>
+            <ul class="footer-links-col">
+              <li><a href="${prefix}sitemap.xml">${isEn ? 'Sitemap' : 'Карта сайта'}</a></li>
+              <li><a href="privacy.html">${isEn ? 'Privacy Policy' : 'Политика конфиденциальности'}</a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-copy">© 2026 Radar Group. ${isEn ? 'All rights reserved.' : 'Все права защищены.'}</div>
+        <a href="https://t.me/my_ai_TGAgency_bot" class="footer-tg" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm5.6 8.4l-2 9.4c-.1.6-.5.8-1 .5l-2.8-2.1-1.4 1.3c-.1.1-.3.2-.5.2l.2-2.9 5.3-4.8c.2-.2 0-.3-.4-.1l-6.6 4.1-2.8-.9c-.6-.2-.6-.6.1-.9l11-4.2c.5-.2 1 .1.9.4z"/></svg>
+        </a>
+      </div>
+    `;
+  }
+
   // ===== БЕЗОПАСНЫЙ ТРЕКИНГ =====
   function track(eventName, params = {}) {
     try {
