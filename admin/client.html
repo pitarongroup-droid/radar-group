@@ -74,6 +74,54 @@
     </div>
 
     <div id="clientContent" style="display:none;">
+      
+      <!-- 💳 ТАРИФ И ОПЛАТА (НОВОЕ) -->
+      <section class="dash-section" style="border-color: rgba(0, 240, 255, 0.3); background: linear-gradient(180deg, rgba(0, 240, 255, 0.02) 0%, var(--bg-elevated) 100%);">
+        <div class="dash-section-header">
+          <h2 class="dash-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Тариф и оплата
+          </h2>
+          <button class="btn btn-outline" id="confirmPayBtn" onclick="confirmPayment()" style="border-color:var(--cyan); color:var(--cyan); display:none;">✅ Подтвердить оплату</button>
+        </div>
+
+        <div class="settings-form" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div class="form-row">
+            <label class="form-label">Тариф</label>
+            <select class="form-select" id="tariffCode" onchange="updatePriceFromTariff()">
+              <option value="start">Старт (200 BYN)</option>
+              <option value="business">Бизнес (350 BYN)</option>
+              <option value="premium">Премиум (500 BYN)</option>
+              <option value="webdev">Разработка сайта (500 BYN)</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Стоимость</label>
+            <div style="display:flex; gap:8px;">
+              <input class="form-input" type="number" id="monthlyPrice" placeholder="200" style="flex:1;">
+              <select class="form-select" id="subCurrency" style="width:90px;">
+                <option value="BYN">BYN</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="RUB">RUB</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Оплачено до (дата)</label>
+            <input class="form-input" type="date" id="subscriptionEnd">
+          </div>
+          <div class="form-row">
+            <label class="form-label">Следующий платёж (дата)</label>
+            <input class="form-input" type="date" id="nextPaymentDue">
+          </div>
+          <div class="form-row" style="grid-column: 1 / -1;">
+            <label class="form-label">Заметки для себя (админ)</label>
+            <textarea class="form-textarea" id="adminNotes" style="min-height:60px;" placeholder="Например: обещал скидку 10%..."></textarea>
+          </div>
+        </div>
+      </section>
+
       <!-- 🔒 ДОСТУП -->
       <section class="dash-section">
         <div class="dash-section-header">
@@ -162,12 +210,9 @@
               <option value="USD">$ USD</option><option value="EUR">€ EUR</option><option value="BYN">Br BYN</option><option value="RUB">₽ RUB</option>
             </select>
           </div>
-          <div class="form-row">
-            <label class="form-label">План</label>
-            <select class="form-select" id="clientPlan">
-              <option value="basic">basic</option><option value="standard">standard</option><option value="premium">premium</option>
-            </select>
-          </div>
+          <!-- Скрытое поле plan (оставлено для совместимости со старым ботом) -->
+          <input type="hidden" id="clientPlan" value="basic">
+          
           <div class="form-row">
             <label class="form-label">API-ключ виджета</label>
             <div class="key-block">
@@ -298,6 +343,7 @@
   .color-picker-row .form-input:not(.color-input) { flex: 1; }
   .form-select { width: 100%; padding: 11px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: inherit; font-size: 14px; outline: none; transition: var(--transition); }
   .form-select:focus { border-color: var(--cyan); background: var(--bg-hover); box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.12); }
+  @media (max-width: 640px) { .settings-form[style*="grid-template-columns"] { grid-template-columns: 1fr !important; } }
 </style>
 
 <script>
@@ -329,6 +375,7 @@ async function loadClient() {
     document.getElementById('loadingBlock').style.display = 'none';
     document.getElementById('clientContent').style.display = 'block';
     document.getElementById('headerActions').style.display = 'flex';
+    document.getElementById('confirmPayBtn').style.display = 'inline-block';
   } catch (err) { showError('Ошибка сети: ' + err.message); }
 }
 
@@ -341,6 +388,16 @@ function showError(msg) {
 function renderClient() {
   const c = clientData; const s = settingsData;
   document.getElementById('pageTitle').textContent = c.name || 'Клиент';
+
+  // ТАРИФЫ (НОВОЕ)
+  document.getElementById('tariffCode').value = c.tariff_code || 'start';
+  document.getElementById('monthlyPrice').value = c.monthly_price || 200;
+  document.getElementById('subCurrency').value = c.sub_currency || 'BYN';
+  document.getElementById('subscriptionEnd').value = c.subscription_end || '';
+  document.getElementById('nextPaymentDue').value = c.next_payment_due || '';
+  document.getElementById('adminNotes').value = c.admin_notes || '';
+
+  // ДОСТУП
   document.getElementById('accountStatus').value = c.account_status || 'pending';
   document.getElementById('widgetEnabled').checked = s.widget_enabled === 1;
   document.getElementById('botEnabled').checked = s.bot_enabled === 1;
@@ -353,6 +410,7 @@ function renderClient() {
   document.getElementById('businessConnectionId').textContent = connId ? connId : 'не подключен';
   document.getElementById('businessConnectionId').style.color = connId ? 'var(--cyan)' : 'var(--text-dim)';
 
+  // ДАННЫЕ
   document.getElementById('clientName').value = c.name || '';
   document.getElementById('clientEmail').value = c.email || '';
   document.getElementById('clientPhone').value = c.phone || '';
@@ -363,12 +421,14 @@ function renderClient() {
   document.getElementById('clientPlan').value = c.plan || 'basic';
   document.getElementById('clientApiKey').textContent = c.api_key || '—';
 
+  // БОТ
   document.getElementById('botTelegramToken').value = s.bot_telegram_token || s.telegram_token || '';
   document.getElementById('botTelegramAdminId').value = s.bot_telegram_admin_id || s.telegram_admin_id || '';
   document.getElementById('botRemindersEnabled').checked = s.bot_reminders_enabled === 1;
   document.getElementById('botWorkHours').value = s.bot_work_hours || 'always';
   document.getElementById('botMaxDaily').value = s.bot_max_daily || 1000;
 
+  // ВИДЖЕТ
   document.getElementById('widgetPromptRu').value = s.prompt_ru || '';
   document.getElementById('widgetIndustry').value = s.industry || '';
   document.getElementById('widgetServices').value = s.services || '';
@@ -380,6 +440,7 @@ function renderClient() {
   document.getElementById('widgetColor').value = s.widget_color || '#00F0FF';
   document.getElementById('widgetColorText').value = s.widget_color || '#00F0FF';
 
+  // БОТ ПРОМПТ + AI
   document.getElementById('botPromptRu').value = s.bot_prompt_ru || '';
   document.getElementById('botGreetingRu').value = s.bot_greeting_ru || '';
   document.getElementById('botIndustry').value = s.bot_industry || '';
@@ -390,6 +451,11 @@ function renderClient() {
 
   updateCounter('widgetPromptRu', 'counterWidgetPrompt');
   updateCounter('botPromptRu', 'counterBotPrompt');
+}
+
+function updatePriceFromTariff() {
+  const tariffs = { start: 200, business: 350, premium: 500, webdev: 500 };
+  document.getElementById('monthlyPrice').value = tariffs[document.getElementById('tariffCode').value] || 0;
 }
 
 function updateCounter(inputId, counterId) {
@@ -416,6 +482,7 @@ async function saveAll() {
   const status = document.getElementById('saveStatus');
   status.className = 'form-status'; status.textContent = 'Сохраняем...';
 
+  // ОБНОВЛЕНО: добавлены поля тарифов
   const clientPayload = {
     name: document.getElementById('clientName').value.trim(),
     email: document.getElementById('clientEmail').value.trim(),
@@ -427,7 +494,14 @@ async function saveAll() {
     plan: document.getElementById('clientPlan').value,
     account_status: document.getElementById('accountStatus').value,
     widget_enabled: document.getElementById('widgetEnabled').checked ? 1 : 0,
-    bot_enabled: document.getElementById('botEnabled').checked ? 1 : 0
+    bot_enabled: document.getElementById('botEnabled').checked ? 1 : 0,
+    // Новые поля
+    tariff_code: document.getElementById('tariffCode').value,
+    monthly_price: parseFloat(document.getElementById('monthlyPrice').value) || 0,
+    sub_currency: document.getElementById('subCurrency').value,
+    subscription_end: document.getElementById('subscriptionEnd').value || null,
+    next_payment_due: document.getElementById('nextPaymentDue').value || null,
+    admin_notes: document.getElementById('adminNotes').value.trim()
   };
 
   try {
@@ -474,6 +548,29 @@ async function saveAll() {
     if (!data2.ok) throw new Error(data2.error?.ru || 'Ошибка сохранения настроек');
     showStatus('✅ Все изменения сохранены', 'success');
   } catch (err) { showStatus('❌ ' + err.message, 'error'); }
+}
+
+async function confirmPayment() {
+  if (!confirm('Подтвердить оплату?\n\nСистема автоматически:\n1. Запишет платёж.\n2. Продлит подписку.\n3. Сдвинет дату след. платежа.')) return;
+
+  const price = parseFloat(document.getElementById('monthlyPrice').value) || 0;
+  const currency = document.getElementById('subCurrency').value;
+  
+  try {
+    const res = await fetch('/api/admin/billing/confirm-payment', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ client_id: clientId, amount: price, currency: currency })
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error?.ru || 'Ошибка');
+
+    document.getElementById('subscriptionEnd').value = data.new_subscription_end;
+    document.getElementById('nextPaymentDue').value = data.new_next_payment_due;
+    alert('✅ Оплата проведена, даты обновлены!');
+  } catch (err) {
+    alert('❌ Ошибка: ' + err.message);
+  }
 }
 
 async function setupWebhook() {
