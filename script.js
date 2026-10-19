@@ -140,6 +140,28 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ===== АВТО-ДОБАВЛЕНИЕ ССЫЛКИ "ТАРИФЫ" В МЕНЮ =====
+  const isEnPage = window.location.pathname.includes('/en/');
+  const pricingText = isEnPage ? 'Pricing' : 'Тарифы';
+
+  // 1. Десктопное меню
+  const desktopNav = document.querySelector('.nav');
+  if (desktopNav && !desktopNav.querySelector('a[href="pricing.html"]')) {
+    const pricingLi = document.createElement('li');
+    pricingLi.innerHTML = `<a href="pricing.html">${pricingText}</a>`;
+    const firstLi = desktopNav.querySelector('li');
+    if (firstLi) firstLi.after(pricingLi);
+  }
+
+  // 2. Мобильное меню
+  const mobileNav = document.querySelector('.mobile-menu ul');
+  if (mobileNav && !mobileNav.querySelector('a[href="pricing.html"]')) {
+    const pricingLi = document.createElement('li');
+    pricingLi.innerHTML = `<a href="pricing.html">${pricingText}</a>`;
+    const mobileAccordion = mobileNav.querySelector('.mobile-accordion');
+    if (mobileAccordion) mobileAccordion.after(pricingLi);
+  }
+
   // ===== ШАПКА ПРИ СКРОЛЛЕ =====
   const header = document.getElementById('header');
   if (header) {
