@@ -98,7 +98,7 @@ async function callOpenAI({ provider, apiKey, baseUrl, systemPrompt, messages })
     body: JSON.stringify({
       model: 'gpt-4o-mini',
       messages: [{ role: 'system', content: systemPrompt }, ...messages],
-      temperature: 0.7, max_tokens: 400,
+      temperature: 0.7, max_tokens: 150, // ИСПРАВЛЕНО: 150 токенов для коротких ответов
       frequency_penalty: 0.6, presence_penalty: 0.6
     })
   });
@@ -119,7 +119,7 @@ async function callClaude({ apiKey, baseUrl, systemPrompt, messages }) {
     },
     body: JSON.stringify({
       model: 'claude-3-5-sonnet-20241022',
-      max_tokens: 400, system: systemPrompt, messages
+      max_tokens: 150, system: systemPrompt, messages // ИСПРАВЛЕНО: 150 токенов
     })
   });
   const data = await res.json();
@@ -142,7 +142,7 @@ async function callGemini({ apiKey, baseUrl, systemPrompt, messages }) {
     body: JSON.stringify({
       systemInstruction: { parts: [{ text: systemPrompt }] },
       contents,
-      generationConfig: { temperature: 0.7, maxOutputTokens: 400 }
+      generationConfig: { temperature: 0.7, maxOutputTokens: 150 } // ИСПРАВЛЕНО: 150 токенов
     })
   });
   const data = await res.json();
