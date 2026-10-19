@@ -1,27 +1,27 @@
 export async function onRequestPost({ request, env }) {
   try {
-    // ИСПРАВЛЕНО: принимаем тариф и цену с фронтенда
     const { client_id, amount, currency, tariff_code, monthly_price } = await request.json();
     
-    // Получаем текущую дату окончания подписки
+    // Защита от undefined
+    const safeTariff = tariff_code || 'start';
+    const safePrice = monthly_price || 0;
+    const safeCurrency = currency || 'BYN';
+
     const client = await env.radar_group_db.prepare(
       `SELECT subscription_end FROM clients WHERE id = ?`
     ).bind(client_id).first();
     
     if (!client) return Response.json({ ok: false, error: { ru: 'Клиент не найден' } });
 
-    // Вычисляем новые даты
     let startDate = client.subscription_end ? new Date(client.subscription_end) : new Date();
-    if (startDate < new Date()) startDate = new Date(); // если просрочено, начинаем с сегодня
+    if (startDate < new Date()) startDate = new Date();
 
     const endDate = new Date(startDate);
-    endDate.setMonth(endDate.getMonth() + 1); // + 1 месяц
+    endDate.setMonth(endDate.getMonth() + 1);
 
-    // Форматируем в YYYY-MM-DD для базы данных
     const startStr = startDate.toISOString().split('T')[0];
     const endStr = endDate.toISOString().split('T')[0];
 
-    // Записываем платёж в историю
     await env.radar_group_db.prepare(
       `INSERT INTO payments (id, client_id, amount, currency, period_start, period_end, paid_at)
        VALUES (?, ?, ?, ?, ?, ?, ?)`
@@ -29,13 +29,12 @@ export async function onRequestPost({ request, env }) {
       'pay_' + crypto.randomUUID().slice(0, 8), 
       client_id, 
       amount, 
-      currency, 
+      safeCurrency, 
       startStr, 
       endStr, 
       new Date().toISOString()
     ).run();
 
-    // ИСПРАВЛЕНО: продлеваем подписку И сохраняем тариф с ценой
     await env.radar_group_db.prepare(
       `UPDATE clients SET 
         subscription_end = ?, 
@@ -44,7 +43,7 @@ export async function onRequestPost({ request, env }) {
         monthly_price = ?, 
         sub_currency = ? 
        WHERE id = ?`
-    ).bind(endStr, endStr, tariff_code, monthly_price, currency, client_id).run();
+    ).bind(endStr, endStr, safeTariff, safePrice, safeCurrency, client_id).run();
 
     return Response.json({ 
       ok: true, 

@@ -75,7 +75,7 @@
 
     <div id="clientContent" style="display:none;">
       
-      <!-- 💳 ТАРИФ И ОПЛАТА (НОВОЕ) -->
+      <!-- 💳 ТАРИФ И ОПЛАТА -->
       <section class="dash-section" style="border-color: rgba(0, 240, 255, 0.3); background: linear-gradient(180deg, rgba(0, 240, 255, 0.02) 0%, var(--bg-elevated) 100%);">
         <div class="dash-section-header">
           <h2 class="dash-section-title">
@@ -389,7 +389,7 @@ function renderClient() {
   const c = clientData; const s = settingsData;
   document.getElementById('pageTitle').textContent = c.name || 'Клиент';
 
-  // ТАРИФЫ (НОВОЕ)
+  // ТАРИФЫ
   document.getElementById('tariffCode').value = c.tariff_code || 'start';
   document.getElementById('monthlyPrice').value = c.monthly_price || 200;
   document.getElementById('subCurrency').value = c.sub_currency || 'BYN';
@@ -404,7 +404,6 @@ function renderClient() {
   document.getElementById('useRadarKeyWidget').checked = s.use_radar_ai_key_widget === 1;
   document.getElementById('useRadarKeyBot').checked = s.use_radar_ai_key_bot === 1;
   
-  // Telegram Business
   document.getElementById('businessBotEnabled').checked = s.business_bot_enabled === 1;
   const connId = s.business_connection_id;
   document.getElementById('businessConnectionId').textContent = connId ? connId : 'не подключен';
@@ -482,7 +481,6 @@ async function saveAll() {
   const status = document.getElementById('saveStatus');
   status.className = 'form-status'; status.textContent = 'Сохраняем...';
 
-  // ОБНОВЛЕНО: добавлены поля тарифов
   const clientPayload = {
     name: document.getElementById('clientName').value.trim(),
     email: document.getElementById('clientEmail').value.trim(),
@@ -495,7 +493,6 @@ async function saveAll() {
     account_status: document.getElementById('accountStatus').value,
     widget_enabled: document.getElementById('widgetEnabled').checked ? 1 : 0,
     bot_enabled: document.getElementById('botEnabled').checked ? 1 : 0,
-    // Новые поля
     tariff_code: document.getElementById('tariffCode').value,
     monthly_price: parseFloat(document.getElementById('monthlyPrice').value) || 0,
     sub_currency: document.getElementById('subCurrency').value,
@@ -550,24 +547,32 @@ async function saveAll() {
   } catch (err) { showStatus('❌ ' + err.message, 'error'); }
 }
 
+// ИСПРАВЛЕННАЯ ФУНКЦИЯ ПОДТВЕРЖДЕНИЯ ОПЛАТЫ
 async function confirmPayment() {
-  if (!confirm('Подтвердить оплату?\n\nСистема автоматически:\n1. Запишет платёж.\n2. Продлит подписку.\n3. Сдвинет дату след. платежа.')) return;
+  if (!confirm('Подтвердить оплату?\n\nСистема автоматически:\n1. Запишет платёж.\n2. Продлит подписку.\n3. Сохранит выбранный тариф.')) return;
 
   const price = parseFloat(document.getElementById('monthlyPrice').value) || 0;
-  const currency = document.getElementById('subCurrency').value;
+  const currency = document.getElementById('subCurrency').value || 'BYN';
+  const tariffCode = document.getElementById('tariffCode').value || 'start';
   
   try {
     const res = await fetch('/api/admin/billing/confirm-payment', {
       method: 'POST',
       headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ client_id: clientId, amount: price, currency: currency })
+      body: JSON.stringify({ 
+        client_id: clientId, 
+        amount: price, 
+        currency: currency,
+        tariff_code: tariffCode,
+        monthly_price: price
+      })
     });
     const data = await res.json();
     if (!data.ok) throw new Error(data.error?.ru || 'Ошибка');
 
     document.getElementById('subscriptionEnd').value = data.new_subscription_end;
     document.getElementById('nextPaymentDue').value = data.new_next_payment_due;
-    alert('✅ Оплата проведена, даты обновлены!');
+    alert('✅ Оплата проведена, тариф и даты обновлены!');
   } catch (err) {
     alert('❌ Ошибка: ' + err.message);
   }
