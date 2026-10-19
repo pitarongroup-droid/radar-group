@@ -13,20 +13,18 @@ document.addEventListener('DOMContentLoaded', () => {
   // ===== АВТО-ФИКС МОБИЛЬНОГО МЕНЮ (АККОРДЕОН) =====
   const mobileNavUl = document.querySelector('.mobile-menu ul');
   if (mobileNavUl) {
-    // 1. Проверяем, есть ли старое меню (текст "Услуги:" вместо кнопки)
-    const serviceSpan = Array.from(mobileNavUl.querySelectorAll('span')).find(el => 
+    const serviceSpan = Array.from(mobileNavUl.querySelectorAll('span')).find(el =>
       el.textContent.includes('Услуги') || el.textContent.includes('Services')
     );
 
     if (serviceSpan && !mobileNavUl.querySelector('.mobile-accordion')) {
       const parentLi = serviceSpan.closest('li');
       const submenu = parentLi.querySelector('.mobile-submenu');
-      
+
       if (parentLi && submenu) {
         const isEn = window.location.pathname.includes('/en/');
         const servicesText = isEn ? 'Services' : 'Услуги';
-        
-        // Переделываем HTML старого меню в аккордеон
+
         parentLi.className = 'mobile-accordion';
         parentLi.innerHTML = `
           <button class="mobile-accordion-btn">
@@ -38,10 +36,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // 2. Теперь вешаем обработчик на кнопку (она уже есть в HTML или мы её только что создали)
     const accordionBtn = mobileNavUl.querySelector('.mobile-accordion-btn');
     if (accordionBtn) {
-      // Клонируем кнопку, чтобы сбросить старые обработчики (если были)
       const newAccordionBtn = accordionBtn.cloneNode(true);
       accordionBtn.parentNode.replaceChild(newAccordionBtn, accordionBtn);
 
@@ -56,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const isEnPage = window.location.pathname.includes('/en/');
   const pricingText = isEnPage ? 'Pricing' : 'Тарифы';
 
-  // 1. Десктопное меню
   const desktopNav = document.querySelector('.nav');
   if (desktopNav && !desktopNav.querySelector('a[href="pricing.html"]')) {
     const pricingLi = document.createElement('li');
@@ -65,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (firstLi) firstLi.after(pricingLi);
   }
 
-  // 2. Мобильное меню (вставляем после аккордеона)
   if (mobileNavUl && !mobileNavUl.querySelector('a[href="pricing.html"]')) {
     const pricingLi = document.createElement('li');
     pricingLi.innerHTML = `<a href="pricing.html">${pricingText}</a>`;
@@ -75,11 +69,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===== АВТО-ЗАМЕНА СТАРОГО ПОДВАЛА НА НОВЫЙ =====
   const footerContainer = document.querySelector('.footer .container');
-  
+
   if (footerContainer && !footerContainer.querySelector('.footer-main')) {
     const isEn = window.location.pathname.includes('/en/');
     const prefix = isEn ? '../' : '';
-    
+
     footerContainer.innerHTML = `
       <div class="footer-main">
         <div class="footer-brand">
@@ -300,13 +294,22 @@ document.addEventListener('DOMContentLoaded', () => {
     if (contactInput) {
       contactInput.setAttribute('maxlength', String(MAX_CONTACT));
 
+      // === ИСПРАВЛЕНО: разрешаем буквы, авто-@ для username ===
       contactInput.addEventListener('input', function() {
-        let val = this.value;
-        if (val.startsWith('@')) {
-          this.value = val.replace(/[^a-zA-Z0-9_@]/g, '').slice(0, MAX_CONTACT);
-        } else {
-          this.value = val.replace(/[^\d+\-()\s]/g, '').slice(0, MAX_CONTACT);
+        const val = this.value;
+
+        // Если начали вводить букву (a-zA-Z) — автопрефикс @ (значит, вводят username)
+        if (/^[a-zA-Z]/.test(val)) {
+          this.value = '@' + val.replace(/[^a-zA-Z0-9_]/g, '').slice(0, MAX_CONTACT - 1);
+          return;
         }
+        // Если уже начинается с @ — фильтруем username
+        if (val.startsWith('@')) {
+          this.value = '@' + val.slice(1).replace(/[^a-zA-Z0-9_]/g, '').slice(0, MAX_CONTACT - 1);
+          return;
+        }
+        // Иначе — телефон
+        this.value = val.replace(/[^\d+\-()\s]/g, '').slice(0, MAX_CONTACT);
       });
 
       contactInput.addEventListener('blur', function() {
@@ -389,8 +392,18 @@ document.addEventListener('DOMContentLoaded', () => {
       const agreeEl = leadForm.querySelector('[name="agree"]');
       const agree = agreeEl ? agreeEl.checked : false;
 
-      const nicheInput = leadForm.querySelector('input[name="niche"]:checked');
-      const niche = nicheInput ? nicheInput.value : '';
+      const nicheRadios = leadForm.querySelectorAll('input[name="niche"]');
+      const nicheSelect = leadForm.querySelector('select[name="niche"]');
+      let niche = '';
+      let nicheIsRequired = false;
+
+      if (nicheRadios.length > 0) {
+        nicheIsRequired = true;
+        const checked = leadForm.querySelector('input[name="niche"]:checked');
+        niche = checked ? checked.value : '';
+      } else if (nicheSelect) {
+        niche = nicheSelect.value || '';
+      }
 
       const features = Array.from(
         leadForm.querySelectorAll('input[name="features"]:checked')
@@ -400,7 +413,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (name.length < 2) { showStatus(M.nameShort, 'error'); nameInput?.focus(); return; }
       if (!contact) { showStatus(M.contactRequired, 'error'); contactInput?.focus(); return; }
       if (!CONTACT_RE.test(contact)) { showStatus(M.contactInvalid, 'error'); contactInput?.focus(); return; }
-      if (!niche) { showStatus(M.nicheRequired, 'error'); return; }
+      if (nicheIsRequired && !niche) { showStatus(M.nicheRequired, 'error'); return; }
       if (!agree) { showStatus(M.agreeRequired, 'error'); return; }
 
       submitBtn.disabled = true;

@@ -85,14 +85,12 @@
     <li><a href="cases.html">Кейсы</a></li>
     <li><a href="about.html">О технологии</a></li>
   </ul>
-  <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
-    <a href="/app/login.html" class="btn btn-outline" style="width: 100%; border-color: var(--border-strong); color: var(--text);">
-      Войти в кабинет
-    </a>
-    <a href="#lead" class="btn btn-primary" target="_self" style="width: 100%;">
-      Обсудить проект
-    </a>
-  </div>
+
+  <!-- Кнопка «Войти в кабинет» убрана — она уже есть в шапке -->
+  <a href="#lead" class="btn btn-primary" target="_self" style="width: 100%; margin-top: 20px;">
+    Обсудить проект
+  </a>
+
   <div class="mobile-lang"><a href="pricing.html" class="active">RU</a><a href="en/pricing.html">EN</a></div>
 </aside>
 
@@ -154,7 +152,6 @@
         </div>
       </div>
 
-      <!-- БЛОК РАЗРАБОТКА САЙТОВ -->
       <div class="cta-block" style="margin-top: 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px; text-align: left; background: linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(15, 15, 26, 1) 100%); border-color: rgba(168, 85, 247, 0.3);">
         <div style="flex: 1; min-width: 280px;">
           <div class="hero-badge" style="margin-bottom: 16px; border-color: rgba(168, 85, 247, 0.3); color: var(--violet);"><span class="dot" style="background: var(--violet); box-shadow: 0 0 10px var(--violet);"></span>Разовая услуга</div>
@@ -271,7 +268,7 @@
           </div>
           <div class="form-row">
             <label class="form-label">Telegram или телефон *</label>
-            <input class="form-input" type="tel" name="contact" placeholder="@username или телефон" required maxlength="30">
+            <input class="form-input" type="text" name="contact" placeholder="@username или телефон" required maxlength="30" autocomplete="off" inputmode="text">
           </div>
           <div class="form-row">
             <label class="form-label">Какой тариф интересует? (необязательно)</label>
