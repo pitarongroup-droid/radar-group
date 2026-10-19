@@ -10,6 +10,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const SCROLL_OFFSET = 80;
   const STATUS_TIMEOUT = 7000;
 
+  const VALID_NICHES = ['Telegram Business', 'Telegram-бот', 'Виджет на сайт', 'Создание сайта'];
+  const DEFAULT_NICHE = 'Telegram Business';
+
+  // extras: name -> человекочитаемая метка для comment
+  const EXTRA_FIELDS = {
+    'tariff':     'Тариф',
+    'crm_system': 'CRM',
+    'site_type':  'Тип сайта',
+    'industry':   'Сфера',
+    'tg_link':    'Telegram',
+    'site':       'Сайт'
+  };
+
   // ===== АВТО-ФИКС МОБИЛЬНОГО МЕНЮ (АККОРДЕОН) =====
   const mobileNavUl = document.querySelector('.mobile-menu ul');
   if (mobileNavUl) {
@@ -24,7 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (parentLi && submenu) {
         const isEn = window.location.pathname.includes('/en/');
         const servicesText = isEn ? 'Services' : 'Услуги';
-
         parentLi.className = 'mobile-accordion';
         parentLi.innerHTML = `
           <button class="mobile-accordion-btn">
@@ -67,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (mobileAccordion) mobileAccordion.after(pricingLi);
   }
 
-  // ===== АВТО-ЗАМЕНА СТАРОГО ПОДВАЛА НА НОВЫЙ =====
+  // ===== АВТО-ЗАМЕНА СТАРОГО ПОДВАЛА =====
   const footerContainer = document.querySelector('.footer .container');
 
   if (footerContainer && !footerContainer.querySelector('.footer-main')) {
@@ -123,21 +135,18 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
   }
 
-  // ===== БЕЗОПАСНЫЙ ТРЕКИНГ =====
+  // ===== ТРЕКИНГ =====
   function track(eventName, params = {}) {
     try {
       if (typeof zaraz !== 'undefined' && typeof zaraz.track === 'function') {
         zaraz.track(eventName, params);
-        console.log('[Zaraz] tracked:', eventName, params);
-      } else {
-        console.warn('[Zaraz] not available, skip:', eventName);
       }
     } catch (err) {
       console.error('[Zaraz] track error:', eventName, err);
     }
   }
 
-  // ===== БЛОКИРОВКА СКРОЛЛА (счётчик) =====
+  // ===== БЛОКИРОВКА СКРОЛЛА =====
   let scrollLocks = 0;
   function lockScroll() {
     scrollLocks++;
@@ -148,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (scrollLocks === 0) document.body.style.overflow = '';
   }
 
-  // ===== ЛОГО: не перезагружаем текущую страницу =====
+  // ===== ЛОГО =====
   document.querySelectorAll('.logo').forEach(logo => {
     logo.addEventListener('click', function(e) {
       const currentPath = window.location.pathname.split('/').pop() || 'index.html';
@@ -266,11 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!targetId || targetId === '#') return;
 
       let target;
-      try {
-        target = document.querySelector(targetId);
-      } catch (err) {
-        return;
-      }
+      try { target = document.querySelector(targetId); } catch (err) { return; }
 
       if (target) {
         e.preventDefault();
@@ -294,28 +299,23 @@ document.addEventListener('DOMContentLoaded', () => {
     if (contactInput) {
       contactInput.setAttribute('maxlength', String(MAX_CONTACT));
 
-      // === ИСПРАВЛЕНО: разрешаем буквы, авто-@ для username ===
+      // Авто-@ для username, фильтр для телефона
       contactInput.addEventListener('input', function() {
         const val = this.value;
-
-        // Если начали вводить букву (a-zA-Z) — автопрефикс @ (значит, вводят username)
         if (/^[a-zA-Z]/.test(val)) {
           this.value = '@' + val.replace(/[^a-zA-Z0-9_]/g, '').slice(0, MAX_CONTACT - 1);
           return;
         }
-        // Если уже начинается с @ — фильтруем username
         if (val.startsWith('@')) {
           this.value = '@' + val.slice(1).replace(/[^a-zA-Z0-9_]/g, '').slice(0, MAX_CONTACT - 1);
           return;
         }
-        // Иначе — телефон
         this.value = val.replace(/[^\d+\-()\s]/g, '').slice(0, MAX_CONTACT);
       });
 
       contactInput.addEventListener('blur', function() {
         const val = this.value.trim();
         if (!val) { this.setCustomValidity(''); return; }
-
         if (!CONTACT_RE.test(val)) {
           this.setCustomValidity(
             PAGE_LANG === 'en'
@@ -340,6 +340,22 @@ document.addEventListener('DOMContentLoaded', () => {
       commentInput.addEventListener('input', updateCounter);
       updateCounter();
     }
+
+    // Кнопки «Выбрать Старт/Бизнес/Премиум» на pricing
+    const tariffSelect = leadForm.querySelector('select[name="tariff"]');
+    document.querySelectorAll('[data-tariff]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (tariffSelect) {
+          tariffSelect.value = btn.dataset.tariff;
+          tariffSelect.style.borderColor = 'var(--cyan)';
+          tariffSelect.style.boxShadow = '0 0 0 3px rgba(0, 240, 255, 0.12)';
+          setTimeout(() => {
+            tariffSelect.style.borderColor = '';
+            tariffSelect.style.boxShadow = '';
+          }, 1500);
+        }
+      });
+    });
 
     const MESSAGES = {
       ru: {
@@ -388,49 +404,98 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const name = nameInput ? nameInput.value.trim() : '';
       const contact = contactInput ? contactInput.value.trim() : '';
-      const comment = commentInput ? commentInput.value.trim() : '';
+      const userComment = commentInput ? commentInput.value.trim() : '';
       const agreeEl = leadForm.querySelector('[name="agree"]');
       const agree = agreeEl ? agreeEl.checked : false;
 
-      const nicheRadios = leadForm.querySelectorAll('input[name="niche"]');
+      // ===== niche: три сценария — radio / hidden / select =====
+      const nicheRadios = leadForm.querySelectorAll('input[type="radio"][name="niche"]');
+      const nicheHidden = leadForm.querySelector('input[type="hidden"][name="niche"]');
       const nicheSelect = leadForm.querySelector('select[name="niche"]');
-      let niche = '';
+
+      let rawNiche = '';
       let nicheIsRequired = false;
 
       if (nicheRadios.length > 0) {
         nicheIsRequired = true;
-        const checked = leadForm.querySelector('input[name="niche"]:checked');
-        niche = checked ? checked.value : '';
+        const checked = leadForm.querySelector('input[type="radio"][name="niche"]:checked');
+        rawNiche = checked ? checked.value : '';
+      } else if (nicheHidden && nicheHidden.value) {
+        rawNiche = nicheHidden.value;
       } else if (nicheSelect) {
-        niche = nicheSelect.value || '';
+        rawNiche = nicheSelect.value || '';
       }
 
+      // features (на index, если есть)
       const features = Array.from(
         leadForm.querySelectorAll('input[name="features"]:checked')
       ).map(el => el.value);
 
+      // ===== Сбор extras (tariff/crm_system/industry/site_type/site/tg_link) =====
+      const extras = [];
+
+      // Метка страницы — первой строкой в comment
+      const pageTitle = (document.title.split('|')[0] || '').trim();
+      if (pageTitle) extras.push(`Страница: ${pageTitle}`);
+
+      // Legacy fallback: если niche пришёл невалидным — тоже в comment
+      if (rawNiche && !VALID_NICHES.includes(rawNiche)) {
+        extras.push(`Выбор на странице: ${rawNiche}`);
+      }
+
+      for (const [fieldName, label] of Object.entries(EXTRA_FIELDS)) {
+        const radios = leadForm.querySelectorAll(`input[type="radio"][name="${fieldName}"]:checked`);
+        if (radios.length) {
+          const val = Array.from(radios).map(r => r.value).join(', ');
+          if (val) extras.push(`${label}: ${val}`);
+          continue;
+        }
+        const el = leadForm.querySelector(
+          `select[name="${fieldName}"], input[type="text"][name="${fieldName}"], input:not([type])[name="${fieldName}"]`
+        );
+        if (el && el.value && el.value.trim()) {
+          extras.push(`${label}: ${el.value.trim()}`);
+        }
+      }
+
+      // Итоговый niche
+      let finalNiche = DEFAULT_NICHE;
+      if (rawNiche && VALID_NICHES.includes(rawNiche)) {
+        finalNiche = rawNiche;
+      }
+
+      // Итоговый comment
+      let finalComment = extras.join('\n');
+      if (userComment) {
+        finalComment += (finalComment ? '\n\n' : '') + userComment;
+      }
+      if (finalComment.length > MAX_COMMENT) finalComment = finalComment.slice(0, MAX_COMMENT);
+
+      // ===== Валидация =====
       if (!name) { showStatus(M.nameRequired, 'error'); nameInput?.focus(); return; }
       if (name.length < 2) { showStatus(M.nameShort, 'error'); nameInput?.focus(); return; }
       if (!contact) { showStatus(M.contactRequired, 'error'); contactInput?.focus(); return; }
       if (!CONTACT_RE.test(contact)) { showStatus(M.contactInvalid, 'error'); contactInput?.focus(); return; }
-      if (nicheIsRequired && !niche) { showStatus(M.nicheRequired, 'error'); return; }
+      if (nicheIsRequired && !rawNiche) { showStatus(M.nicheRequired, 'error'); return; }
       if (!agree) { showStatus(M.agreeRequired, 'error'); return; }
 
       submitBtn.disabled = true;
       submitBtn.innerHTML = M.sending;
 
+      const payload = {
+        name: name,
+        contact: contact,
+        niche: finalNiche,
+        features: features,
+        comment: finalComment,
+        lang: PAGE_LANG
+      };
+
       try {
         const response = await fetch('/api/send', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: name,
-            contact: contact,
-            niche: niche,
-            features: features,
-            comment: comment,
-            lang: PAGE_LANG
-          })
+          body: JSON.stringify(payload)
         });
 
         let data = {};
@@ -447,16 +512,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
           track('form_submit', {
             category: 'lead',
-            niche: niche
+            niche: finalNiche,
+            page: pageTitle
           });
 
           showStatus(M.success, 'success');
         } else {
-          console.error('Send error:', response.status, data);
+          console.error('[leadForm] send failed', {
+            status: response.status,
+            statusText: response.statusText,
+            responseBody: data,
+            sentPayload: payload
+          });
           showStatus(M.errorSend, 'error');
         }
       } catch (err) {
-        console.error('Form error:', err);
+        console.error('[leadForm] network error', err, { sentPayload: payload });
         showStatus(M.errorNet, 'error');
       } finally {
         submitBtn.disabled = false;
@@ -480,11 +551,7 @@ document.addEventListener('DOMContentLoaded', () => {
     chatWidget.setAttribute('aria-hidden', 'false');
     lockScroll();
     setTimeout(() => chatInput && chatInput.focus(), 300);
-
-    if (!chatOpened) {
-      chatOpened = true;
-      track('chat_open');
-    }
+    if (!chatOpened) { chatOpened = true; track('chat_open'); }
   };
 
   window.closeChatWidget = function() {
@@ -494,9 +561,7 @@ document.addEventListener('DOMContentLoaded', () => {
     unlockScroll();
   };
 
-  if (chatClose) {
-    chatClose.addEventListener('click', window.closeChatWidget);
-  }
+  if (chatClose) chatClose.addEventListener('click', window.closeChatWidget);
 
   if (chatInput && chatForm) {
     chatInput.addEventListener('keydown', (e) => {
@@ -512,7 +577,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ===== ОТПРАВКА СООБЩЕНИЯ В ЧАТЕ =====
   if (chatForm) {
     chatForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -530,7 +594,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (CONTACT_RE.test(message)) {
         const chatHistory = getChatHistory();
-
         showChatTyping();
         try {
           const response = await fetch('/api/chat', {
@@ -542,25 +605,15 @@ document.addEventListener('DOMContentLoaded', () => {
               lang: PAGE_LANG
             })
           });
-
           hideChatTyping();
-
-          if (!response.ok) {
-            console.warn('[chat_lead] server status:', response.status);
-          }
-
+          if (!response.ok) console.warn('[chat_lead] server status:', response.status);
           addChatMessage(
             PAGE_LANG === 'en'
               ? 'Great! 👍 The engineer will contact you shortly.'
               : 'Отлично! 👍 Инженер свяжется с вами в ближайшее время.',
             'bot'
           );
-
-          track('chat_lead', {
-            category: 'lead',
-            source: 'chat',
-            lang: PAGE_LANG
-          });
+          track('chat_lead', { category: 'lead', source: 'chat', lang: PAGE_LANG });
         } catch (err) {
           console.error('[chat_lead] error:', err);
           hideChatTyping();
@@ -575,7 +628,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       track('chat_message');
-
       showChatTyping();
 
       const chatHistory = getChatHistory();
@@ -584,10 +636,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const response = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            messages: chatHistory,
-            lang: PAGE_LANG
-          })
+          body: JSON.stringify({ messages: chatHistory, lang: PAGE_LANG })
         });
 
         if (response.status === 429) {
@@ -608,10 +657,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (data.reply) {
           addChatMessage(data.reply, 'bot');
-
-          if (data.contactReady && !document.getElementById('chatCta')) {
-            showContactCta();
-          }
+          if (data.contactReady && !document.getElementById('chatCta')) showContactCta();
         } else {
           addChatMessage(
             PAGE_LANG === 'en'
@@ -633,7 +679,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ===== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ЧАТА =====
   function getChatHistory() {
     const history = [];
     if (!chatBody) return history;
@@ -694,16 +739,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typing) typing.remove();
   }
 
-  // ===== ЕДИНЫЙ ОБРАБОТЧИК ESCAPE =====
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
     if (chatWidget && chatWidget.classList.contains('active')) {
       window.closeChatWidget();
       return;
     }
-    if (burger && burger.classList.contains('active')) {
-      toggleMenu(false);
-    }
+    if (burger && burger.classList.contains('active')) toggleMenu(false);
   });
 
 });

@@ -59,16 +59,20 @@
             <a href="services-crm.html">Интеграции с CRM</a>
           </div>
         </li>
+        <li><a href="pricing.html">Тарифы</a></li>
         <li><a href="index.html#features">Что умеет</a></li>
         <li><a href="cases.html">Кейсы</a></li>
-        <li><a href="about.html">О технологии</a></li>
+        <li><a href="about.html" class="active">О технологии</a></li>
         <li><a href="#lead">Оставить заявку</a></li>
       </ul>
     </nav>
     <div class="header-cta">
       <div class="lang-switch"><a href="about.html" class="active">RU</a><a href="en/about.html">EN</a></div>
       <a href="https://t.me/my_ai_TGAgency_bot" class="tg-link" target="_blank" rel="noopener"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm5.6 8.4l-2 9.4c-.1.6-.5.8-1 .5l-2.8-2.1-1.4 1.3c-.1.1-.3.2-.5.2l.2-2.9 5.3-4.8c.2-.2 0-.3-.4-.1l-6.6 4.1-2.8-.9c-.6-.2-.6-.6.1-.9l11-4.2c.5-.2 1 .1.9.4z"/></svg></a>
-      <a href="/app/login.html" class="btn btn-outline">Войти</a>
+      <a href="/app/login.html" class="btn btn-outline" style="display: flex; align-items: center; gap: 6px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        Войти
+      </a>
       <a href="#lead" class="btn btn-primary">Обсудить проект</a>
       <button class="burger" id="burger" aria-label="Открыть меню" aria-expanded="false"><span></span><span></span><span></span></button>
     </div>
@@ -79,8 +83,11 @@
 <aside class="mobile-menu" id="mobileMenu" aria-hidden="true">
   <ul>
     <li><a href="index.html">Главная</a></li>
-    <li>
-      <span style="padding: 14px 16px; color: var(--text); font-weight: 700; display:block;">Услуги:</span>
+    <li class="mobile-accordion">
+      <button class="mobile-accordion-btn">
+        Услуги
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
       <div class="mobile-submenu">
         <a href="services-telegram-business.html">Telegram Business</a>
         <a href="services-telegram-bot.html">Telegram-бот</a>
@@ -89,13 +96,13 @@
         <a href="services-crm.html">Интеграции с CRM</a>
       </div>
     </li>
+    <li><a href="pricing.html">Тарифы</a></li>
     <li><a href="index.html#features">Что умеет</a></li>
     <li><a href="cases.html">Кейсы</a></li>
-    <li><a href="about.html">О технологии</a></li>
+    <li><a href="about.html" class="active">О технологии</a></li>
     <li><a href="#lead">Оставить заявку</a></li>
-    <li><a href="/app/login.html">Войти в кабинет</a></li>
   </ul>
-  <a href="#lead" class="btn btn-primary" target="_self">Обсудить проект</a>
+  <a href="#lead" class="btn btn-primary" target="_self" style="width: 100%; margin-top: 20px;">Обсудить проект</a>
   <div class="mobile-lang"><a href="about.html" class="active">RU</a><a href="en/about.html">EN</a></div>
 </aside>
 
@@ -130,19 +137,20 @@
         <div class="form-step">
           <div class="form-step-head"><span class="form-step-num">1</span><span class="form-step-title">Контакты</span></div>
           <div class="form-row"><label class="form-label">Как вас зовут? *</label><input class="form-input" type="text" name="name" placeholder="Иван" required maxlength="50"></div>
-          <div class="form-row"><label class="form-label">Telegram или телефон *</label><input class="form-input" type="tel" name="contact" placeholder="@username или телефон" required maxlength="30"></div>
+          <div class="form-row"><label class="form-label">Telegram или телефон *</label><input class="form-input" type="text" name="contact" placeholder="@username или телефон" required maxlength="30" autocomplete="off" inputmode="text"></div>
         </div>
 
         <div class="form-step">
-          <div class="form-step-head"><span class="form-step-num">2</span><span class="form-step-title">Ваша ниша</span></div>
+          <div class="form-step-head"><span class="form-step-num">2</span><span class="form-step-title">Ваша сфера</span></div>
           <div class="option-grid" role="radiogroup">
-            <label class="option-card"><input type="radio" name="niche" value="Автосервис" required><span class="option-card-inner"><span class="option-card-text">Автосервис</span></span></label>
-            <label class="option-card"><input type="radio" name="niche" value="Онлайн-школа"><span class="option-card-inner"><span class="option-card-text">Онлайн-школа</span></span></label>
-            <label class="option-card"><input type="radio" name="niche" value="Клиника"><span class="option-card-inner"><span class="option-card-text">Клиника</span></span></label>
-            <label class="option-card"><input type="radio" name="niche" value="Другое"><span class="option-card-inner"><span class="option-card-text">Другое</span></span></label>
+            <label class="option-card"><input type="radio" name="industry" value="Автосервис" required><span class="option-card-inner"><span class="option-card-text">Автосервис</span></span></label>
+            <label class="option-card"><input type="radio" name="industry" value="Онлайн-школа"><span class="option-card-inner"><span class="option-card-text">Онлайн-школа</span></span></label>
+            <label class="option-card"><input type="radio" name="industry" value="Клиника"><span class="option-card-inner"><span class="option-card-text">Клиника</span></span></label>
+            <label class="option-card"><input type="radio" name="industry" value="Другое"><span class="option-card-inner"><span class="option-card-text">Другое</span></span></label>
           </div>
         </div>
 
+        <input type="hidden" name="niche" value="Telegram Business">
         <label class="form-checkbox-row"><input type="checkbox" name="agree" required><span class="form-checkbox-custom"></span><span>Согласен на обработку персональных данных</span></label>
         <button type="submit" class="btn btn-primary form-submit form-submit-hero">Получить демо</button>
         <div class="form-status" id="formStatus"></div>
@@ -160,11 +168,8 @@
           <img src="/images/logo.webp" alt="Логотип Radar Group" width="36" height="36">
           <span class="logo-text">RADAR GROUP</span>
         </a>
-        <p class="footer-copy">
-          ИИ-менеджер, обученный под ваш продукт. Продаёт в Telegram и на сайте 24/7.
-        </p>
+        <p class="footer-copy">ИИ-менеджер, обученный под ваш продукт. Продаёт в Telegram и на сайте 24/7.</p>
       </div>
-
       <nav class="footer-columns" aria-label="Навигация в подвале">
         <div class="footer-col">
           <div class="footer-title">Услуги</div>
@@ -176,18 +181,17 @@
             <li><a href="services-crm.html">Интеграции с CRM</a></li>
           </ul>
         </div>
-
         <div class="footer-col">
           <div class="footer-title">Компания</div>
           <ul class="footer-links-col">
             <li><a href="index.html">Главная</a></li>
+            <li><a href="pricing.html">Тарифы</a></li>
             <li><a href="cases.html">Кейсы</a></li>
             <li><a href="about.html">О технологии</a></li>
             <li><a href="index.html#lead">Оставить заявку</a></li>
             <li><a href="/app/login.html">Войти в кабинет</a></li>
           </ul>
         </div>
-
         <div class="footer-col">
           <div class="footer-title">Документы</div>
           <ul class="footer-links-col">
@@ -197,14 +201,10 @@
         </div>
       </nav>
     </div>
-
     <div class="footer-bottom">
       <div class="footer-copy">© 2026 Radar Group. Все права защищены.</div>
-
       <a href="https://t.me/my_ai_TGAgency_bot" class="footer-tg" target="_blank" rel="noopener" aria-label="Написать в Telegram">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm5.6 8.4l-2 9.4c-.1.6-.5.8-1 .5l-2.8-2.1-1.4 1.3c-.1.1-.3.2-.5.2l.2-2.9 5.3-4.8c.2-.2 0-.3-.4-.1l-6.6 4.1-2.8-.9c-.6-.2-.6-.6.1-.9l11-4.2c.5-.2 1 .1.9.4z"/>
-        </svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm5.6 8.4l-2 9.4c-.1.6-.5.8-1 .5l-2.8-2.1-1.4 1.3c-.1.1-.3.2-.5.2l.2-2.9 5.3-4.8c.2-.2 0-.3-.4-.1l-6.6 4.1-2.8-.9c-.6-.2-.6-.6.1-.9l11-4.2c.5-.2 1 .1.9.4z"/></svg>
       </a>
     </div>
   </div>

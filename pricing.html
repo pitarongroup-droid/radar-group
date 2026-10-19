@@ -86,7 +86,6 @@
     <li><a href="about.html">О технологии</a></li>
   </ul>
 
-  <!-- Кнопка «Войти в кабинет» убрана — она уже есть в шапке -->
   <a href="#lead" class="btn btn-primary" target="_self" style="width: 100%; margin-top: 20px;">
     Обсудить проект
   </a>
@@ -118,7 +117,7 @@
             <li class="disabled"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg> Telegram-бот</li>
             <li class="disabled"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg> Интеграция с CRM</li>
           </ul>
-          <a href="#lead" class="btn btn-outline">Выбрать Старт</a>
+          <a href="#lead" class="btn btn-outline" data-tariff="Старт (200 BYN)">Выбрать Старт</a>
         </div>
 
         <div class="pricing-card popular">
@@ -134,7 +133,7 @@
             <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Настройка за 1-2 дня</li>
             <li class="disabled"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg> Telegram Business</li>
           </ul>
-          <a href="#lead" class="btn btn-primary">Выбрать Бизнес</a>
+          <a href="#lead" class="btn btn-primary" data-tariff="Бизнес (350 BYN)">Выбрать Бизнес</a>
         </div>
 
         <div class="pricing-card">
@@ -148,7 +147,7 @@
             <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Личный менеджер</li>
             <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Приоритетная поддержка</li>
           </ul>
-          <a href="#lead" class="btn btn-outline">Выбрать Премиум</a>
+          <a href="#lead" class="btn btn-outline" data-tariff="Премиум (500 BYN)">Выбрать Премиум</a>
         </div>
       </div>
 
@@ -262,24 +261,46 @@
       </div>
       <div class="lead-form-wrap" style="max-width: 500px; margin: 0 auto;">
         <form class="lead-form" id="leadForm" novalidate>
-          <div class="form-row">
-            <label class="form-label">Как вас зовут? *</label>
-            <input class="form-input" type="text" name="name" placeholder="Иван" required maxlength="50">
+          <div class="form-step">
+            <div class="form-step-head"><span class="form-step-num">1</span><span class="form-step-title">Контакты</span></div>
+            <div class="form-row">
+              <label class="form-label">Как вас зовут? *</label>
+              <input class="form-input" type="text" name="name" placeholder="Иван" required maxlength="50">
+            </div>
+            <div class="form-row">
+              <label class="form-label">Telegram или телефон *</label>
+              <input class="form-input" type="text" name="contact" placeholder="@username или телефон" required maxlength="30" autocomplete="off" inputmode="text">
+            </div>
           </div>
-          <div class="form-row">
-            <label class="form-label">Telegram или телефон *</label>
-            <input class="form-input" type="text" name="contact" placeholder="@username или телефон" required maxlength="30" autocomplete="off" inputmode="text">
+
+          <div class="form-step">
+            <div class="form-step-head"><span class="form-step-num">2</span><span class="form-step-title">Что вас интересует?</span></div>
+            <div class="option-grid" role="radiogroup">
+              <label class="option-card"><input type="radio" name="niche" value="Telegram Business" required><span class="option-card-inner"><span class="option-card-text">Telegram Business</span></span></label>
+              <label class="option-card"><input type="radio" name="niche" value="Telegram-бот"><span class="option-card-inner"><span class="option-card-text">Telegram-бот</span></span></label>
+              <label class="option-card"><input type="radio" name="niche" value="Виджет на сайт"><span class="option-card-inner"><span class="option-card-text">Виджет на сайт</span></span></label>
+              <label class="option-card"><input type="radio" name="niche" value="Создание сайта"><span class="option-card-inner"><span class="option-card-text">Создание сайта</span></span></label>
+            </div>
           </div>
-          <div class="form-row">
-            <label class="form-label">Какой тариф интересует? (необязательно)</label>
-            <select class="form-select" name="niche">
-              <option value="">Выберите тариф</option>
-              <option value="Старт">Старт (200 BYN)</option>
-              <option value="Бизнес">Бизнес (350 BYN)</option>
-              <option value="Премиум">Премиум (500 BYN)</option>
-              <option value="Разработка сайта">Разработка сайта</option>
-            </select>
+
+          <div class="form-step">
+            <div class="form-step-head"><span class="form-step-num">3</span><span class="form-step-title">Какой тариф интересует?</span><span class="form-step-hint">необязательно</span></div>
+            <div class="form-row">
+              <select class="form-select" name="tariff">
+                <option value="">Выберите тариф</option>
+                <option value="Старт (200 BYN)">Старт — 200 BYN / мес</option>
+                <option value="Бизнес (350 BYN)">Бизнес — 350 BYN / мес</option>
+                <option value="Премиум (500 BYN)">Премиум — 500 BYN / мес</option>
+                <option value="Разработка сайта">Разработка сайта — от 500 BYN</option>
+              </select>
+            </div>
           </div>
+
+          <div class="form-step">
+            <div class="form-step-head"><span class="form-step-num">4</span><span class="form-step-title">Комментарий</span><span class="form-step-hint">необязательно</span></div>
+            <div class="form-row"><textarea class="form-textarea" name="comment" placeholder="Что продаёте, какие возражения чаще слышите..." maxlength="500"></textarea></div>
+          </div>
+
           <label class="form-checkbox-row"><input type="checkbox" name="agree" required><span class="form-checkbox-custom"></span><span>Согласен на обработку персональных данных</span></label>
           <button type="submit" class="btn btn-primary form-submit form-submit-hero">Получить консультацию</button>
           <div class="form-status" id="formStatus"></div>
