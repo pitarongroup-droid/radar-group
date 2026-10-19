@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // ===== АВТО-ЗАМЕНА СТАРОГО ПОДВАЛА НА НОВЫЙ =====
   const footerContainer = document.querySelector('.footer .container');
   
-  // Проверяем, что подвал существует, и в нем НЕТ нового класса footer-main (значит он старый)
   if (footerContainer && !footerContainer.querySelector('.footer-main')) {
     const isEn = window.location.pathname.includes('/en/');
     const prefix = isEn ? '../' : '';
@@ -42,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="footer-title">${isEn ? 'Company' : 'Компания'}</div>
             <ul class="footer-links-col">
               <li><a href="index.html">${isEn ? 'Home' : 'Главная'}</a></li>
+              <li><a href="pricing.html">${isEn ? 'Pricing' : 'Тарифы'}</a></li>
               <li><a href="cases.html">${isEn ? 'Cases' : 'Кейсы'}</a></li>
               <li><a href="about.html">${isEn ? 'Technology' : 'О технологии'}</a></li>
               <li><a href="index.html#lead">${isEn ? 'Get a quote' : 'Оставить заявку'}</a></li>
@@ -128,6 +128,15 @@ document.addEventListener('DOMContentLoaded', () => {
   if (mobileMenu) {
     mobileMenu.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => toggleMenu(false));
+    });
+  }
+
+  // ===== АККОРДЕОН В МОБИЛЬНОМ МЕНЮ =====
+  const accordionBtn = document.querySelector('.mobile-accordion-btn');
+  if (accordionBtn) {
+    accordionBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      accordionBtn.closest('.mobile-accordion').classList.toggle('open');
     });
   }
 
@@ -396,7 +405,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const chatForm = document.getElementById('chatForm');
   const chatInput = document.getElementById('chatInput');
 
-  let chatOpened = false; // защита от повторного chat_open
+  let chatOpened = false;
 
   window.openChatWidget = function() {
     if (!chatWidget) return;
@@ -449,11 +458,9 @@ document.addEventListener('DOMContentLoaded', () => {
       chatInput.value = '';
       chatInput.style.height = '';
 
-      // Убираем старый CTA, если он был
       const oldCta = document.getElementById('chatCta');
       if (oldCta) oldCta.remove();
 
-      // --- ВЕТКА 1: это контакт → лид ---
       if (CONTACT_RE.test(message)) {
         const chatHistory = getChatHistory();
 
@@ -500,7 +507,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // --- ВЕТКА 2: обычное сообщение → AI ---
       track('chat_message');
 
       showChatTyping();
@@ -517,7 +523,6 @@ document.addEventListener('DOMContentLoaded', () => {
           })
         });
 
-        // 429 проверяем ДО json()
         if (response.status === 429) {
           hideChatTyping();
           addChatMessage(

@@ -5,7 +5,7 @@
   <!-- ГЛАВНЫЕ СТРАНИЦЫ -->
   <url>
     <loc>https://radar-group.org/</loc>
-    <lastmod>2026-10-18</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/"/>
@@ -14,7 +14,7 @@
   </url>
   <url>
     <loc>https://radar-group.org/en/</loc>
-    <lastmod>2026-10-18</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/"/>
@@ -22,10 +22,30 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://radar-group.org/"/>
   </url>
 
+  <!-- НОВАЯ СТРАНИЦА: ТАРИФЫ -->
+  <url>
+    <loc>https://radar-group.org/pricing.html</loc>
+    <lastmod>2026-10-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/pricing.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://radar-group.org/en/pricing.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://radar-group.org/pricing.html"/>
+  </url>
+  <url>
+    <loc>https://radar-group.org/en/pricing.html</loc>
+    <lastmod>2026-10-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/pricing.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://radar-group.org/en/pricing.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://radar-group.org/pricing.html"/>
+  </url>
+
   <!-- УСЛУГИ (RU) -->
   <url>
     <loc>https://radar-group.org/services-telegram-business.html</loc>
-    <lastmod>2026-10-18</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/services-telegram-business.html"/>
@@ -33,7 +53,7 @@
   </url>
   <url>
     <loc>https://radar-group.org/services-telegram-bot.html</loc>
-    <lastmod>2026-10-18</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/services-telegram-bot.html"/>
@@ -41,7 +61,7 @@
   </url>
   <url>
     <loc>https://radar-group.org/services-widget.html</loc>
-    <lastmod>2026-10-18</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/services-widget.html"/>
@@ -49,7 +69,7 @@
   </url>
   <url>
     <loc>https://radar-group.org/services-webdev.html</loc>
-    <lastmod>2026-10-18</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/services-webdev.html"/>
@@ -57,7 +77,7 @@
   </url>
   <url>
     <loc>https://radar-group.org/services-crm.html</loc>
-    <lastmod>2026-10-18</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/services-crm.html"/>
@@ -67,7 +87,7 @@
   <!-- УСЛУГИ (EN) -->
   <url>
     <loc>https://radar-group.org/en/services-telegram-business.html</loc>
-    <lastmod>2026-10-18</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/services-telegram-business.html"/>
@@ -75,7 +95,7 @@
   </url>
   <url>
     <loc>https://radar-group.org/en/services-telegram-bot.html</loc>
-    <lastmod>2026-10-18</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/services-telegram-bot.html"/>
@@ -83,7 +103,7 @@
   </url>
   <url>
     <loc>https://radar-group.org/en/services-widget.html</loc>
-    <lastmod>2026-10-18</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/services-widget.html"/>
@@ -91,7 +111,7 @@
   </url>
   <url>
     <loc>https://radar-group.org/en/services-webdev.html</loc>
-    <lastmod>2026-10-18</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/services-webdev.html"/>
@@ -99,7 +119,7 @@
   </url>
   <url>
     <loc>https://radar-group.org/en/services-crm.html</loc>
-    <lastmod>2026-10-18</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/services-crm.html"/>
@@ -109,7 +129,7 @@
   <!-- ДРУГИЕ СТРАНИЦЫ -->
   <url>
     <loc>https://radar-group.org/cases.html</loc>
-    <lastmod>2026-10-18</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/cases.html"/>
@@ -117,7 +137,7 @@
   </url>
   <url>
     <loc>https://radar-group.org/en/cases.html</loc>
-    <lastmod>2026-10-18</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/cases.html"/>
@@ -125,7 +145,7 @@
   </url>
   <url>
     <loc>https://radar-group.org/about.html</loc>
-    <lastmod>2026-10-18</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/about.html"/>
@@ -133,7 +153,7 @@
   </url>
   <url>
     <loc>https://radar-group.org/en/about.html</loc>
-    <lastmod>2026-10-18</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/about.html"/>
@@ -141,7 +161,7 @@
   </url>
   <url>
     <loc>https://radar-group.org/privacy.html</loc>
-    <lastmod>2026-10-18</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
     <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/privacy.html"/>
@@ -149,7 +169,7 @@
   </url>
   <url>
     <loc>https://radar-group.org/en/privacy.html</loc>
-    <lastmod>2026-10-18</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
     <xhtml:link rel="alternate" hreflang="ru" href="https://radar-group.org/privacy.html"/>

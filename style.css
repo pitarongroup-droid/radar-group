@@ -2163,3 +2163,84 @@ body::before {
   .footer-bottom { flex-direction: column-reverse !important; align-items: center !important; gap: 16px !important; padding-top: 0 !important; border-top: none !important; }
   .footer-tg { width: 44px !important; height: 44px !important; background: var(--bg-elevated) !important; border: 1px solid var(--border-strong) !important; border-radius: 12px !important; }
 }
+/* ============================================
+   АККОРДЕОН В МОБИЛЬНОМ МЕНЮ
+   ============================================ */
+.mobile-accordion-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 14px 16px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 16px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: var(--transition);
+}
+.mobile-accordion-btn:hover { color: var(--cyan); background: var(--cyan-soft); border-radius: var(--radius-sm); }
+.mobile-accordion-btn svg { transition: transform 0.3s ease; }
+.mobile-accordion.open .mobile-accordion-btn svg { transform: rotate(180deg); }
+.mobile-submenu {
+  display: none;
+  padding-left: 16px;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.mobile-accordion.open .mobile-submenu { display: flex; }
+.mobile-submenu a { font-size: 14px; padding: 10px 16px; color: var(--text-dim); }
+.mobile-submenu a:hover { color: var(--cyan); }
+
+/* ============================================
+   ТАРИФЫ (PRICING)
+   ============================================ */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+.pricing-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 36px 28px;
+  position: relative;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+}
+.pricing-card:hover { transform: translateY(-6px); border-color: var(--border-strong); }
+.pricing-card.popular {
+  border-color: var(--cyan);
+  box-shadow: 0 0 30px rgba(0, 240, 255, 0.1);
+  background: linear-gradient(180deg, rgba(0, 240, 255, 0.05) 0%, var(--bg-elevated) 100%);
+}
+.popular-badge {
+  position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+  background: var(--gradient-cta); color: #FFF; font-size: 11px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.1em; padding: 6px 16px;
+  border-radius: 100px; white-space: nowrap;
+}
+.pricing-title { font-size: 20px; font-weight: 800; margin-bottom: 8px; color: var(--text); }
+.pricing-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; min-height: 40px; }
+.pricing-price { font-size: 42px; font-weight: 800; color: var(--cyan); line-height: 1; margin-bottom: 8px; display: flex; align-items: baseline; gap: 6px; }
+.pricing-price span { font-size: 14px; color: var(--text-muted); font-weight: 500; }
+.pricing-features { list-style: none; padding: 0; margin: 0 0 32px 0; flex: 1; }
+.pricing-features li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4; }
+.pricing-features svg { flex-shrink: 0; margin-top: 2px; }
+.pricing-features .disabled { color: var(--text-dim); opacity: 0.6; }
+.pricing-card .btn { width: 100%; }
+
+.lead-channels { display: flex; flex-direction: column; gap: 0; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.lead-channel-item { display: flex; align-items: center; gap: 16px; padding: 20px 24px; border-bottom: 1px solid var(--border); transition: var(--transition); }
+.lead-channel-item:last-child { border-bottom: none; }
+.lead-channel-item:hover { background: var(--bg-hover); padding-left: 28px; }
+.lead-channel-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--cyan-soft); border: 1px solid rgba(0, 240, 255, 0.2); display: flex; align-items: center; justify-content: center; color: var(--cyan); flex-shrink: 0; }
+.lead-channel-text h4 { font-size: 16px; font-weight: 700; margin-bottom: 4px; color: var(--text); }
+.lead-channel-text p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
