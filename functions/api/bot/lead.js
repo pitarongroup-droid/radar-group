@@ -17,7 +17,7 @@ export async function onRequestPost({ request, env }) {
       return Response.json({ ok: false, error: 'dialog_id, client_id, contact required' }, { status: 400 });
     }
 
-    // Обновляем диалог → лид
+    // 1. Обновляем диалог → ставим статус "Лид" (is_lead = 1)
     await env.radar_group_db.prepare(
       `UPDATE dialogs
        SET is_lead = 1, user_contact = ?, user_name = COALESCE(?, user_name), lead_data = ?
@@ -30,7 +30,7 @@ export async function onRequestPost({ request, env }) {
       client_id
     ).run();
 
-    // Событие
+    // 2. Записываем событие в лог (нужно для статистики и отчётов)
     await env.radar_group_db.prepare(
       `INSERT INTO events (id, client_id, event_name, dialog_id, metadata)
        VALUES (?, ?, 'lead.created', ?, ?)`
@@ -41,7 +41,7 @@ export async function onRequestPost({ request, env }) {
       JSON.stringify({ contact, source: 'telegram_bot' })
     ).run();
 
-    // Настройки клиента — куда отправлять
+    // 3. Получаем настройки клиента — куда отправлять уведомления
     const settings = await env.radar_group_db.prepare(
       `SELECT bot_telegram_token, bot_telegram_admin_id,
               bot_channel_sheets_enabled, bot_sheets_url,
@@ -68,7 +68,7 @@ export async function onRequestPost({ request, env }) {
 
     const notified = [];
 
-    // Telegram
+    // Отправка в Telegram
     if (settings.bot_telegram_token && settings.bot_telegram_admin_id) {
       try {
         await fetch(`https://api.telegram.org/bot${settings.bot_telegram_token}/sendMessage`, {
@@ -83,7 +83,7 @@ export async function onRequestPost({ request, env }) {
       } catch (e) { console.error('TG lead error:', e); }
     }
 
-    // Google Sheets
+    // Отправка в Google Sheets
     if (settings.bot_channel_sheets_enabled === 1 && settings.bot_sheets_url) {
       try {
         await fetch(settings.bot_sheets_url, {
@@ -102,7 +102,7 @@ export async function onRequestPost({ request, env }) {
       } catch (e) { console.error('Sheets lead error:', e); }
     }
 
-    // Webhook (CRM)
+    // Отправка в Webhook (CRM)
     if (settings.bot_channel_webhook_enabled === 1 && settings.bot_webhook_url) {
       try {
         const payload = JSON.stringify({
@@ -125,7 +125,7 @@ export async function onRequestPost({ request, env }) {
       } catch (e) { console.error('Webhook lead error:', e); }
     }
 
-    // Email (заглушка — лог)
+    // Email (заглушка)
     if (settings.bot_channel_email_enabled === 1 && settings.bot_notification_email) {
       console.log('Email would be sent to:', settings.bot_notification_email);
       notified.push('email');

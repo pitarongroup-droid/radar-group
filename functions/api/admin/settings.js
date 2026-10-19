@@ -101,6 +101,11 @@ export async function onRequestPut({ request, env }) {
          admin_allow_email = COALESCE(?, admin_allow_email),
          use_radar_ai_key_widget = COALESCE(?, use_radar_ai_key_widget),
          use_radar_ai_key_bot = COALESCE(?, use_radar_ai_key_bot),
+         
+         -- ИСПРАВЛЕНО: Добавлены эти две строки
+         business_bot_enabled = COALESCE(?, business_bot_enabled),
+         business_connection_id = COALESCE(?, business_connection_id),
+         
          updated_at = unixepoch()
        WHERE client_id = ?`
     ).bind(
@@ -134,6 +139,11 @@ export async function onRequestPut({ request, env }) {
       b.admin_allow_email !== undefined ? (b.admin_allow_email ? 1 : 0) : null,
       b.use_radar_ai_key_widget !== undefined ? (b.use_radar_ai_key_widget ? 1 : 0) : null,
       b.use_radar_ai_key_bot !== undefined ? (b.use_radar_ai_key_bot ? 1 : 0) : null,
+      
+      // ИСПРАВЛЕНО: Передаем новые поля
+      b.business_bot_enabled !== undefined ? (b.business_bot_enabled ? 1 : 0) : null,
+      b.business_connection_id || null,
+      
       b.client_id
     ).run();
 
