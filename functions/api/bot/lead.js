@@ -1,8 +1,3 @@
-// ============================================
-// POST /api/bot/lead — пометить лид + уведомить (VPS-бот)
-// Авторизация: X-Bot-Secret
-// ============================================
-
 export async function onRequestPost({ request, env }) {
   try {
     const secret = request.headers.get('X-Bot-Secret');
@@ -30,15 +25,14 @@ export async function onRequestPost({ request, env }) {
       client_id
     ).run();
 
-    // 2. Записываем событие в лог (нужно для статистики и отчётов)
+    // 2. Записываем событие (ИСПРАВЛЕНО: используем language вместо metadata)
     await env.radar_group_db.prepare(
-      `INSERT INTO events (id, client_id, event_name, dialog_id, metadata)
-       VALUES (?, ?, 'lead.created', ?, ?)`
+      `INSERT INTO events (id, client_id, event_name, dialog_id, language)
+       VALUES (?, ?, 'lead.created', ?, 'ru')`
     ).bind(
       'evt_' + crypto.randomUUID().slice(0, 8),
       client_id,
-      dialog_id,
-      JSON.stringify({ contact, source: 'telegram_bot' })
+      dialog_id
     ).run();
 
     // 3. Получаем настройки клиента — куда отправлять уведомления
@@ -74,10 +68,7 @@ export async function onRequestPost({ request, env }) {
         await fetch(`https://api.telegram.org/bot${settings.bot_telegram_token}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: settings.bot_telegram_admin_id,
-            text: leadText
-          })
+          body: JSON.stringify({ chat_id: settings.bot_telegram_admin_id, text: leadText })
         });
         notified.push('telegram');
       } catch (e) { console.error('TG lead error:', e); }
@@ -90,12 +81,8 @@ export async function onRequestPost({ request, env }) {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            source: 'telegram_bot',
-            name: user_name || '',
-            phone: contact,
-            client: client?.name || '',
-            message: summary || '',
-            date: new Date().toISOString()
+            source: 'telegram_bot', name: user_name || '', phone: contact,
+            client: client?.name || '', message: summary || '', date: new Date().toISOString()
           })
         });
         notified.push('sheets');
@@ -106,12 +93,8 @@ export async function onRequestPost({ request, env }) {
     if (settings.bot_channel_webhook_enabled === 1 && settings.bot_webhook_url) {
       try {
         const payload = JSON.stringify({
-          event: 'lead.created',
-          source: 'telegram_bot',
-          timestamp: new Date().toISOString(),
-          client_id,
-          dialog_id,
-          lead: { contact, user_name, summary }
+          event: 'lead.created', source: 'telegram_bot', timestamp: new Date().toISOString(),
+          client_id, dialog_id, lead: { contact, user_name, summary }
         });
         await fetch(settings.bot_webhook_url, {
           method: 'POST',
@@ -123,12 +106,6 @@ export async function onRequestPost({ request, env }) {
         });
         notified.push('webhook');
       } catch (e) { console.error('Webhook lead error:', e); }
-    }
-
-    // Email (заглушка)
-    if (settings.bot_channel_email_enabled === 1 && settings.bot_notification_email) {
-      console.log('Email would be sent to:', settings.bot_notification_email);
-      notified.push('email');
     }
 
     return Response.json({ ok: true, notified });
