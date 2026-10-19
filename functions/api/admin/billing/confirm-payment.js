@@ -1,6 +1,7 @@
 export async function onRequestPost({ request, env }) {
   try {
-    const { client_id, amount, currency } = await request.json();
+    // ИСПРАВЛЕНО: принимаем тариф и цену с фронтенда
+    const { client_id, amount, currency, tariff_code, monthly_price } = await request.json();
     
     // Получаем текущую дату окончания подписки
     const client = await env.radar_group_db.prepare(
@@ -34,10 +35,16 @@ export async function onRequestPost({ request, env }) {
       new Date().toISOString()
     ).run();
 
-    // Продлеваем подписку клиенту
+    // ИСПРАВЛЕНО: продлеваем подписку И сохраняем тариф с ценой
     await env.radar_group_db.prepare(
-      `UPDATE clients SET subscription_end = ?, next_payment_due = ? WHERE id = ?`
-    ).bind(endStr, endStr, client_id).run();
+      `UPDATE clients SET 
+        subscription_end = ?, 
+        next_payment_due = ?, 
+        tariff_code = ?, 
+        monthly_price = ?, 
+        sub_currency = ? 
+       WHERE id = ?`
+    ).bind(endStr, endStr, tariff_code, monthly_price, currency, client_id).run();
 
     return Response.json({ 
       ok: true, 
