@@ -10,6 +10,69 @@ document.addEventListener('DOMContentLoaded', () => {
   const SCROLL_OFFSET = 80;
   const STATUS_TIMEOUT = 7000;
 
+  // ===== АВТО-ФИКС МОБИЛЬНОГО МЕНЮ (АККОРДЕОН) =====
+  const mobileNavUl = document.querySelector('.mobile-menu ul');
+  if (mobileNavUl) {
+    // 1. Проверяем, есть ли старое меню (текст "Услуги:" вместо кнопки)
+    const serviceSpan = Array.from(mobileNavUl.querySelectorAll('span')).find(el => 
+      el.textContent.includes('Услуги') || el.textContent.includes('Services')
+    );
+
+    if (serviceSpan && !mobileNavUl.querySelector('.mobile-accordion')) {
+      const parentLi = serviceSpan.closest('li');
+      const submenu = parentLi.querySelector('.mobile-submenu');
+      
+      if (parentLi && submenu) {
+        const isEn = window.location.pathname.includes('/en/');
+        const servicesText = isEn ? 'Services' : 'Услуги';
+        
+        // Переделываем HTML старого меню в аккордеон
+        parentLi.className = 'mobile-accordion';
+        parentLi.innerHTML = `
+          <button class="mobile-accordion-btn">
+            ${servicesText}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          ${submenu.outerHTML}
+        `;
+      }
+    }
+
+    // 2. Теперь вешаем обработчик на кнопку (она уже есть в HTML или мы её только что создали)
+    const accordionBtn = mobileNavUl.querySelector('.mobile-accordion-btn');
+    if (accordionBtn) {
+      // Клонируем кнопку, чтобы сбросить старые обработчики (если были)
+      const newAccordionBtn = accordionBtn.cloneNode(true);
+      accordionBtn.parentNode.replaceChild(newAccordionBtn, accordionBtn);
+
+      newAccordionBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        newAccordionBtn.closest('.mobile-accordion').classList.toggle('open');
+      });
+    }
+  }
+
+  // ===== АВТО-ДОБАВЛЕНИЕ ССЫЛКИ "ТАРИФЫ" В МЕНЮ =====
+  const isEnPage = window.location.pathname.includes('/en/');
+  const pricingText = isEnPage ? 'Pricing' : 'Тарифы';
+
+  // 1. Десктопное меню
+  const desktopNav = document.querySelector('.nav');
+  if (desktopNav && !desktopNav.querySelector('a[href="pricing.html"]')) {
+    const pricingLi = document.createElement('li');
+    pricingLi.innerHTML = `<a href="pricing.html">${pricingText}</a>`;
+    const firstLi = desktopNav.querySelector('li');
+    if (firstLi) firstLi.after(pricingLi);
+  }
+
+  // 2. Мобильное меню (вставляем после аккордеона)
+  if (mobileNavUl && !mobileNavUl.querySelector('a[href="pricing.html"]')) {
+    const pricingLi = document.createElement('li');
+    pricingLi.innerHTML = `<a href="pricing.html">${pricingText}</a>`;
+    const mobileAccordion = mobileNavUl.querySelector('.mobile-accordion');
+    if (mobileAccordion) mobileAccordion.after(pricingLi);
+  }
+
   // ===== АВТО-ЗАМЕНА СТАРОГО ПОДВАЛА НА НОВЫЙ =====
   const footerContainer = document.querySelector('.footer .container');
   
@@ -129,37 +192,6 @@ document.addEventListener('DOMContentLoaded', () => {
     mobileMenu.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => toggleMenu(false));
     });
-  }
-
-  // ===== АККОРДЕОН В МОБИЛЬНОМ МЕНЮ =====
-  const accordionBtn = document.querySelector('.mobile-accordion-btn');
-  if (accordionBtn) {
-    accordionBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      accordionBtn.closest('.mobile-accordion').classList.toggle('open');
-    });
-  }
-
-  // ===== АВТО-ДОБАВЛЕНИЕ ССЫЛКИ "ТАРИФЫ" В МЕНЮ =====
-  const isEnPage = window.location.pathname.includes('/en/');
-  const pricingText = isEnPage ? 'Pricing' : 'Тарифы';
-
-  // 1. Десктопное меню
-  const desktopNav = document.querySelector('.nav');
-  if (desktopNav && !desktopNav.querySelector('a[href="pricing.html"]')) {
-    const pricingLi = document.createElement('li');
-    pricingLi.innerHTML = `<a href="pricing.html">${pricingText}</a>`;
-    const firstLi = desktopNav.querySelector('li');
-    if (firstLi) firstLi.after(pricingLi);
-  }
-
-  // 2. Мобильное меню
-  const mobileNav = document.querySelector('.mobile-menu ul');
-  if (mobileNav && !mobileNav.querySelector('a[href="pricing.html"]')) {
-    const pricingLi = document.createElement('li');
-    pricingLi.innerHTML = `<a href="pricing.html">${pricingText}</a>`;
-    const mobileAccordion = mobileNav.querySelector('.mobile-accordion');
-    if (mobileAccordion) mobileAccordion.after(pricingLi);
   }
 
   // ===== ШАПКА ПРИ СКРОЛЛЕ =====
