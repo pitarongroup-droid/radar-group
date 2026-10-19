@@ -1,9 +1,3 @@
-// ============================================
-// POST /api/bot/business-connection
-// Сохраняет business_connection_id в базу
-// Авторизация: X-Bot-Secret
-// ============================================
-
 export async function onRequestPost({ request, env }) {
   try {
     const secret = request.headers.get('X-Bot-Secret');
@@ -17,7 +11,7 @@ export async function onRequestPost({ request, env }) {
       return Response.json({ ok: false, error: 'client_id required' }, { status: 400 });
     }
 
-    // Если connection_id пустой — значит, подключение отключено
+    // Если connection_id есть — включаем (1), если пусто — выключаем (0)
     const enabled = connection_id ? 1 : 0;
 
     await env.radar_group_db.prepare(
