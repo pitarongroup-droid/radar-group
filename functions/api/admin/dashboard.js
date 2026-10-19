@@ -1,12 +1,12 @@
 export async function onRequestGet({ env }) {
   try {
+    // Используем ISO строку для корректного сравнения в SQLite
+    const monthAgoIso = new Date(Date.now() - 30 * 86400000).toISOString();
+
     const clientsCount = await env.radar_group_db.prepare(
       `SELECT COUNT(*) as c FROM clients WHERE account_status != 'suspended'`
     ).first();
 
-    const monthAgo = Math.floor(Date.now() / 1000) - 30 * 86400;
-
-    // УБРАЛИ ФИЛЬТР ПО ДАТЕ, чтобы цифры появились
     const dialogsCount = await env.radar_group_db.prepare(
       `SELECT COUNT(*) as c FROM dialogs`
     ).first();
@@ -15,19 +15,23 @@ export async function onRequestGet({ env }) {
       `SELECT COUNT(*) as c FROM dialogs WHERE is_lead = 1`
     ).first();
 
+    // Убрали несуществующую колонку status = 'paid'
     const revenue = await env.radar_group_db.prepare(
       `SELECT COALESCE(SUM(amount), 0) as s FROM payments WHERE paid_at > ?`
-    ).bind(monthAgo).first();
+    ).bind(monthAgoIso).first();
 
     const apiCost = await env.radar_group_db.prepare(
       `SELECT COALESCE(SUM(m.cost_usd), 0) as s 
        FROM messages m
        JOIN dialogs d ON d.id = m.dialog_id
-       WHERE m.created_at > ?`
-    ).bind(monthAgo).first();
+       WHERE datetime(m.created_at) > datetime('now', '-30 days')`
+    ).first();
 
+    // Возвращаем И tariff_code, И алиас plan, И account_status, И алиас status
     const { results: recentClients } = await env.radar_group_db.prepare(
-      `SELECT c.id, c.name, c.email, c.tariff_code as plan, c.account_status as status, c.created_at,
+      `SELECT c.id, c.name, c.email, c.created_at,
+              c.tariff_code, c.tariff_code as plan, 
+              c.account_status, c.account_status as status,
               (SELECT COUNT(*) FROM dialogs WHERE client_id = c.id) as dialogs_count,
               (SELECT COUNT(*) FROM dialogs WHERE client_id = c.id AND is_lead = 1) as leads_count
        FROM clients c

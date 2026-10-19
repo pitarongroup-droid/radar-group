@@ -12,9 +12,8 @@ export async function onRequestGet({ request, env }) {
     if (!payload?.clientId) return unauthorized();
 
     const clientId = payload.clientId;
-    const dayStart = Math.floor(new Date().setHours(0, 0, 0, 0) / 1000);
 
-    // Воронка
+    // Воронка (считаем за всё время)
     const chatOpened = await env.radar_group_db.prepare(
       `SELECT COUNT(*) as c FROM events 
        WHERE client_id = ? AND event_name = 'chat_open'`
@@ -29,15 +28,16 @@ export async function onRequestGet({ request, env }) {
        WHERE client_id = ? AND is_lead = 1`
     ).bind(clientId).first();
 
-    // Лидов сегодня
+    // ИСПРАВЛЕНО: используем datetime() для корректного сравнения дат
     const leadsToday = await env.radar_group_db.prepare(
       `SELECT COUNT(*) as c FROM dialogs 
-       WHERE client_id = ? AND is_lead = 1 AND created_at > ?`
-    ).bind(clientId, dayStart).first();
+       WHERE client_id = ? AND is_lead = 1 
+         AND datetime(created_at) >= datetime('now', 'start of day')`
+    ).bind(clientId).first();
 
     const dialogsNum = dialogs.c || 0;
     const leadsNum = leads.c || 0;
-
+    
     const conversion = dialogsNum > 0 
       ? Math.round((leadsNum / dialogsNum) * 100) 
       : 0;

@@ -235,11 +235,11 @@
 
       document.getElementById('statDialogs').textContent = data.stats.dialogs;
       document.getElementById('statLeads').textContent = data.stats.leads;
-      document.getElementById('statCost').textContent = '$' + data.stats.cost.toFixed(2);
+      document.getElementById('statCost').textContent = '$' + (data.stats.cost || 0).toFixed(2);
       document.getElementById('statConv').textContent = data.stats.conversion + '%';
 
       const tbody = document.getElementById('leadsTable');
-      if (!data.recent_leads.length) {
+      if (!data.recent_leads || !data.recent_leads.length) {
         tbody.innerHTML = `
           <tr>
             <td colspan="4" class="empty-state">
@@ -259,8 +259,17 @@
           } catch (e) {}
         }
 
-        const date = new Date(l.created_at * 1000)
-          .toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+        // ИСПРАВЛЕНО: умный парсер дат
+        let dateObj;
+        if (typeof l.created_at === 'string' && (l.created_at.includes('-') || l.created_at.includes('T'))) {
+          dateObj = new Date(l.created_at);
+        } else {
+          dateObj = new Date(l.created_at * 1000);
+        }
+        
+        const date = isNaN(dateObj.getTime()) 
+          ? '—' 
+          : dateObj.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
 
         return `
           <tr>

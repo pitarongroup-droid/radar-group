@@ -187,8 +187,17 @@
       }
 
       tbody.innerHTML = data.dialogs.map(d => {
-        const date = new Date(d.created_at * 1000)
-          .toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+        // ИСПРАВЛЕНО: умный парсер дат
+        let dateObj;
+        if (typeof d.created_at === 'string' && (d.created_at.includes('-') || d.created_at.includes('T'))) {
+          dateObj = new Date(d.created_at);
+        } else {
+          dateObj = new Date(d.created_at * 1000);
+        }
+        
+        const date = isNaN(dateObj.getTime()) 
+          ? '—' 
+          : dateObj.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
 
         const channelLabel = {
           widget: '🌐 Сайт',
