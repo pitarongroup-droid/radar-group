@@ -1,7 +1,7 @@
 export async function onRequestGet({ env }) {
   try {
     const clientsCount = await env.radar_group_db.prepare(
-      `SELECT COUNT(*) as c FROM clients WHERE status != 'suspended'`
+      `SELECT COUNT(*) as c FROM clients WHERE account_status != 'suspended'`
     ).first();
 
     const monthAgo = Math.floor(Date.now() / 1000) - 30 * 86400;
@@ -14,9 +14,9 @@ export async function onRequestGet({ env }) {
       `SELECT COUNT(*) as c FROM dialogs WHERE is_lead = 1 AND created_at > ?`
     ).bind(monthAgo).first();
 
+    // ИСПРАВЛЕНО: убрали status = 'paid'
     const revenue = await env.radar_group_db.prepare(
-      `SELECT COALESCE(SUM(amount), 0) as s FROM payments 
-       WHERE status = 'paid' AND paid_at > ?`
+      `SELECT COALESCE(SUM(amount), 0) as s FROM payments WHERE paid_at > ?`
     ).bind(monthAgo).first();
 
     const apiCost = await env.radar_group_db.prepare(
@@ -26,8 +26,9 @@ export async function onRequestGet({ env }) {
        WHERE m.created_at > ?`
     ).bind(monthAgo).first();
 
+    // ИСПРАВЛЕНО: берем tariff_code и account_status
     const { results: recentClients } = await env.radar_group_db.prepare(
-      `SELECT c.id, c.name, c.email, c.plan, c.status, c.created_at,
+      `SELECT c.id, c.name, c.email, c.tariff_code as plan, c.account_status as status, c.created_at,
               (SELECT COUNT(*) FROM dialogs WHERE client_id = c.id) as dialogs_count,
               (SELECT COUNT(*) FROM dialogs WHERE client_id = c.id AND is_lead = 1) as leads_count
        FROM clients c
@@ -47,9 +48,6 @@ export async function onRequestGet({ env }) {
       recent_clients: recentClients || []
     });
   } catch (err) {
-    return Response.json(
-      { ok: false, error: { ru: err.message, en: err.message } },
-      { status: 500 }
-    );
+    return Response.json({ ok: false, error: { ru: err.message, en: err.message } }, { status: 500 });
   }
 }

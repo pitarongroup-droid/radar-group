@@ -1,42 +1,27 @@
 // ============================================
 // /api/admin/clients/:id
 // GET    — карточка клиента + настройки
-// PUT    — обновить данные + доступ + авто-reload VPS
+// PUT    — обновить данные + доступ + тарифы + авто-reload VPS
 // DELETE — удалить клиента + авто-delete webhook
-// ⚠️ Проверяет role = admin
 // ============================================
 
 export async function onRequestGet({ params, request, env }) {
   try {
     const payload = getPayload(request);
     if (!payload || payload.role !== 'admin') {
-      return Response.json(
-        { ok: false, error: { ru: 'Доступ запрещён', en: 'Forbidden' } },
-        { status: 403 }
-      );
+      return Response.json({ ok: false, error: { ru: 'Доступ запрещён', en: 'Forbidden' } }, { status: 403 });
     }
 
-    const client = await env.radar_group_db.prepare(
-      'SELECT * FROM clients WHERE id = ?'
-    ).bind(params.id).first();
-
+    const client = await env.radar_group_db.prepare('SELECT * FROM clients WHERE id = ?').bind(params.id).first();
     if (!client) {
-      return Response.json(
-        { ok: false, error: { ru: 'Клиент не найден', en: 'Client not found' } },
-        { status: 404 }
-      );
+      return Response.json({ ok: false, error: { ru: 'Клиент не найден', en: 'Client not found' } }, { status: 404 });
     }
 
-    const settings = await env.radar_group_db.prepare(
-      'SELECT * FROM settings WHERE client_id = ?'
-    ).bind(params.id).first();
+    const settings = await env.radar_group_db.prepare('SELECT * FROM settings WHERE client_id = ?').bind(params.id).first();
 
     return Response.json({ ok: true, client, settings: settings || {} });
   } catch (err) {
-    return Response.json(
-      { ok: false, error: { ru: err.message, en: err.message } },
-      { status: 500 }
-    );
+    return Response.json({ ok: false, error: { ru: err.message, en: err.message } }, { status: 500 });
   }
 }
 
@@ -44,20 +29,14 @@ export async function onRequestPut({ params, request, env }) {
   try {
     const payload = getPayload(request);
     if (!payload || payload.role !== 'admin') {
-      return Response.json(
-        { ok: false, error: { ru: 'Доступ запрещён', en: 'Forbidden' } },
-        { status: 403 }
-      );
+      return Response.json({ ok: false, error: { ru: 'Доступ запрещён', en: 'Forbidden' } }, { status: 403 });
     }
 
     const b = await request.json();
 
     if ('account_status' in b) {
       if (!['pending', 'approved', 'suspended'].includes(b.account_status)) {
-        return Response.json(
-          { ok: false, error: { ru: 'Неверный статус', en: 'Invalid status' } },
-          { status: 400 }
-        );
+        return Response.json({ ok: false, error: { ru: 'Неверный статус', en: 'Invalid status' } }, { status: 400 });
       }
     }
 
@@ -68,6 +47,7 @@ export async function onRequestPut({ params, request, env }) {
        WHERE c.id = ?`
     ).bind(params.id).first();
 
+    // ОБНОВЛЕНО: Добавлены поля tariff_code, monthly_price, sub_currency, subscription_end, next_payment_due, admin_notes
     await env.radar_group_db.prepare(
       `UPDATE clients SET
          name = COALESCE(?, name),
@@ -80,6 +60,12 @@ export async function onRequestPut({ params, request, env }) {
          plan = COALESCE(?, plan),
          status = COALESCE(?, status),
          account_status = COALESCE(?, account_status),
+         tariff_code = COALESCE(?, tariff_code),
+         monthly_price = COALESCE(?, monthly_price),
+         sub_currency = COALESCE(?, sub_currency),
+         subscription_end = COALESCE(?, subscription_end),
+         next_payment_due = COALESCE(?, next_payment_due),
+         admin_notes = COALESCE(?, admin_notes),
          updated_at = unixepoch()
        WHERE id = ?`
     ).bind(
@@ -93,6 +79,12 @@ export async function onRequestPut({ params, request, env }) {
       b.plan || null,
       b.status || null,
       b.account_status || null,
+      b.tariff_code || null,
+      b.monthly_price !== undefined ? b.monthly_price : null,
+      b.sub_currency || null,
+      b.subscription_end !== undefined ? b.subscription_end : null,
+      b.next_payment_due !== undefined ? b.next_payment_due : null,
+      b.admin_notes !== undefined ? b.admin_notes : null,
       params.id
     ).run();
 
@@ -136,10 +128,7 @@ export async function onRequestPut({ params, request, env }) {
 
     return Response.json({ ok: true });
   } catch (err) {
-    return Response.json(
-      { ok: false, error: { ru: err.message, en: err.message } },
-      { status: 500 }
-    );
+    return Response.json({ ok: false, error: { ru: err.message, en: err.message } }, { status: 500 });
   }
 }
 
@@ -147,10 +136,7 @@ export async function onRequestDelete({ params, request, env }) {
   try {
     const payload = getPayload(request);
     if (!payload || payload.role !== 'admin') {
-      return Response.json(
-        { ok: false, error: { ru: 'Доступ запрещён', en: 'Forbidden' } },
-        { status: 403 }
-      );
+      return Response.json({ ok: false, error: { ru: 'Доступ запрещён', en: 'Forbidden' } }, { status: 403 });
     }
 
     // Удаляем webhook у Telegram, если есть токен
@@ -173,6 +159,7 @@ export async function onRequestDelete({ params, request, env }) {
       console.error('Webhook cleanup error:', e);
     }
 
+    // Удаляем связанные данные (платежи и заметки тоже удалятся благодаря ON DELETE CASCADE в SQL)
     await env.radar_group_db.batch([
       env.radar_group_db.prepare('DELETE FROM settings WHERE client_id = ?').bind(params.id),
       env.radar_group_db.prepare('DELETE FROM users WHERE client_id = ?').bind(params.id),
@@ -181,10 +168,7 @@ export async function onRequestDelete({ params, request, env }) {
 
     return Response.json({ ok: true });
   } catch (err) {
-    return Response.json(
-      { ok: false, error: { ru: err.message, en: err.message } },
-      { status: 500 }
-    );
+    return Response.json({ ok: false, error: { ru: err.message, en: err.message } }, { status: 500 });
   }
 }
 
