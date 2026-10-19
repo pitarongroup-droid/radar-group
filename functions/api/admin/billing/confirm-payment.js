@@ -1,11 +1,15 @@
 export async function onRequestPost({ request, env }) {
   try {
-    const { client_id, amount, currency, tariff_code, monthly_price } = await request.json();
+    const b = await request.json();
     
-    // Защита от undefined
-    const safeTariff = tariff_code || 'start';
-    const safePrice = monthly_price || 0;
-    const safeCurrency = currency || 'BYN';
+    // Жесткая проверка, чтобы D1 не падал с ошибкой undefined
+    const client_id = b.client_id;
+    const amount = b.amount || 0;
+    const currency = b.currency || 'BYN';
+    const tariff_code = b.tariff_code || 'start';
+    const monthly_price = b.monthly_price || 0;
+
+    if (!client_id) return Response.json({ ok: false, error: { ru: 'Нет ID клиента' } });
 
     const client = await env.radar_group_db.prepare(
       `SELECT subscription_end FROM clients WHERE id = ?`
@@ -22,19 +26,16 @@ export async function onRequestPost({ request, env }) {
     const startStr = startDate.toISOString().split('T')[0];
     const endStr = endDate.toISOString().split('T')[0];
 
+    // Записываем в историю платежей
     await env.radar_group_db.prepare(
       `INSERT INTO payments (id, client_id, amount, currency, period_start, period_end, paid_at)
        VALUES (?, ?, ?, ?, ?, ?, ?)`
     ).bind(
       'pay_' + crypto.randomUUID().slice(0, 8), 
-      client_id, 
-      amount, 
-      safeCurrency, 
-      startStr, 
-      endStr, 
-      new Date().toISOString()
+      client_id, amount, currency, startStr, endStr, new Date().toISOString()
     ).run();
 
+    // Обновляем карточку клиента (сохраняем тариф и даты)
     await env.radar_group_db.prepare(
       `UPDATE clients SET 
         subscription_end = ?, 
@@ -43,15 +44,10 @@ export async function onRequestPost({ request, env }) {
         monthly_price = ?, 
         sub_currency = ? 
        WHERE id = ?`
-    ).bind(endStr, endStr, safeTariff, safePrice, safeCurrency, client_id).run();
+    ).bind(endStr, endStr, tariff_code, monthly_price, currency, client_id).run();
 
-    return Response.json({ 
-      ok: true, 
-      new_subscription_end: endStr, 
-      new_next_payment_due: endStr 
-    });
+    return Response.json({ ok: true, new_subscription_end: endStr, new_next_payment_due: endStr });
   } catch (err) {
-    console.error('Payment error:', err);
     return Response.json({ ok: false, error: { ru: err.message } }, { status: 500 });
   }
 }
