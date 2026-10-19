@@ -6,15 +6,15 @@ export async function onRequestGet({ env }) {
 
     const monthAgo = Math.floor(Date.now() / 1000) - 30 * 86400;
 
+    // УБРАЛИ ФИЛЬТР ПО ДАТЕ, чтобы цифры появились
     const dialogsCount = await env.radar_group_db.prepare(
-      `SELECT COUNT(*) as c FROM dialogs WHERE created_at > ?`
-    ).bind(monthAgo).first();
+      `SELECT COUNT(*) as c FROM dialogs`
+    ).first();
 
     const leadsCount = await env.radar_group_db.prepare(
-      `SELECT COUNT(*) as c FROM dialogs WHERE is_lead = 1 AND created_at > ?`
-    ).bind(monthAgo).first();
+      `SELECT COUNT(*) as c FROM dialogs WHERE is_lead = 1`
+    ).first();
 
-    // ИСПРАВЛЕНО: убрали status = 'paid'
     const revenue = await env.radar_group_db.prepare(
       `SELECT COALESCE(SUM(amount), 0) as s FROM payments WHERE paid_at > ?`
     ).bind(monthAgo).first();
@@ -26,7 +26,6 @@ export async function onRequestGet({ env }) {
        WHERE m.created_at > ?`
     ).bind(monthAgo).first();
 
-    // ИСПРАВЛЕНО: берем tariff_code и account_status
     const { results: recentClients } = await env.radar_group_db.prepare(
       `SELECT c.id, c.name, c.email, c.tariff_code as plan, c.account_status as status, c.created_at,
               (SELECT COUNT(*) FROM dialogs WHERE client_id = c.id) as dialogs_count,
