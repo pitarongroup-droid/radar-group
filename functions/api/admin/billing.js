@@ -2,6 +2,7 @@ export async function onRequestGet({ env }) {
   try {
     const monthAgo = Math.floor(Date.now() / 1000) - 30 * 86400;
 
+    // ИСПРАВЛЕНО: убрали status='paid'
     const revenue = await env.radar_group_db.prepare(
       `SELECT COALESCE(SUM(amount), 0) as s FROM payments WHERE paid_at > ?`
     ).bind(monthAgo).first();
@@ -10,7 +11,6 @@ export async function onRequestGet({ env }) {
       `SELECT COUNT(*) as c FROM payments WHERE paid_at > ?`
     ).bind(monthAgo).first();
 
-    // ИСПРАВЛЕНО: считаем активные подписки по дате следующего платежа
     const activeSubs = await env.radar_group_db.prepare(
       `SELECT COUNT(*) as c FROM clients WHERE next_payment_due >= date('now')`
     ).first();

@@ -57,17 +57,19 @@
     <section class="stats-grid">
       <div class="stat-card">
         <div class="stat-card-label">Выручка</div>
-        <div class="stat-card-value">$0</div>
-        <div class="stat-card-meta">за месяц</div>
+        <!-- ИСПРАВЛЕНО: Добавлен id и BYN вместо $ -->
+        <div class="stat-card-value" id="statRevenue">0 BYN</div>
+        <div class="stat-card-meta">за текущий месяц</div>
       </div>
       <div class="stat-card">
         <div class="stat-card-label">Активных подписок</div>
-        <div class="stat-card-value">0</div>
-        <div class="stat-card-meta">платят</div>
+        <div class="stat-card-value" id="statSubs">0</div>
+        <div class="stat-card-meta">платят регулярно</div>
       </div>
       <div class="stat-card">
         <div class="stat-card-label">Средний чек</div>
-        <div class="stat-card-value">$0</div>
+        <!-- ИСПРАВЛЕНО: Добавлен id и BYN вместо $ -->
+        <div class="stat-card-value" id="statAvg">0 BYN</div>
         <div class="stat-card-meta">в месяц</div>
       </div>
     </section>
@@ -82,11 +84,12 @@
             <th>Дата</th>
             <th>Клиент</th>
             <th>Сумма</th>
+            <th>Период</th>
             <th>Статус</th>
           </tr>
         </thead>
-        <tbody>
-          <tr><td colspan="4" class="empty-state">Загрузка...</td></tr>
+        <tbody id="paymentsBody">
+          <tr><td colspan="5" class="empty-state">Загрузка...</td></tr>
         </tbody>
       </table>
     </section>
@@ -107,46 +110,41 @@
 
   async function loadBilling() {
     try {
-      const res = await fetch('/api/admin/billing');
+      const res = await fetch('/api/admin/billing', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
       const data = await res.json();
       if (!data.ok) throw new Error(data.error?.ru || 'Ошибка');
 
-      document.querySelector('.stat-card:nth-child(1) .stat-card-value').textContent =
-        '$' + Math.round(data.stats.revenue);
-      document.querySelector('.stat-card:nth-child(2) .stat-card-value').textContent =
-        data.stats.active_subs;
-      document.querySelector('.stat-card:nth-child(3) .stat-card-value').textContent =
-        '$' + data.stats.avg_check;
+      // ИСПРАВЛЕНО: Используем ID элементов и выводим BYN
+      document.getElementById('statRevenue').textContent = (data.stats?.revenue || 0) + ' BYN';
+      document.getElementById('statSubs').textContent = data.stats?.active_subs || 0;
+      document.getElementById('statAvg').textContent = (data.stats?.avg_check || 0) + ' BYN';
 
-      const tbody = document.querySelector('.clients-table tbody');
-      if (!data.payments.length) {
-        tbody.innerHTML = `<tr><td colspan="4" class="empty-state">Пока нет платежей</td></tr>`;
+      const tbody = document.getElementById('paymentsBody');
+      if (!data.payments || !data.payments.length) {
+        tbody.innerHTML = `<tr><td colspan="5" class="empty-state">Пока нет платежей</td></tr>`;
         return;
       }
 
       tbody.innerHTML = data.payments.map(p => {
-        const date = new Date(p.created_at * 1000)
-          .toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
-
-        const statusClass = p.status === 'paid' ? 'status-active' :
-                            p.status === 'pending' ? 'status-trial' : 'status-suspended';
-        const statusLabel = {
-          paid: '✅ Оплачен',
-          pending: '⏳ Ожидает',
-          failed: '❌ Ошибка'
-        }[p.status] || p.status;
+        // ИСПРАВЛЕНО: Берем paid_at (время оплаты), а не created_at
+        const date = new Date(p.paid_at).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        const period = `${new Date(p.period_start).toLocaleDateString('ru-RU')} — ${new Date(p.period_end).toLocaleDateString('ru-RU')}`;
 
         return `
           <tr>
             <td>${date}</td>
-            <td>${escapeHtml(p.client_name || '—')}</td>
-            <td>$${p.amount || 0}</td>
-            <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
+            <td style="font-weight:600; color:var(--text);">${escapeHtml(p.client_name || '—')}</td>
+            <td style="color:var(--cyan); font-weight:700;">${p.amount} ${p.currency || 'BYN'}</td>
+            <td>${period}</td>
+            <td><span class="status-badge status-active">✅ Оплачен</span></td>
           </tr>
         `;
       }).join('');
     } catch (err) {
       console.error('Billing error:', err);
+      document.getElementById('paymentsBody').innerHTML = `<tr><td colspan="5" class="empty-state">Ошибка: ${err.message}</td></tr>`;
     }
   }
 
