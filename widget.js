@@ -1,10 +1,5 @@
 // ============================================
-// Radar Group — Widget v1.2 (Mobile Fix + Scroll Lock)
-// Установка:
-// <script src="https://radar-group.org/widget.js"
-//         data-key="rg_live_xxx"
-//         data-lang="ru"
-//         async></script>
+// Radar Group — Widget v1.3 (Mobile Keyboard Fix + Visible Close)
 // ============================================
 
 (function () {
@@ -31,9 +26,6 @@
   let isOpen = false;
   let isSending = false;
 
-  // ============================================
-  // 1. Загрузка конфига
-  // ============================================
   async function loadConfig() {
     try {
       const res = await fetch(`${API_BASE}/api/widget-config?key=${API_KEY}&lang=${LANG}`);
@@ -47,9 +39,6 @@
     }
   }
 
-  // ============================================
-  // 2. Отправка события chat_open (1 раз за сессию)
-  // ============================================
   function trackChatOpen() {
     if (sessionStorage.getItem(CHAT_OPEN_KEY)) return;
     sessionStorage.setItem(CHAT_OPEN_KEY, '1');
@@ -66,17 +55,17 @@
     }).catch(() => {});
   }
 
-  // ============================================
-  // 3. Создание HTML виджета
-  // ============================================
   function createWidget() {
     const root = document.createElement('div');
     root.id = 'radar-widget-root';
     root.innerHTML = `
       <style>
-        /* Блокировка скролла фона при открытом виджете на мобильных */
+        /* Жесткая блокировка скролла фона на мобильных */
         body.rw-no-scroll {
           overflow: hidden !important;
+          position: fixed !important; /* Не дает странице дергаться */
+          width: 100% !important;
+          height: 100% !important;
           touch-action: none !important;
         }
 
@@ -85,7 +74,7 @@
           position: fixed;
           ${config.position === 'left' ? 'left: 24px;' : 'right: 24px;'}
           bottom: 24px;
-          z-index: 2147483647 !important; /* Максимальный z-index */
+          z-index: 2147483647 !important;
           font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
           line-height: 1.4;
         }
@@ -137,6 +126,7 @@
           display: flex;
           align-items: center;
           gap: 12px;
+          flex-shrink: 0; /* Не сжимается при клавиатуре */
         }
         .rw-avatar {
           width: 40px; height: 40px; border-radius: 12px;
@@ -152,27 +142,30 @@
           background: var(--rw-color) !important; box-shadow: 0 0 8px var(--rw-color);
         }
         
-        /* Кнопка закрытия - белый крестик */
+        /* Кнопка закрытия (теперь с фоном и белая) */
         .rw-close {
-          width: 32px; height: 32px; border-radius: 8px;
-          background: transparent !important; 
-          border: 1px solid rgba(255,255,255,0.2) !important;
-          color: #FFFFFF !important; /* Белый цвет */
+          width: 34px; height: 34px; border-radius: 8px;
+          background: rgba(255, 255, 255, 0.1) !important; /* Серый фон */
+          border: 1px solid rgba(255,255,255,0.15) !important;
           cursor: pointer;
           display: flex; align-items: center; justify-content: center;
           transition: 0.2s;
         }
+        /* Сам крестик SVG */
+        .rw-close svg {
+          stroke: #FFFFFF !important; /* Принудительно белый */
+          width: 18px !important;
+          height: 18px !important;
+        }
         .rw-close:hover { 
-          color: var(--rw-color) !important; 
-          border-color: var(--rw-color) !important; 
-          background: rgba(255,255,255,0.05) !important;
+          background: rgba(255, 255, 255, 0.2) !important;
         }
 
         .rw-body {
           flex: 1;
           padding: 20px;
           overflow-y: auto;
-          overscroll-behavior: contain; /* Блокирует передачу скролла родителю */
+          overscroll-behavior: contain;
           -webkit-overflow-scrolling: touch;
           display: flex; flex-direction: column; gap: 12px;
         }
@@ -236,6 +229,7 @@
           border-top: 1px solid rgba(255,255,255,0.08);
           background: #0A0A18 !important;
           display: flex; gap: 8px; align-items: flex-end;
+          flex-shrink: 0; /* Не сжимается при клавиатуре */
         }
         .rw-input {
           flex: 1;
@@ -280,18 +274,20 @@
         /* МОБИЛЬНАЯ ВЕРСИЯ */
         @media (max-width: 640px) {
           #radar-widget-window {
+            position: fixed !important;
+            top: 0 !important; 
             left: 0 !important; 
-            right: 0 !important; 
-            top: 0 !important;
+            right: 0 !important;
             bottom: 0 !important;
             width: 100vw !important; 
-            height: 100dvh !important; /* d - dynamic, учитывает панель браузера */
+            height: 100dvh !important;
             max-height: 100dvh !important;
             border-radius: 0 !important;
             margin: 0 !important;
+            border: none !important;
           }
           .rw-body {
-            padding-bottom: env(safe-area-inset-bottom, 20px) !important;
+            padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px)) !important;
           }
         }
       </style>
@@ -310,7 +306,7 @@
             <div class="rw-status">Онлайн</div>
           </div>
           <button class="rw-close" aria-label="Закрыть">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
               <path d="M18 6L6 18M6 6l12 12"/>
             </svg>
           </button>
@@ -339,9 +335,6 @@
     document.body.appendChild(root);
   }
 
-  // ============================================
-  // 4. Отправка сообщения
-  // ============================================
   async function sendMessage(text) {
     if (!text.trim() || isSending) return;
 
@@ -426,9 +419,6 @@
     }
   }
 
-  // ============================================
-  // 5. Вспомогательные
-  // ============================================
   function addMessage(text, role) {
     const body = document.getElementById('radar-widget-body');
     const msg = document.createElement('div');
@@ -452,9 +442,6 @@
     document.getElementById('radar-widget-typing')?.remove();
   }
 
-  // ============================================
-  // 6. Инициализация
-  // ============================================
   async function init() {
     const cfg = await loadConfig();
     if (!cfg) return;
@@ -473,7 +460,7 @@
       win.classList.add('open');
       btn.classList.add('hidden');
       
-      // Блокируем скролл фона на мобильных
+      // Фикс для iOS: сохраняем позицию и фиксируем body
       if (window.innerWidth <= 640) {
         document.body.classList.add('rw-no-scroll');
       }
@@ -488,7 +475,6 @@
       win.classList.remove('open');
       btn.classList.remove('hidden');
       
-      // Возвращаем скролл фону
       document.body.classList.remove('rw-no-scroll');
     });
 
@@ -507,9 +493,6 @@
     });
   }
 
-  // ============================================
-  // 7. Запуск
-  // ============================================
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
