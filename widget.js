@@ -1,24 +1,21 @@
 // ============================================
-// Radar Group — Widget v1.7 (Anti-Bug & Bulletproof)
+// Radar Group — Widget v1.8 (Event Delegation Fix)
 // ============================================
 
 (function () {
   'use strict';
 
-  console.log('🟢 [Radar Widget] Версия 1.7 загружена');
+  console.log('🟢 [Radar Widget] Версия 1.8 загружена');
 
-  // Защита от двойной загрузки скрипта (частая проблема на WordPress/Elementor)
   if (window.radarWidgetInitialized) {
-    console.warn('[Radar Widget] Скрипт уже загружен, повторная инициализация отменена.');
+    console.warn('[Radar Widget] Скрипт уже загружен.');
     return;
   }
   window.radarWidgetInitialized = true;
 
   const currentScript = document.currentScript || document.querySelector('script[src*="widget.js"]');
   const API_KEY = currentScript?.getAttribute('data-key');
-  const LANG = currentScript?.getAttribute('data-lang')
-    || document.documentElement.lang
-    || 'ru';
+  const LANG = currentScript?.getAttribute('data-lang') || document.documentElement.lang || 'ru';
 
   if (!API_KEY) {
     console.error('[Radar Widget] data-key не указан');
@@ -32,11 +29,8 @@
 
   let config = null;
   let dialogId = localStorage.getItem(DIALOG_KEY) || null;
-  
   let messages = [];
-  try {
-    messages = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-  } catch(e) { messages = []; }
+  try { messages = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch(e) { messages = []; }
 
   let isOpen = false;
   let isSending = false;
@@ -45,18 +39,10 @@
     localStorage.setItem(HISTORY_KEY, JSON.stringify(messages.slice(-20)));
   }
 
-  // Функция защиты от HTML-инъекций (чтобы кавычки не ломали код)
   function escapeHTML(str) {
     if (!str) return '';
     return String(str).replace(/[&<>"']/g, function(match) {
-      const map = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;'
-      };
-      return map[match];
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[match];
     });
   }
 
@@ -80,28 +66,19 @@
     fetch(`${API_BASE}/api/events`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        api_key: API_KEY,
-        event_name: 'chat_open',
-        dialog_id: dialogId,
-        lang: LANG
-      })
+      body: JSON.stringify({ api_key: API_KEY, event_name: 'chat_open', dialog_id: dialogId, lang: LANG })
     }).catch(() => {});
   }
 
   function createWidget() {
-    // Если виджет уже есть на странице, не создаем второй
     if (document.getElementById('radar-widget-root')) return;
 
     const root = document.createElement('div');
     root.id = 'radar-widget-root';
 
-    let messagesHtml = '';
-    if (messages.length > 0) {
-      messagesHtml = messages.map(m => `<div class="rw-msg ${m.role === 'user' ? 'user' : 'bot'}">${escapeHTML(m.content)}</div>`).join('');
-    } else {
-      messagesHtml = `<div class="rw-msg bot">${escapeHTML(config.welcome)}</div>`;
-    }
+    let messagesHtml = messages.length > 0 
+      ? messages.map(m => `<div class="rw-msg ${m.role === 'user' ? 'user' : 'bot'}">${escapeHTML(m.content)}</div>`).join('')
+      : `<div class="rw-msg bot">${escapeHTML(config.welcome)}</div>`;
 
     root.innerHTML = `
       <style>
@@ -112,7 +89,6 @@
           height: 100% !important;
           touch-action: none !important;
         }
-
         #radar-widget-root {
           --rw-color: ${config.color};
           position: fixed;
@@ -123,16 +99,13 @@
           line-height: 1.4;
         }
         #radar-widget-btn {
-          width: 60px;
-          height: 60px;
+          width: 60px; height: 60px;
           border-radius: 50%;
           background: var(--rw-color) !important;
           border: none !important;
           cursor: pointer;
           box-shadow: 0 8px 24px rgba(0, 240, 255, 0.35);
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          display: flex; align-items: center; justify-content: center;
           transition: transform 0.2s, box-shadow 0.2s;
         }
         #radar-widget-btn:hover {
@@ -167,10 +140,7 @@
           padding: 16px 20px;
           background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(168, 85, 247, 0.08));
           border-bottom: 1px solid rgba(255,255,255,0.08);
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          flex-shrink: 0;
+          display: flex; align-items: center; gap: 12px; flex-shrink: 0;
         }
         .rw-avatar {
           width: 40px; height: 40px; border-radius: 12px;
@@ -187,75 +157,45 @@
         }
         
         .rw-close {
-          width: 32px !important; 
-          height: 32px !important; 
-          border-radius: 8px !important;
+          width: 32px !important; height: 32px !important; border-radius: 8px !important;
           background: rgba(255, 255, 255, 0.08) !important; 
           border: 1px solid rgba(255, 255, 255, 0.15) !important;
           cursor: pointer !important;
-          display: flex !important; 
-          align-items: center !important; 
-          justify-content: center !important;
-          padding: 0 !important;
-          margin: 0 !important;
-          font-size: 20px !important;
-          line-height: 1 !important;
+          display: flex !important; align-items: center !important; justify-content: center !important;
+          padding: 0 !important; margin: 0 !important;
+          font-size: 20px !important; line-height: 1 !important;
           color: var(--rw-color) !important;
-          font-family: Arial, sans-serif !important;
-          font-weight: bold !important;
+          font-family: Arial, sans-serif !important; font-weight: bold !important;
           transition: 0.2s ease !important;
         }
         .rw-close:hover { 
-          background: var(--rw-color) !important;
-          color: #0F0F1A !important;
-          border-color: var(--rw-color) !important;
+          background: var(--rw-color) !important; color: #0F0F1A !important; border-color: var(--rw-color) !important;
         }
 
         .rw-body {
-          flex: 1;
-          padding: 20px;
-          overflow-y: auto;
-          overscroll-behavior: contain;
-          -webkit-overflow-scrolling: touch;
+          flex: 1; padding: 20px; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
           display: flex; flex-direction: column; gap: 12px;
         }
         .rw-body::-webkit-scrollbar { width: 6px; }
         .rw-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
 
         .rw-msg {
-          max-width: 85%;
-          padding: 12px 16px;
-          border-radius: 16px;
-          font-size: 14px;
-          line-height: 1.5;
-          word-wrap: break-word;
-          white-space: pre-wrap;
+          max-width: 85%; padding: 12px 16px; border-radius: 16px; font-size: 14px; line-height: 1.5;
+          word-wrap: break-word; white-space: pre-wrap;
         }
         .rw-msg.bot {
-          align-self: flex-start;
-          background: #16162A !important;
-          border: 1px solid rgba(255,255,255,0.08) !important;
-          color: #F8FAFC !important;
-          border-bottom-left-radius: 4px;
+          align-self: flex-start; background: #16162A !important; border: 1px solid rgba(255,255,255,0.08) !important;
+          color: #F8FAFC !important; border-bottom-left-radius: 4px;
         }
         .rw-msg.user {
-          align-self: flex-end;
-          background: var(--rw-color) !important;
-          color: #fff !important;
-          border-bottom-right-radius: 4px;
+          align-self: flex-end; background: var(--rw-color) !important; color: #fff !important; border-bottom-right-radius: 4px;
         }
         .rw-typing {
-          align-self: flex-start;
-          display: flex; gap: 4px;
-          padding: 14px 18px;
-          background: #16162A !important;
-          border-radius: 16px;
-          border-bottom-left-radius: 4px;
+          align-self: flex-start; display: flex; gap: 4px; padding: 14px 18px;
+          background: #16162A !important; border-radius: 16px; border-bottom-left-radius: 4px;
         }
         .rw-typing span {
-          width: 6px; height: 6px; border-radius: 50%;
-          background: #64748B !important;
-          animation: rwDot 1.4s infinite;
+          width: 6px; height: 6px; border-radius: 50%; background: #64748B !important; animation: rwDot 1.4s infinite;
         }
         .rw-typing span:nth-child(2) { animation-delay: 0.2s; }
         .rw-typing span:nth-child(3) { animation-delay: 0.4s; }
@@ -265,79 +205,38 @@
         }
 
         .rw-cta {
-          padding: 12px 14px;
-          background: rgba(0, 240, 255, 0.08) !important;
-          border: 1px solid var(--rw-color) !important;
-          border-radius: 12px;
-          font-size: 13px;
-          color: var(--rw-color) !important;
-          text-align: center;
+          padding: 12px 14px; background: rgba(0, 240, 255, 0.08) !important; border: 1px solid var(--rw-color) !important;
+          border-radius: 12px; font-size: 13px; color: var(--rw-color) !important; text-align: center;
         }
-
         .rw-footer {
-          padding: 14px 16px;
-          border-top: 1px solid rgba(255,255,255,0.08);
-          background: #0A0A18 !important;
-          display: flex; gap: 8px; align-items: flex-end;
-          flex-shrink: 0;
+          padding: 14px 16px; border-top: 1px solid rgba(255,255,255,0.08); background: #0A0A18 !important;
+          display: flex; gap: 8px; align-items: flex-end; flex-shrink: 0;
         }
         .rw-input {
-          flex: 1;
-          padding: 12px 16px;
-          background: #0F0F1A !important;
-          border: 1px solid rgba(255,255,255,0.1) !important;
-          border-radius: 12px;
-          color: #fff !important;
-          font-family: inherit;
-          font-size: 16px;
-          resize: none;
-          max-height: 100px;
-          min-height: 44px;
-          outline: none;
+          flex: 1; padding: 12px 16px; background: #0F0F1A !important; border: 1px solid rgba(255,255,255,0.1) !important;
+          border-radius: 12px; color: #fff !important; font-family: inherit; font-size: 16px; resize: none; max-height: 100px; min-height: 44px; outline: none;
         }
-        .rw-input:focus {
-          border-color: var(--rw-color) !important;
-          background: #16162A !important;
-        }
+        .rw-input:focus { border-color: var(--rw-color) !important; background: #16162A !important; }
         .rw-input::placeholder { color: #64748B !important; }
         .rw-send {
-          width: 44px; height: 44px;
-          border-radius: 12px;
-          background: var(--rw-color) !important;
-          border: none !important;
-          color: #fff !important;
-          cursor: pointer;
-          display: flex; align-items: center; justify-content: center;
+          width: 44px; height: 44px; border-radius: 12px; background: var(--rw-color) !important; border: none !important;
+          color: #fff !important; cursor: pointer; display: flex; align-items: center; justify-content: center;
         }
         .rw-send:disabled { opacity: 0.5; cursor: not-allowed; }
         .rw-send svg { width: 18px; height: 18px; }
 
         .rw-note {
-          padding: 8px 16px 12px;
-          text-align: center;
-          font-size: 11px;
-          color: #64748B !important;
-          background: #0A0A18 !important;
+          padding: 8px 16px 12px; text-align: center; font-size: 11px; color: #64748B !important; background: #0A0A18 !important;
         }
         .rw-note a { color: var(--rw-color) !important; text-decoration: none; }
 
         @media (max-width: 640px) {
           #radar-widget-window {
-            position: fixed !important;
-            top: 0 !important; 
-            left: 0 !important; 
-            right: 0 !important;
-            bottom: 0 !important;
-            width: 100vw !important; 
-            height: 100dvh !important;
-            max-height: 100dvh !important;
-            border-radius: 0 !important;
-            margin: 0 !important;
-            border: none !important;
+            position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+            width: 100vw !important; height: 100dvh !important; max-height: 100dvh !important; border-radius: 0 !important;
+            margin: 0 !important; border: none !important;
           }
-          .rw-body {
-            padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px)) !important;
-          }
+          .rw-body { padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px)) !important; }
         }
       </style>
 
@@ -356,29 +255,22 @@
           </div>
           <button class="rw-close" aria-label="Закрыть">✕</button>
         </div>
-
         <div class="rw-body" id="radar-widget-body">
           ${messagesHtml}
         </div>
-
         <div class="rw-footer">
           <textarea class="rw-input" id="radar-widget-input" placeholder="Напишите сообщение..." rows="1" maxlength="500"></textarea>
           <button class="rw-send" id="radar-widget-send" aria-label="Отправить">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M22 2L11 13"/>
-              <path d="M22 2l-7 20-4-9-9-4 20-7z"/>
+              <path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/>
             </svg>
           </button>
         </div>
-
-        <div class="rw-note">
-          Работает на <a href="https://radar-group.org" target="_blank">Radar Group</a>
-        </div>
+        <div class="rw-note">Работает на <a href="https://radar-group.org" target="_blank">Radar Group</a></div>
       </div>
     `;
 
     document.body.appendChild(root);
-    
     const bodyEl = document.getElementById('radar-widget-body');
     if (bodyEl) bodyEl.scrollTop = bodyEl.scrollHeight;
   }
@@ -418,9 +310,7 @@
       hideTyping();
 
       if (res.status === 429) {
-        addMessage(LANG === 'en'
-          ? 'Too many messages. Please wait a couple of minutes 🙂'
-          : 'Слишком много сообщений. Подождите пару минут 🙂', 'bot');
+        addMessage(LANG === 'en' ? 'Too many messages. Please wait 🙂' : 'Слишком много сообщений. Подождите 🙂', 'bot');
         return;
       }
 
@@ -444,27 +334,18 @@
         if (data.contactReady && !document.querySelector('.rw-cta')) {
           const cta = document.createElement('div');
           cta.className = 'rw-cta';
-          cta.textContent = LANG === 'en'
-            ? '🎯 Leave your @username or phone — the manager will reach out'
-            : '🎯 Оставьте @username или телефон — менеджер свяжется';
+          cta.textContent = LANG === 'en' ? '🎯 Leave your phone — manager will reach out' : '🎯 Оставьте телефон — менеджер свяжется';
           bodyEl.appendChild(cta);
           bodyEl.scrollTop = bodyEl.scrollHeight;
         }
       } else if (data.error) {
-        addMessage(LANG === 'en'
-          ? 'Sorry, an error occurred: ' + data.error
-          : 'Извините, ошибка: ' + data.error, 'bot');
+        addMessage(LANG === 'en' ? 'Error: ' + data.error : 'Ошибка: ' + data.error, 'bot');
       } else {
-        addMessage(LANG === 'en'
-          ? 'Sorry, an error occurred. Please try again.'
-          : 'Извините, произошла ошибка. Попробуйте позже.', 'bot');
+        addMessage(LANG === 'en' ? 'Error. Try again.' : 'Произошла ошибка. Попробуйте позже.', 'bot');
       }
     } catch (err) {
       hideTyping();
-      console.error('[Radar Widget] Send error:', err);
-      addMessage(LANG === 'en'
-        ? 'Network error. Please try again.'
-        : 'Ошибка сети. Попробуйте позже.', 'bot');
+      addMessage(LANG === 'en' ? 'Network error.' : 'Ошибка сети.', 'bot');
     } finally {
       isSending = false;
       sendBtn.disabled = false;
@@ -500,54 +381,59 @@
 
     createWidget();
 
-    const btn = document.getElementById('radar-widget-btn');
-    const win = document.getElementById('radar-widget-window');
-    const closeBtn = win ? win.querySelector('.rw-close') : null;
-    const input = document.getElementById('radar-widget-input');
+    // ДЕЛЕГИРОВАНИЕ СОБЫТИЙ (Event Delegation) - работает даже если Elementor пересоздаст кнопку
+    document.addEventListener('click', function(e) {
+      const btn = e.target.closest('#radar-widget-btn');
+      const closeBtn = e.target.closest('.rw-close');
+
+      if (btn) {
+        // ОТКРЫТИЕ
+        const win = document.getElementById('radar-widget-window');
+        if (win) {
+          win.classList.add('open');
+          btn.classList.add('hidden');
+          
+          const bodyEl = document.getElementById('radar-widget-body');
+          if (bodyEl) bodyEl.scrollTop = bodyEl.scrollHeight;
+
+          if (window.innerWidth <= 640) {
+            document.body.classList.add('rw-no-scroll');
+          }
+          
+          trackChatOpen();
+          const input = document.getElementById('radar-widget-input');
+          if (input) setTimeout(() => input.focus(), 200);
+        }
+      } else if (closeBtn) {
+        // ЗАКРЫТИЕ
+        const win = document.getElementById('radar-widget-window');
+        const btn = document.getElementById('radar-widget-btn');
+        if (win && btn) {
+          win.classList.remove('open');
+          btn.classList.remove('hidden');
+          document.body.classList.remove('rw-no-scroll');
+        }
+      }
+    });
+
     const sendBtn = document.getElementById('radar-widget-send');
+    const input = document.getElementById('radar-widget-input');
 
-    // Проверка, что все элементы на месте
-    if (!btn || !win || !closeBtn || !input || !sendBtn) {
-      console.error('[Radar Widget] Ошибка: не найдены элементы интерфейса.');
-      return;
+    if (sendBtn) sendBtn.addEventListener('click', () => sendMessage(input.value));
+
+    if (input) {
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage(input.value);
+        }
+      });
+
+      input.addEventListener('input', () => {
+        input.style.height = 'auto';
+        input.style.height = Math.min(input.scrollHeight, 100) + 'px';
+      });
     }
-
-    btn.addEventListener('click', () => {
-      isOpen = true;
-      win.classList.add('open');
-      btn.classList.add('hidden');
-      
-      const bodyEl = document.getElementById('radar-widget-body');
-      if (bodyEl) bodyEl.scrollTop = bodyEl.scrollHeight;
-
-      if (window.innerWidth <= 640) {
-        document.body.classList.add('rw-no-scroll');
-      }
-      
-      trackChatOpen();
-      setTimeout(() => input.focus(), 200);
-    });
-
-    closeBtn.addEventListener('click', () => {
-      isOpen = false;
-      win.classList.remove('open');
-      btn.classList.remove('hidden'); // Возвращаем кнопку на место
-      document.body.classList.remove('rw-no-scroll');
-    });
-
-    sendBtn.addEventListener('click', () => sendMessage(input.value));
-
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage(input.value);
-      }
-    });
-
-    input.addEventListener('input', () => {
-      input.style.height = 'auto';
-      input.style.height = Math.min(input.scrollHeight, 100) + 'px';
-    });
   }
 
   if (document.readyState === 'loading') {
