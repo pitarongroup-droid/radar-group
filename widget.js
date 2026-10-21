@@ -1,11 +1,11 @@
 // ============================================
-// Radar Group — Widget v1.8 (Event Delegation Fix)
+// Radar Group — Widget v2.0 (Full-Screen Mobile Fix)
 // ============================================
 
 (function () {
   'use strict';
 
-  console.log('🟢 [Radar Widget] Версия 1.8 загружена');
+  console.log('🟢 [Radar Widget] Версия 2.0 загружена');
 
   if (window.radarWidgetInitialized) {
     console.warn('[Radar Widget] Скрипт уже загружен.');
@@ -70,6 +70,27 @@
     }).catch(() => {});
   }
 
+  function adjustMobileHeight() {
+    const win = document.getElementById('radar-widget-window');
+    if (!win) return;
+
+    if (window.innerWidth <= 640) {
+      if (window.visualViewport) {
+        win.style.height = `${window.visualViewport.height}px`;
+        win.style.maxHeight = `${window.visualViewport.height}px`;
+        win.style.top = `${window.visualViewport.offsetTop}px`;
+      } else {
+        win.style.height = `${window.innerHeight}px`;
+        win.style.maxHeight = `${window.innerHeight}px`;
+        win.style.top = '0px';
+      }
+    } else {
+      win.style.height = '';
+      win.style.maxHeight = '';
+      win.style.top = '';
+    }
+  }
+
   function createWidget() {
     if (document.getElementById('radar-widget-root')) return;
 
@@ -82,8 +103,10 @@
 
     root.innerHTML = `
       <style>
+        /* Блокируем скролл фона и убираем горизонтальный скролл */
         body.rw-no-scroll {
           overflow: hidden !important;
+          overflow-x: hidden !important;
           position: fixed !important;
           width: 100% !important;
           height: 100% !important;
@@ -175,6 +198,7 @@
         .rw-body {
           flex: 1; padding: 20px; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
           display: flex; flex-direction: column; gap: 12px;
+          width: 100% !important; /* Жестко на всю ширину */
         }
         .rw-body::-webkit-scrollbar { width: 6px; }
         .rw-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
@@ -211,6 +235,7 @@
         .rw-footer {
           padding: 14px 16px; border-top: 1px solid rgba(255,255,255,0.08); background: #0A0A18 !important;
           display: flex; gap: 8px; align-items: flex-end; flex-shrink: 0;
+          width: 100% !important; /* Жестко на всю ширину */
         }
         .rw-input {
           flex: 1; padding: 12px 16px; background: #0F0F1A !important; border: 1px solid rgba(255,255,255,0.1) !important;
@@ -230,13 +255,23 @@
         }
         .rw-note a { color: var(--rw-color) !important; text-decoration: none; }
 
+        /* МОБИЛЬНАЯ ВЕРСИЯ */
         @media (max-width: 640px) {
           #radar-widget-window {
-            position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
-            width: 100vw !important; height: 100dvh !important; max-height: 100dvh !important; border-radius: 0 !important;
-            margin: 0 !important; border: none !important;
+            position: fixed !important;
+            left: 0 !important; 
+            right: 0 !important;
+            width: 100% !important; /* ИСПРАВЛЕНО: 100% вместо 100vw */
+            max-width: 100% !important;
+            border-radius: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            box-sizing: border-box !important;
           }
-          .rw-body { padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px)) !important; }
+          .rw-body {
+            padding-bottom: 20px !important;
+          }
         }
       </style>
 
@@ -273,6 +308,12 @@
     document.body.appendChild(root);
     const bodyEl = document.getElementById('radar-widget-body');
     if (bodyEl) bodyEl.scrollTop = bodyEl.scrollHeight;
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', adjustMobileHeight);
+      window.visualViewport.addEventListener('scroll', adjustMobileHeight);
+    }
+    window.addEventListener('resize', adjustMobileHeight);
   }
 
   async function sendMessage(text) {
@@ -381,13 +422,11 @@
 
     createWidget();
 
-    // ДЕЛЕГИРОВАНИЕ СОБЫТИЙ (Event Delegation) - работает даже если Elementor пересоздаст кнопку
     document.addEventListener('click', function(e) {
       const btn = e.target.closest('#radar-widget-btn');
       const closeBtn = e.target.closest('.rw-close');
 
       if (btn) {
-        // ОТКРЫТИЕ
         const win = document.getElementById('radar-widget-window');
         if (win) {
           win.classList.add('open');
@@ -398,20 +437,24 @@
 
           if (window.innerWidth <= 640) {
             document.body.classList.add('rw-no-scroll');
+            adjustMobileHeight();
           }
           
           trackChatOpen();
           const input = document.getElementById('radar-widget-input');
-          if (input) setTimeout(() => input.focus(), 200);
+          if (input) setTimeout(() => { input.focus(); adjustMobileHeight(); }, 300); 
         }
       } else if (closeBtn) {
-        // ЗАКРЫТИЕ
         const win = document.getElementById('radar-widget-window');
         const btn = document.getElementById('radar-widget-btn');
         if (win && btn) {
           win.classList.remove('open');
           btn.classList.remove('hidden');
           document.body.classList.remove('rw-no-scroll');
+          
+          win.style.height = '';
+          win.style.maxHeight = '';
+          win.style.top = '';
         }
       }
     });
@@ -422,6 +465,10 @@
     if (sendBtn) sendBtn.addEventListener('click', () => sendMessage(input.value));
 
     if (input) {
+      input.addEventListener('focus', () => {
+        if (window.innerWidth <= 640) setTimeout(adjustMobileHeight, 100);
+      });
+
       input.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
           e.preventDefault();
