@@ -351,7 +351,8 @@
     input.value = '';
     input.style.height = 'auto';
 
-    const CONTACT_RE = /^@[a-zA-Z0-9_]{3,32}$|^\+?[\d\s\-()]{7,20}$/;
+    // ИСПРАВЛЕНО: Убрана строгая привязка к началу и концу строки, чтобы ловить номер в тексте
+    const CONTACT_RE = /@[a-zA-Z0-9_]{3,32}|(?:\+?\d[\d\s\-()]{8,18}\d)/;
     const isContact = CONTACT_RE.test(text.trim());
 
     isSending = true;

@@ -180,13 +180,24 @@ export async function onRequestPost(context) {
 
     // ЛИД
     if (contact) {
-      if (dialog_id && !isDemo) {
+      let activeDialogId = dialog_id;
+      
+      // ИСПРАВЛЕНО: Если диалога нет (клиент сразу написал номер), создаем его!
+      if (!activeDialogId && !isDemo) {
+        activeDialogId = 'dlg_' + crypto.randomUUID().slice(0, 8);
+        await env.radar_group_db.prepare(
+          `INSERT INTO dialogs (id, client_id, channel, status) VALUES (?, ?, 'widget', 'active')`
+        ).bind(activeDialogId, client.id).run();
+      }
+
+      // Записываем лид в базу
+      if (activeDialogId && !isDemo) {
         await env.radar_group_db.prepare(
           `UPDATE dialogs SET is_lead = 1, user_contact = ?, lead_data = ? WHERE id = ?`
         ).bind(
           contact,
           JSON.stringify({ contact, lang: langSafe, timestamp: new Date().toISOString() }),
-          dialog_id
+          activeDialogId
         ).run();
 
         await env.radar_group_db.prepare(
@@ -194,18 +205,28 @@ export async function onRequestPost(context) {
            VALUES (?, ?, 'lead.created', ?, ?, ?)`
         ).bind(
           'evt_' + crypto.randomUUID().slice(0, 8),
-          client.id, dialog_id, langSafe,
+          client.id, activeDialogId, langSafe,
           JSON.stringify({ contact })
         ).run();
       }
 
+      // Формируем уведомление
       const dialogLog = (history || [])
         .map(m => `• ${m.role === 'user' ? 'Клиент' : 'Бот'}: ${String(m.content).slice(0, 200)}`)
         .join('\n');
 
+      // Пытаемся найти имя клиента в истории
+      let clientName = '';
+      const nameMatch = dialogLog.match(/(?:меня зовут|мое имя|я)\s+([А-ЯЁA-Z][а-яёa-z]+)/i);
+      if (nameMatch) clientName = nameMatch[1];
+
+      const sourceName = client?.name || 'Radar Group (демо)';
+      
+      // ИСПРАВЛЕНО: Обновлен формат сообщения для Telegram
       const leadText = `🔥 НОВЫЙ ЛИД\n\n` +
+        `🌐 Источник: Виджет на сайте "${sourceName}"\n` +
         `📞 Контакт: ${contact}\n` +
-        `🏢 Клиент: ${client?.name || 'Radar Group (демо)'}\n` +
+        (clientName ? `👤 Имя: ${clientName}\n` : '') +
         `🕐 ${new Date().toLocaleString('ru-RU')}\n\n` +
         `📝 Диалог:\n${dialogLog.slice(0, 3000)}`;
 
@@ -214,12 +235,14 @@ export async function onRequestPost(context) {
       const canTelegram = settings?.channel_telegram_enabled && settings?.admin_allow_telegram;
       if (canTelegram && settings?.telegram_token && settings?.telegram_admin_id) {
         try {
-          await fetch(`https://api.telegram.org/bot${settings.telegram_token}/sendMessage`, {
+          const tgRes = await fetch(`https://api.telegram.org/bot${settings.telegram_token}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ chat_id: settings.telegram_admin_id, text: leadText })
           });
-          sent = true;
+          const tgData = await tgRes.json();
+          if (tgData.ok) sent = true;
+          else console.error('TG error:', tgData.description);
         } catch (e) { console.error('TG error:', e); }
       }
 
@@ -230,10 +253,10 @@ export async function onRequestPost(context) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              name: client?.name || 'Клиент',
+              name: clientName || 'Клиент',
               phone: contact,
               message: history?.slice(-1)[0]?.content || '',
-              client: client?.name || '',
+              client: sourceName,
               date: new Date().toISOString()
             })
           });
@@ -247,8 +270,8 @@ export async function onRequestPost(context) {
           const payload = JSON.stringify({
             event: 'lead.created', lang: langSafe,
             timestamp: new Date().toISOString(),
-            client_id: client.id, dialog_id, source: 'widget',
-            lead: { contact, message: history?.slice(-1)[0]?.content || '' }
+            client_id: client.id, dialog_id: activeDialogId, source: 'widget',
+            lead: { contact, name: clientName, message: history?.slice(-1)[0]?.content || '' }
           });
           await fetch(settings.webhook_url, {
             method: 'POST',
@@ -262,11 +285,6 @@ export async function onRequestPost(context) {
         } catch (e) { console.error('Webhook error:', e); }
       }
 
-      const canEmail = settings?.channel_email_enabled && settings?.admin_allow_email;
-      if (canEmail && settings?.notification_email) {
-        console.log('Email would be sent to:', settings.notification_email);
-      }
-
       if (!sent && BOT_TOKEN && CHAT_ID) {
         await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
           method: 'POST',
@@ -275,7 +293,8 @@ export async function onRequestPost(context) {
         }).catch(() => {});
       }
 
-      return jsonResponse({ ok: true });
+      // ИСПРАВЛЕНО: Возвращаем dialog_id, чтобы фронтенд его сохранил
+      return jsonResponse({ ok: true, dialog_id: activeDialogId });
     }
 
     // ПРОМПТ
@@ -297,18 +316,15 @@ export async function onRequestPost(context) {
       }
     }
 
-    // ⚠️ AI-КЛЮЧ с учётом галки use_radar_ai_key_widget
+    // AI-КЛЮЧ
     let AI_KEY = null;
 
     if (isDemo) {
       AI_KEY = FALLBACK_AI_KEY;
     } else {
-      // Свой ключ клиента — приоритет
       if (settings?.ai_api_key) {
         AI_KEY = settings.ai_api_key;
-      }
-      // Fallback на ключ Radar — только если админ разрешил
-      else if (settings?.use_radar_ai_key_widget === 1 && FALLBACK_AI_KEY) {
+      } else if (settings?.use_radar_ai_key_widget === 1 && FALLBACK_AI_KEY) {
         AI_KEY = FALLBACK_AI_KEY;
       }
     }
@@ -321,7 +337,7 @@ export async function onRequestPost(context) {
       }, 503);
     }
 
-    // СОЗДАТЬ ДИАЛОГ
+    // СОЗДАТЬ ДИАЛОГ (если его нет)
     let activeDialogId = dialog_id;
     if (!activeDialogId && !isDemo) {
       activeDialogId = 'dlg_' + crypto.randomUUID().slice(0, 8);
