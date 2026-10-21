@@ -1,13 +1,20 @@
 // ============================================
-// Radar Group — Widget v1.6 (Brand Color + History Save)
+// Radar Group — Widget v1.7 (Anti-Bug & Bulletproof)
 // ============================================
 
 (function () {
   'use strict';
 
-  console.log('🟢 [Radar Widget] Версия 1.6 загружена');
+  console.log('🟢 [Radar Widget] Версия 1.7 загружена');
 
-  const currentScript = document.currentScript;
+  // Защита от двойной загрузки скрипта (частая проблема на WordPress/Elementor)
+  if (window.radarWidgetInitialized) {
+    console.warn('[Radar Widget] Скрипт уже загружен, повторная инициализация отменена.');
+    return;
+  }
+  window.radarWidgetInitialized = true;
+
+  const currentScript = document.currentScript || document.querySelector('script[src*="widget.js"]');
   const API_KEY = currentScript?.getAttribute('data-key');
   const LANG = currentScript?.getAttribute('data-lang')
     || document.documentElement.lang
@@ -20,13 +27,12 @@
 
   const API_BASE = 'https://radar-group.org';
   const DIALOG_KEY = 'radar_dialog_' + API_KEY;
-  const HISTORY_KEY = 'radar_history_' + API_KEY; // Ключ для сохранения истории
+  const HISTORY_KEY = 'radar_history_' + API_KEY;
   const CHAT_OPEN_KEY = 'radar_chat_opened_' + API_KEY;
 
   let config = null;
   let dialogId = localStorage.getItem(DIALOG_KEY) || null;
   
-  // Загружаем историю из памяти браузера при старте
   let messages = [];
   try {
     messages = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
@@ -35,9 +41,23 @@
   let isOpen = false;
   let isSending = false;
 
-  // Функция сохранения истории (храним последние 20 сообщений)
   function saveHistory() {
     localStorage.setItem(HISTORY_KEY, JSON.stringify(messages.slice(-20)));
+  }
+
+  // Функция защиты от HTML-инъекций (чтобы кавычки не ломали код)
+  function escapeHTML(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>"']/g, function(match) {
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      };
+      return map[match];
+    });
   }
 
   async function loadConfig() {
@@ -70,15 +90,17 @@
   }
 
   function createWidget() {
+    // Если виджет уже есть на странице, не создаем второй
+    if (document.getElementById('radar-widget-root')) return;
+
     const root = document.createElement('div');
     root.id = 'radar-widget-root';
 
-    // Формируем HTML сообщений на основе сохраненной истории
     let messagesHtml = '';
     if (messages.length > 0) {
-      messagesHtml = messages.map(m => `<div class="rw-msg ${m.role === 'user' ? 'user' : 'bot'}">${m.content}</div>`).join('');
+      messagesHtml = messages.map(m => `<div class="rw-msg ${m.role === 'user' ? 'user' : 'bot'}">${escapeHTML(m.content)}</div>`).join('');
     } else {
-      messagesHtml = `<div class="rw-msg bot">${config.welcome}</div>`;
+      messagesHtml = `<div class="rw-msg bot">${escapeHTML(config.welcome)}</div>`;
     }
 
     root.innerHTML = `
@@ -149,7 +171,6 @@
           align-items: center;
           gap: 12px;
           flex-shrink: 0;
-          position: relative !important;
         }
         .rw-avatar {
           width: 40px; height: 40px; border-radius: 12px;
@@ -330,7 +351,7 @@
         <div class="rw-header">
           <div class="rw-avatar">AI</div>
           <div class="rw-header-text">
-            <div class="rw-title">${config.title}</div>
+            <div class="rw-title">${escapeHTML(config.title)}</div>
             <div class="rw-status">Онлайн</div>
           </div>
           <button class="rw-close" aria-label="Закрыть">✕</button>
@@ -358,7 +379,6 @@
 
     document.body.appendChild(root);
     
-    // Прокручиваем чат вниз при загрузке
     const bodyEl = document.getElementById('radar-widget-body');
     if (bodyEl) bodyEl.scrollTop = bodyEl.scrollHeight;
   }
@@ -372,7 +392,7 @@
 
     addMessage(text, 'user');
     messages.push({ role: 'user', content: text });
-    saveHistory(); // Сохраняем в память при отправке
+    saveHistory(); 
 
     input.value = '';
     input.style.height = 'auto';
@@ -415,11 +435,11 @@
         const successMsg = LANG === 'en' ? '✅ Great! The manager will contact you shortly.' : '✅ Отлично! Менеджер свяжется с вами в ближайшее время.';
         addMessage(successMsg, 'bot');
         messages.push({ role: 'assistant', content: successMsg });
-        saveHistory(); // Сохраняем ответ бота
+        saveHistory(); 
       } else if (data.reply) {
         addMessage(data.reply, 'bot');
         messages.push({ role: 'assistant', content: data.reply });
-        saveHistory(); // Сохраняем ответ бота
+        saveHistory(); 
 
         if (data.contactReady && !document.querySelector('.rw-cta')) {
           const cta = document.createElement('div');
@@ -482,16 +502,21 @@
 
     const btn = document.getElementById('radar-widget-btn');
     const win = document.getElementById('radar-widget-window');
-    const closeBtn = win.querySelector('.rw-close');
+    const closeBtn = win ? win.querySelector('.rw-close') : null;
     const input = document.getElementById('radar-widget-input');
     const sendBtn = document.getElementById('radar-widget-send');
+
+    // Проверка, что все элементы на месте
+    if (!btn || !win || !closeBtn || !input || !sendBtn) {
+      console.error('[Radar Widget] Ошибка: не найдены элементы интерфейса.');
+      return;
+    }
 
     btn.addEventListener('click', () => {
       isOpen = true;
       win.classList.add('open');
       btn.classList.add('hidden');
       
-      // Прокручиваем вниз при открытии
       const bodyEl = document.getElementById('radar-widget-body');
       if (bodyEl) bodyEl.scrollTop = bodyEl.scrollHeight;
 
@@ -506,8 +531,7 @@
     closeBtn.addEventListener('click', () => {
       isOpen = false;
       win.classList.remove('open');
-      btn.classList.add('hidden'); // Тут была ошибка в старом коде (btn.classList.remove('hidden')), исправил
-      btn.classList.remove('hidden'); 
+      btn.classList.remove('hidden'); // Возвращаем кнопку на место
       document.body.classList.remove('rw-no-scroll');
     });
 
