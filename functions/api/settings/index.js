@@ -53,8 +53,9 @@ export async function onRequestGet(context) {
     const user = await getUserFromToken(request, env);
     if (!user) return error('Не авторизован', 'Unauthorized', 401);
 
+    // ИСПРАВЛЕНО: Добавлен api_key в запрос к базе
     const client = await env.radar_group_db.prepare(
-      'SELECT account_status FROM clients WHERE id = ?'
+      'SELECT account_status, api_key FROM clients WHERE id = ?'
     ).bind(user.clientId).first();
 
     if (!client) return error('Клиент не найден', 'Client not found', 404);
@@ -76,7 +77,8 @@ export async function onRequestGet(context) {
 
     if (!settings) return error('Настройки не найдены', 'Settings not found', 404);
 
-    return Response.json({ ok: true, settings });
+    // ИСПРАВЛЕНО: Возвращаем api_key вместе с настройками
+    return Response.json({ ok: true, settings, api_key: client.api_key });
 
   } catch (err) {
     console.error('Settings GET error:', err);
