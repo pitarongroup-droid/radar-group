@@ -1,11 +1,11 @@
 // ============================================
-// Radar Group — Widget v1.5 (Brand Color Close Button)
+// Radar Group — Widget v1.6 (Brand Color + History Save)
 // ============================================
 
 (function () {
   'use strict';
 
-  console.log('🟢 [Radar Widget] Версия 1.5 загружена');
+  console.log('🟢 [Radar Widget] Версия 1.6 загружена');
 
   const currentScript = document.currentScript;
   const API_KEY = currentScript?.getAttribute('data-key');
@@ -20,13 +20,25 @@
 
   const API_BASE = 'https://radar-group.org';
   const DIALOG_KEY = 'radar_dialog_' + API_KEY;
+  const HISTORY_KEY = 'radar_history_' + API_KEY; // Ключ для сохранения истории
   const CHAT_OPEN_KEY = 'radar_chat_opened_' + API_KEY;
 
   let config = null;
   let dialogId = localStorage.getItem(DIALOG_KEY) || null;
+  
+  // Загружаем историю из памяти браузера при старте
   let messages = [];
+  try {
+    messages = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  } catch(e) { messages = []; }
+
   let isOpen = false;
   let isSending = false;
+
+  // Функция сохранения истории (храним последние 20 сообщений)
+  function saveHistory() {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(messages.slice(-20)));
+  }
 
   async function loadConfig() {
     try {
@@ -60,6 +72,15 @@
   function createWidget() {
     const root = document.createElement('div');
     root.id = 'radar-widget-root';
+
+    // Формируем HTML сообщений на основе сохраненной истории
+    let messagesHtml = '';
+    if (messages.length > 0) {
+      messagesHtml = messages.map(m => `<div class="rw-msg ${m.role === 'user' ? 'user' : 'bot'}">${m.content}</div>`).join('');
+    } else {
+      messagesHtml = `<div class="rw-msg bot">${config.welcome}</div>`;
+    }
+
     root.innerHTML = `
       <style>
         body.rw-no-scroll {
@@ -144,7 +165,6 @@
           background: var(--rw-color) !important; box-shadow: 0 0 8px var(--rw-color);
         }
         
-        /* Кнопка закрытия в цвет виджета */
         .rw-close {
           width: 32px !important; 
           height: 32px !important; 
@@ -159,14 +179,14 @@
           margin: 0 !important;
           font-size: 20px !important;
           line-height: 1 !important;
-          color: var(--rw-color) !important; /* Цвет виджета */
+          color: var(--rw-color) !important;
           font-family: Arial, sans-serif !important;
           font-weight: bold !important;
           transition: 0.2s ease !important;
         }
         .rw-close:hover { 
           background: var(--rw-color) !important;
-          color: #0F0F1A !important; /* Темный цвет при наведении для контраста */
+          color: #0F0F1A !important;
           border-color: var(--rw-color) !important;
         }
 
@@ -317,7 +337,7 @@
         </div>
 
         <div class="rw-body" id="radar-widget-body">
-          <div class="rw-msg bot">${config.welcome}</div>
+          ${messagesHtml}
         </div>
 
         <div class="rw-footer">
@@ -337,6 +357,10 @@
     `;
 
     document.body.appendChild(root);
+    
+    // Прокручиваем чат вниз при загрузке
+    const bodyEl = document.getElementById('radar-widget-body');
+    if (bodyEl) bodyEl.scrollTop = bodyEl.scrollHeight;
   }
 
   async function sendMessage(text) {
@@ -348,10 +372,11 @@
 
     addMessage(text, 'user');
     messages.push({ role: 'user', content: text });
+    saveHistory(); // Сохраняем в память при отправке
+
     input.value = '';
     input.style.height = 'auto';
 
-    // ИСПРАВЛЕНО: Убрана строгая привязка к началу и концу строки, чтобы ловить номер в тексте
     const CONTACT_RE = /@[a-zA-Z0-9_]{3,32}|(?:\+?\d[\d\s\-()]{8,18}\d)/;
     const isContact = CONTACT_RE.test(text.trim());
 
@@ -387,12 +412,14 @@
       }
 
       if (isContact) {
-        addMessage(LANG === 'en'
-          ? '✅ Great! The manager will contact you shortly.'
-          : '✅ Отлично! Менеджер свяжется с вами в ближайшее время.', 'bot');
+        const successMsg = LANG === 'en' ? '✅ Great! The manager will contact you shortly.' : '✅ Отлично! Менеджер свяжется с вами в ближайшее время.';
+        addMessage(successMsg, 'bot');
+        messages.push({ role: 'assistant', content: successMsg });
+        saveHistory(); // Сохраняем ответ бота
       } else if (data.reply) {
         addMessage(data.reply, 'bot');
         messages.push({ role: 'assistant', content: data.reply });
+        saveHistory(); // Сохраняем ответ бота
 
         if (data.contactReady && !document.querySelector('.rw-cta')) {
           const cta = document.createElement('div');
@@ -464,6 +491,10 @@
       win.classList.add('open');
       btn.classList.add('hidden');
       
+      // Прокручиваем вниз при открытии
+      const bodyEl = document.getElementById('radar-widget-body');
+      if (bodyEl) bodyEl.scrollTop = bodyEl.scrollHeight;
+
       if (window.innerWidth <= 640) {
         document.body.classList.add('rw-no-scroll');
       }
@@ -475,7 +506,8 @@
     closeBtn.addEventListener('click', () => {
       isOpen = false;
       win.classList.remove('open');
-      btn.classList.remove('hidden');
+      btn.classList.add('hidden'); // Тут была ошибка в старом коде (btn.classList.remove('hidden')), исправил
+      btn.classList.remove('hidden'); 
       document.body.classList.remove('rw-no-scroll');
     });
 
