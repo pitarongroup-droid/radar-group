@@ -1,9 +1,11 @@
 // ============================================
-// Radar Group — Widget v1.3 (Mobile Keyboard Fix + Visible Close)
+// Radar Group — Widget v1.5 (Brand Color Close Button)
 // ============================================
 
 (function () {
   'use strict';
+
+  console.log('🟢 [Radar Widget] Версия 1.5 загружена');
 
   const currentScript = document.currentScript;
   const API_KEY = currentScript?.getAttribute('data-key');
@@ -60,10 +62,9 @@
     root.id = 'radar-widget-root';
     root.innerHTML = `
       <style>
-        /* Жесткая блокировка скролла фона на мобильных */
         body.rw-no-scroll {
           overflow: hidden !important;
-          position: fixed !important; /* Не дает странице дергаться */
+          position: fixed !important;
           width: 100% !important;
           height: 100% !important;
           touch-action: none !important;
@@ -126,7 +127,8 @@
           display: flex;
           align-items: center;
           gap: 12px;
-          flex-shrink: 0; /* Не сжимается при клавиатуре */
+          flex-shrink: 0;
+          position: relative !important;
         }
         .rw-avatar {
           width: 40px; height: 40px; border-radius: 12px;
@@ -142,23 +144,30 @@
           background: var(--rw-color) !important; box-shadow: 0 0 8px var(--rw-color);
         }
         
-        /* Кнопка закрытия (теперь с фоном и белая) */
+        /* Кнопка закрытия в цвет виджета */
         .rw-close {
-          width: 34px; height: 34px; border-radius: 8px;
-          background: rgba(255, 255, 255, 0.1) !important; /* Серый фон */
-          border: 1px solid rgba(255,255,255,0.15) !important;
-          cursor: pointer;
-          display: flex; align-items: center; justify-content: center;
-          transition: 0.2s;
-        }
-        /* Сам крестик SVG */
-        .rw-close svg {
-          stroke: #FFFFFF !important; /* Принудительно белый */
-          width: 18px !important;
-          height: 18px !important;
+          width: 32px !important; 
+          height: 32px !important; 
+          border-radius: 8px !important;
+          background: rgba(255, 255, 255, 0.08) !important; 
+          border: 1px solid rgba(255, 255, 255, 0.15) !important;
+          cursor: pointer !important;
+          display: flex !important; 
+          align-items: center !important; 
+          justify-content: center !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          font-size: 20px !important;
+          line-height: 1 !important;
+          color: var(--rw-color) !important; /* Цвет виджета */
+          font-family: Arial, sans-serif !important;
+          font-weight: bold !important;
+          transition: 0.2s ease !important;
         }
         .rw-close:hover { 
-          background: rgba(255, 255, 255, 0.2) !important;
+          background: var(--rw-color) !important;
+          color: #0F0F1A !important; /* Темный цвет при наведении для контраста */
+          border-color: var(--rw-color) !important;
         }
 
         .rw-body {
@@ -229,7 +238,7 @@
           border-top: 1px solid rgba(255,255,255,0.08);
           background: #0A0A18 !important;
           display: flex; gap: 8px; align-items: flex-end;
-          flex-shrink: 0; /* Не сжимается при клавиатуре */
+          flex-shrink: 0;
         }
         .rw-input {
           flex: 1;
@@ -271,7 +280,6 @@
         }
         .rw-note a { color: var(--rw-color) !important; text-decoration: none; }
 
-        /* МОБИЛЬНАЯ ВЕРСИЯ */
         @media (max-width: 640px) {
           #radar-widget-window {
             position: fixed !important;
@@ -305,11 +313,7 @@
             <div class="rw-title">${config.title}</div>
             <div class="rw-status">Онлайн</div>
           </div>
-          <button class="rw-close" aria-label="Закрыть">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M18 6L6 18M6 6l12 12"/>
-            </svg>
-          </button>
+          <button class="rw-close" aria-label="Закрыть">✕</button>
         </div>
 
         <div class="rw-body" id="radar-widget-body">
@@ -454,13 +458,11 @@
     const input = document.getElementById('radar-widget-input');
     const sendBtn = document.getElementById('radar-widget-send');
 
-    // ОТКРЫТИЕ
     btn.addEventListener('click', () => {
       isOpen = true;
       win.classList.add('open');
       btn.classList.add('hidden');
       
-      // Фикс для iOS: сохраняем позицию и фиксируем body
       if (window.innerWidth <= 640) {
         document.body.classList.add('rw-no-scroll');
       }
@@ -469,12 +471,10 @@
       setTimeout(() => input.focus(), 200);
     });
 
-    // ЗАКРЫТИЕ
     closeBtn.addEventListener('click', () => {
       isOpen = false;
       win.classList.remove('open');
       btn.classList.remove('hidden');
-      
       document.body.classList.remove('rw-no-scroll');
     });
 
