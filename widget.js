@@ -1,5 +1,5 @@
 // ============================================
-// Radar Group — Widget v1.1
+// Radar Group — Widget v1.2 (Mobile Fix + Scroll Lock)
 // Установка:
 // <script src="https://radar-group.org/widget.js"
 //         data-key="rg_live_xxx"
@@ -74,20 +74,27 @@
     root.id = 'radar-widget-root';
     root.innerHTML = `
       <style>
+        /* Блокировка скролла фона при открытом виджете на мобильных */
+        body.rw-no-scroll {
+          overflow: hidden !important;
+          touch-action: none !important;
+        }
+
         #radar-widget-root {
           --rw-color: ${config.color};
           position: fixed;
           ${config.position === 'left' ? 'left: 24px;' : 'right: 24px;'}
           bottom: 24px;
-          z-index: 99999;
+          z-index: 2147483647 !important; /* Максимальный z-index */
           font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          line-height: 1.4;
         }
         #radar-widget-btn {
           width: 60px;
           height: 60px;
           border-radius: 50%;
-          background: var(--rw-color);
-          border: none;
+          background: var(--rw-color) !important;
+          border: none !important;
           cursor: pointer;
           box-shadow: 0 8px 24px rgba(0, 240, 255, 0.35);
           display: flex;
@@ -99,8 +106,8 @@
           transform: scale(1.08);
           box-shadow: 0 12px 32px rgba(0, 240, 255, 0.5);
         }
-        #radar-widget-btn svg { width: 28px; height: 28px; color: #fff; }
-        #radar-widget-btn.hidden { display: none; }
+        #radar-widget-btn svg { width: 28px; height: 28px; color: #fff !important; }
+        #radar-widget-btn.hidden { display: none !important; }
 
         #radar-widget-window {
           position: fixed;
@@ -110,16 +117,18 @@
           max-width: calc(100vw - 32px);
           height: 560px;
           max-height: calc(100vh - 140px);
-          background: #0F0F1A;
-          border: 1px solid rgba(0, 240, 255, 0.3);
+          background: #0F0F1A !important;
+          border: 1px solid rgba(0, 240, 255, 0.3) !important;
           border-radius: 20px;
           box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
           display: none;
           flex-direction: column;
           overflow: hidden;
-          color: #F8FAFC;
+          color: #F8FAFC !important;
+          box-sizing: border-box !important;
         }
-        #radar-widget-window.open { display: flex; }
+        #radar-widget-window.open { display: flex !important; }
+        #radar-widget-window * { box-sizing: border-box !important; }
 
         .rw-header {
           padding: 16px 20px;
@@ -131,29 +140,40 @@
         }
         .rw-avatar {
           width: 40px; height: 40px; border-radius: 12px;
-          background: var(--rw-color);
+          background: var(--rw-color) !important;
           display: flex; align-items: center; justify-content: center;
-          color: #fff; font-weight: 800; font-size: 16px;
+          color: #fff !important; font-weight: 800; font-size: 16px;
         }
         .rw-header-text { flex: 1; }
-        .rw-title { font-size: 15px; font-weight: 700; color: #fff; }
-        .rw-status { font-size: 12px; color: var(--rw-color); display: flex; align-items: center; gap: 6px; }
+        .rw-title { font-size: 15px; font-weight: 700; color: #fff !important; }
+        .rw-status { font-size: 12px; color: var(--rw-color) !important; display: flex; align-items: center; gap: 6px; }
         .rw-status::before {
           content: ''; width: 6px; height: 6px; border-radius: 50%;
-          background: var(--rw-color); box-shadow: 0 0 8px var(--rw-color);
+          background: var(--rw-color) !important; box-shadow: 0 0 8px var(--rw-color);
         }
+        
+        /* Кнопка закрытия - белый крестик */
         .rw-close {
           width: 32px; height: 32px; border-radius: 8px;
-          background: transparent; border: 1px solid rgba(255,255,255,0.1);
-          color: #94A3B8; cursor: pointer;
+          background: transparent !important; 
+          border: 1px solid rgba(255,255,255,0.2) !important;
+          color: #FFFFFF !important; /* Белый цвет */
+          cursor: pointer;
           display: flex; align-items: center; justify-content: center;
+          transition: 0.2s;
         }
-        .rw-close:hover { color: var(--rw-color); border-color: var(--rw-color); }
+        .rw-close:hover { 
+          color: var(--rw-color) !important; 
+          border-color: var(--rw-color) !important; 
+          background: rgba(255,255,255,0.05) !important;
+        }
 
         .rw-body {
           flex: 1;
           padding: 20px;
           overflow-y: auto;
+          overscroll-behavior: contain; /* Блокирует передачу скролла родителю */
+          -webkit-overflow-scrolling: touch;
           display: flex; flex-direction: column; gap: 12px;
         }
         .rw-body::-webkit-scrollbar { width: 6px; }
@@ -170,28 +190,28 @@
         }
         .rw-msg.bot {
           align-self: flex-start;
-          background: #16162A;
-          border: 1px solid rgba(255,255,255,0.08);
-          color: #F8FAFC;
+          background: #16162A !important;
+          border: 1px solid rgba(255,255,255,0.08) !important;
+          color: #F8FAFC !important;
           border-bottom-left-radius: 4px;
         }
         .rw-msg.user {
           align-self: flex-end;
-          background: var(--rw-color);
-          color: #fff;
+          background: var(--rw-color) !important;
+          color: #fff !important;
           border-bottom-right-radius: 4px;
         }
         .rw-typing {
           align-self: flex-start;
           display: flex; gap: 4px;
           padding: 14px 18px;
-          background: #16162A;
+          background: #16162A !important;
           border-radius: 16px;
           border-bottom-left-radius: 4px;
         }
         .rw-typing span {
           width: 6px; height: 6px; border-radius: 50%;
-          background: #64748B;
+          background: #64748B !important;
           animation: rwDot 1.4s infinite;
         }
         .rw-typing span:nth-child(2) { animation-delay: 0.2s; }
@@ -203,27 +223,27 @@
 
         .rw-cta {
           padding: 12px 14px;
-          background: rgba(0, 240, 255, 0.08);
-          border: 1px solid var(--rw-color);
+          background: rgba(0, 240, 255, 0.08) !important;
+          border: 1px solid var(--rw-color) !important;
           border-radius: 12px;
           font-size: 13px;
-          color: var(--rw-color);
+          color: var(--rw-color) !important;
           text-align: center;
         }
 
         .rw-footer {
           padding: 14px 16px;
           border-top: 1px solid rgba(255,255,255,0.08);
-          background: #0A0A18;
+          background: #0A0A18 !important;
           display: flex; gap: 8px; align-items: flex-end;
         }
         .rw-input {
           flex: 1;
           padding: 12px 16px;
-          background: #0F0F1A;
-          border: 1px solid rgba(255,255,255,0.1);
+          background: #0F0F1A !important;
+          border: 1px solid rgba(255,255,255,0.1) !important;
           border-radius: 12px;
-          color: #fff;
+          color: #fff !important;
           font-family: inherit;
           font-size: 16px;
           resize: none;
@@ -232,16 +252,16 @@
           outline: none;
         }
         .rw-input:focus {
-          border-color: var(--rw-color);
-          background: #16162A;
+          border-color: var(--rw-color) !important;
+          background: #16162A !important;
         }
-        .rw-input::placeholder { color: #64748B; }
+        .rw-input::placeholder { color: #64748B !important; }
         .rw-send {
           width: 44px; height: 44px;
           border-radius: 12px;
-          background: var(--rw-color);
-          border: none;
-          color: #fff;
+          background: var(--rw-color) !important;
+          border: none !important;
+          color: #fff !important;
           cursor: pointer;
           display: flex; align-items: center; justify-content: center;
         }
@@ -252,16 +272,26 @@
           padding: 8px 16px 12px;
           text-align: center;
           font-size: 11px;
-          color: #64748B;
-          background: #0A0A18;
+          color: #64748B !important;
+          background: #0A0A18 !important;
         }
-        .rw-note a { color: var(--rw-color); text-decoration: none; }
+        .rw-note a { color: var(--rw-color) !important; text-decoration: none; }
 
+        /* МОБИЛЬНАЯ ВЕРСИЯ */
         @media (max-width: 640px) {
           #radar-widget-window {
-            left: 0; right: 0; bottom: 0;
-            width: 100%; height: 100vh; max-height: 100vh;
-            border-radius: 0;
+            left: 0 !important; 
+            right: 0 !important; 
+            top: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important; 
+            height: 100dvh !important; /* d - dynamic, учитывает панель браузера */
+            max-height: 100dvh !important;
+            border-radius: 0 !important;
+            margin: 0 !important;
+          }
+          .rw-body {
+            padding-bottom: env(safe-area-inset-bottom, 20px) !important;
           }
         }
       </style>
@@ -437,18 +467,29 @@
     const input = document.getElementById('radar-widget-input');
     const sendBtn = document.getElementById('radar-widget-send');
 
+    // ОТКРЫТИЕ
     btn.addEventListener('click', () => {
       isOpen = true;
       win.classList.add('open');
       btn.classList.add('hidden');
+      
+      // Блокируем скролл фона на мобильных
+      if (window.innerWidth <= 640) {
+        document.body.classList.add('rw-no-scroll');
+      }
+      
       trackChatOpen();
       setTimeout(() => input.focus(), 200);
     });
 
+    // ЗАКРЫТИЕ
     closeBtn.addEventListener('click', () => {
       isOpen = false;
       win.classList.remove('open');
       btn.classList.remove('hidden');
+      
+      // Возвращаем скролл фону
+      document.body.classList.remove('rw-no-scroll');
     });
 
     sendBtn.addEventListener('click', () => sendMessage(input.value));
