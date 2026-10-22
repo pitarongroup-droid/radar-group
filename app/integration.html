@@ -191,111 +191,22 @@
 </div>
 
 <style>
-  .widget-status {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-  .widget-status-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: var(--cyan);
-    box-shadow: 0 0 12px var(--cyan);
-    animation: pulse 2s infinite;
-    flex-shrink: 0;
-  }
-  .widget-status-title {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--cyan);
-  }
-  .widget-status-subtitle {
-    font-size: 13px;
-    color: var(--text-muted);
-    margin-top: 2px;
-  }
-  .key-block {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    padding: 14px 16px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    margin-bottom: 12px;
-  }
-  .key-value {
-    flex: 1;
-    font-family: 'Courier New', monospace;
-    font-size: 13px;
-    color: var(--cyan);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    min-width: 0;
-  }
-  .code-block {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 16px;
-    margin-bottom: 12px;
-    overflow: auto;
-    scrollbar-width: none;
-  }
+  .widget-status { display: flex; align-items: center; gap: 14px; }
+  .widget-status-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 12px var(--cyan); animation: pulse 2s infinite; flex-shrink: 0; }
+  .widget-status-title { font-size: 15px; font-weight: 700; color: var(--cyan); }
+  .widget-status-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+  .key-block { display: flex; gap: 10px; align-items: center; padding: 14px 16px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 12px; }
+  .key-value { flex: 1; font-family: 'Courier New', monospace; font-size: 13px; color: var(--cyan); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+  .code-block { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 12px; overflow: auto; scrollbar-width: none; }
   .code-block::-webkit-scrollbar { display: none; }
-  .code-block pre {
-    font-family: 'Courier New', monospace;
-    font-size: 12px;
-    color: var(--text-muted);
-    line-height: 1.6;
-    margin: 0;
-    white-space: pre-wrap;
-    word-break: break-all;
-  }
+  .code-block pre { font-family: 'Courier New', monospace; font-size: 12px; color: var(--text-muted); line-height: 1.6; margin: 0; white-space: pre-wrap; word-break: break-all; }
   .code-block .btn { margin-top: 12px; }
-  .hint {
-    font-size: 12px;
-    color: var(--text-dim);
-    line-height: 1.5;
-  }
-  .instructions {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-  .instruction-item {
-    display: flex;
-    gap: 14px;
-    align-items: flex-start;
-  }
-  .instruction-num {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: var(--gradient-cta);
-    color: #FFFFFF;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 12px;
-    flex-shrink: 0;
-    box-shadow: 0 3px 10px rgba(0, 240, 255, 0.3);
-  }
-  .instruction-item strong {
-    display: block;
-    font-size: 14px;
-    color: var(--text);
-    margin-bottom: 4px;
-  }
-  .instruction-item p {
-    font-size: 13px;
-    color: var(--text-muted);
-    line-height: 1.5;
-    margin: 0;
-  }
+  .hint { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+  .instructions { display: flex; flex-direction: column; gap: 16px; }
+  .instruction-item { display: flex; gap: 14px; align-items: flex-start; }
+  .instruction-num { width: 28px; height: 28px; border-radius: 50%; background: var(--gradient-cta); color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; flex-shrink: 0; box-shadow: 0 3px 10px rgba(0, 240, 255, 0.3); }
+  .instruction-item strong { display: block; font-size: 14px; color: var(--text); margin-bottom: 4px; }
+  .instruction-item p { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 0; }
   @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 
@@ -353,8 +264,8 @@ async function loadData() {
     loadingBlock.style.display = 'none';
     document.getElementById('integrationContent').style.display = 'block';
 
-    const userData = JSON.parse(localStorage.getItem('user') || '{}');
-    const apiKey = userData.apiKey || userData.api_key || null;
+    // ИСПРАВЛЕНО: Берем ключ напрямую из ответа сервера (data.api_key)
+    const apiKey = data.api_key || null;
 
     if (apiKey) {
       document.getElementById('apiKey').textContent = apiKey;
