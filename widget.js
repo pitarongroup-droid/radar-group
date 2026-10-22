@@ -1,11 +1,11 @@
 // ============================================
-// Radar Group — Widget v2.3 (Teaser + Perfect Keyboard)
+// Radar Group — Widget v2.4 (Ideal Layout + Teaser)
 // ============================================
 
 (function () {
   'use strict';
 
-  console.log('🟢 [Radar Widget] Версия 2.3 загружена');
+  console.log('🟢 [Radar Widget] Версия 2.4 загружена');
 
   if (window.radarWidgetInitialized) return;
   window.radarWidgetInitialized = true;
@@ -80,16 +80,16 @@
     
     const teaser = document.createElement('div');
     teaser.id = 'radar-teaser';
-    teaser.innerHTML = `${teaserText} <div class="rw-teaser-close">✕</div>`;
+    teaser.innerHTML = `<span>${teaserText}</span> <div class="rw-teaser-close">✕</div>`;
     
     const root = document.getElementById('radar-widget-root');
     if (root) {
-      root.appendChild(teaser);
+      // Вставляем перед кнопкой, чтобы облачко было сверху
+      root.insertBefore(teaser, document.getElementById('radar-widget-btn'));
       sessionStorage.setItem(TEASER_SHOWN_KEY, '1');
     }
   }
 
-  // ИСПРАВЛЕНО: Функция для идеальной подстройки под клавиатуру
   function adjustMobileHeight() {
     const win = document.getElementById('radar-widget-window');
     if (!win) return;
@@ -98,14 +98,13 @@
       if (window.visualViewport) {
         const vv = window.visualViewport;
         
-        // Привязываем окно точно к видимой области
         win.style.height = `${vv.height}px`;
         win.style.maxHeight = `${vv.height}px`;
         win.style.top = `${vv.offsetTop}px`;
         win.style.bottom = 'auto';
         win.style.borderRadius = '0';
         
-        // Если клавиатура открыта (высота экрана уменьшилась)
+        // Если клавиатура открыта (высота уменьшилась)
         if (vv.height < window.innerHeight - 100) {
           win.classList.add('kb-open');
         } else {
@@ -139,7 +138,21 @@
     root.innerHTML = `
       <style>
         body.rw-no-scroll { overflow: hidden !important; position: fixed !important; width: 100% !important; height: 100% !important; touch-action: none !important; }
-        #radar-widget-root { --rw-color: ${config.color}; position: fixed; ${config.position === 'left' ? 'left: 24px;' : 'right: 24px;'} bottom: 24px; z-index: 2147483647 !important; font-family: 'Manrope', -apple-system, sans-serif; line-height: 1.4; display: flex; flex-direction: column; align-items: ${config.position === 'left' ? 'flex-start' : 'flex-end'}; gap: 12px; }
+        
+        /* ИСПРАВЛЕНО: column-reverse ставит кнопку вниз, а облачко сверху */
+        #radar-widget-root { 
+          --rw-color: ${config.color}; 
+          position: fixed; 
+          ${config.position === 'left' ? 'left: 24px;' : 'right: 24px;'} 
+          bottom: 24px; 
+          z-index: 2147483647 !important; 
+          font-family: 'Manrope', -apple-system, sans-serif; 
+          line-height: 1.4; 
+          display: flex; 
+          flex-direction: column-reverse; 
+          align-items: ${config.position === 'left' ? 'flex-start' : 'flex-end'}; 
+          gap: 12px; 
+        }
 
         /* Кнопка с анимацией пульсации */
         #radar-widget-btn {
@@ -169,8 +182,8 @@
           position: relative; cursor: pointer;
           animation: rw-fade-in 0.5s ease;
           display: flex; align-items: center; gap: 10px;
-          margin-bottom: 10px;
         }
+        /* Хвостик подсказки смотрит вниз на кнопку */
         #radar-teaser::after {
           content: ''; position: absolute;
           ${config.position === 'left' ? 'left: 24px;' : 'right: 24px;'}
@@ -230,19 +243,11 @@
         .rw-note { padding: 8px 16px 12px; text-align: center; font-size: 11px; color: #64748B !important; background: #0A0A18 !important; }
         .rw-note a { color: var(--rw-color) !important; text-decoration: none; }
 
-        /* ИСПРАВЛЕНО: Мобильная версия и клавиатура */
+        /* Мобильная версия (Клавиатура) */
         @media (max-width: 640px) {
-          #radar-widget-window {
-            position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
-            width: 100vw !important; height: 100dvh !important; max-height: 100dvh !important; border-radius: 0 !important; margin: 0 !important; border: none !important;
-          }
-          /* Если клавиатура открыта (добавлен класс через JS) — убираем нижний отступ */
-          #radar-widget-window.kb-open .rw-footer {
-            padding-bottom: 14px !important; /* Фиксированный отступ без учета безопасной зоны */
-          }
-          #radar-widget-window.kb-open .rw-note {
-            display: none !important; /* Скрываем надпись "Работает на Radar Group" чтобы не мешала */
-          }
+          #radar-widget-window { position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100dvh !important; max-height: 100dvh !important; border-radius: 0 !important; margin: 0 !important; border: none !important; }
+          #radar-widget-window.kb-open .rw-footer { padding-bottom: 14px !important; }
+          #radar-widget-window.kb-open .rw-note { display: none !important; }
         }
       </style>
 
@@ -282,7 +287,6 @@
 
     setTimeout(showTeaser, 4000);
 
-    // Слушатели для фикса клавиатуры
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', adjustMobileHeight);
       window.visualViewport.addEventListener('scroll', adjustMobileHeight);
