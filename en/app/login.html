@@ -29,7 +29,6 @@
       <p class="app-subtitle">Manage your AI Manager</p>
 
       <form id="loginForm" class="app-form" novalidate>
-
         <div class="form-row">
           <label class="form-label" for="email">Email</label>
           <input class="form-input" type="email" id="email" name="email" placeholder="your@email.com" required autocomplete="email">
@@ -96,9 +95,9 @@
           let redirectUrl;
 
           if (role === 'admin') {
-            redirectUrl = '/admin/dashboard.html';
+            redirectUrl = '/admin/dashboard.html'; // Если вы админ
           } else {
-            redirectUrl = '/en/app/dashboard.html';
+            redirectUrl = '/en/app/dashboard.html'; // Если клиент (английская версия)
           }
 
           status.className = 'form-status success';
