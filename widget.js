@@ -1,16 +1,13 @@
 // ============================================
-// Radar Group — Widget v2.0 (Full-Screen Mobile Fix)
+// Radar Group — Widget v2.3 (Teaser + Perfect Keyboard)
 // ============================================
 
 (function () {
   'use strict';
 
-  console.log('🟢 [Radar Widget] Версия 2.0 загружена');
+  console.log('🟢 [Radar Widget] Версия 2.3 загружена');
 
-  if (window.radarWidgetInitialized) {
-    console.warn('[Radar Widget] Скрипт уже загружен.');
-    return;
-  }
+  if (window.radarWidgetInitialized) return;
   window.radarWidgetInitialized = true;
 
   const currentScript = document.currentScript || document.querySelector('script[src*="widget.js"]');
@@ -26,6 +23,7 @@
   const DIALOG_KEY = 'radar_dialog_' + API_KEY;
   const HISTORY_KEY = 'radar_history_' + API_KEY;
   const CHAT_OPEN_KEY = 'radar_chat_opened_' + API_KEY;
+  const TEASER_SHOWN_KEY = 'radar_teaser_shown_' + API_KEY;
 
   let config = null;
   let dialogId = localStorage.getItem(DIALOG_KEY) || null;
@@ -62,7 +60,6 @@
   function trackChatOpen() {
     if (sessionStorage.getItem(CHAT_OPEN_KEY)) return;
     sessionStorage.setItem(CHAT_OPEN_KEY, '1');
-
     fetch(`${API_BASE}/api/events`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -70,24 +67,62 @@
     }).catch(() => {});
   }
 
+  function hideTeaser() {
+    const teaser = document.getElementById('radar-teaser');
+    if (teaser) teaser.remove();
+  }
+
+  function showTeaser() {
+    if (isOpen) return;
+    if (sessionStorage.getItem(TEASER_SHOWN_KEY)) return;
+    
+    const teaserText = LANG === 'en' ? 'Hi! How can I help you?' : 'Здравствуйте! Чем помочь?';
+    
+    const teaser = document.createElement('div');
+    teaser.id = 'radar-teaser';
+    teaser.innerHTML = `${teaserText} <div class="rw-teaser-close">✕</div>`;
+    
+    const root = document.getElementById('radar-widget-root');
+    if (root) {
+      root.appendChild(teaser);
+      sessionStorage.setItem(TEASER_SHOWN_KEY, '1');
+    }
+  }
+
+  // ИСПРАВЛЕНО: Функция для идеальной подстройки под клавиатуру
   function adjustMobileHeight() {
     const win = document.getElementById('radar-widget-window');
     if (!win) return;
 
     if (window.innerWidth <= 640) {
       if (window.visualViewport) {
-        win.style.height = `${window.visualViewport.height}px`;
-        win.style.maxHeight = `${window.visualViewport.height}px`;
-        win.style.top = `${window.visualViewport.offsetTop}px`;
+        const vv = window.visualViewport;
+        
+        // Привязываем окно точно к видимой области
+        win.style.height = `${vv.height}px`;
+        win.style.maxHeight = `${vv.height}px`;
+        win.style.top = `${vv.offsetTop}px`;
+        win.style.bottom = 'auto';
+        win.style.borderRadius = '0';
+        
+        // Если клавиатура открыта (высота экрана уменьшилась)
+        if (vv.height < window.innerHeight - 100) {
+          win.classList.add('kb-open');
+        } else {
+          win.classList.remove('kb-open');
+        }
       } else {
         win.style.height = `${window.innerHeight}px`;
-        win.style.maxHeight = `${window.innerHeight}px`;
         win.style.top = '0px';
+        win.style.bottom = 'auto';
       }
     } else {
       win.style.height = '';
       win.style.maxHeight = '';
       win.style.top = '';
+      win.style.bottom = '';
+      win.style.borderRadius = '20px';
+      win.classList.remove('kb-open');
     }
   }
 
@@ -103,174 +138,110 @@
 
     root.innerHTML = `
       <style>
-        /* Блокируем скролл фона и убираем горизонтальный скролл */
-        body.rw-no-scroll {
-          overflow: hidden !important;
-          overflow-x: hidden !important;
-          position: fixed !important;
-          width: 100% !important;
-          height: 100% !important;
-          touch-action: none !important;
-        }
-        #radar-widget-root {
-          --rw-color: ${config.color};
-          position: fixed;
-          ${config.position === 'left' ? 'left: 24px;' : 'right: 24px;'}
-          bottom: 24px;
-          z-index: 2147483647 !important;
-          font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-          line-height: 1.4;
-        }
+        body.rw-no-scroll { overflow: hidden !important; position: fixed !important; width: 100% !important; height: 100% !important; touch-action: none !important; }
+        #radar-widget-root { --rw-color: ${config.color}; position: fixed; ${config.position === 'left' ? 'left: 24px;' : 'right: 24px;'} bottom: 24px; z-index: 2147483647 !important; font-family: 'Manrope', -apple-system, sans-serif; line-height: 1.4; display: flex; flex-direction: column; align-items: ${config.position === 'left' ? 'flex-start' : 'flex-end'}; gap: 12px; }
+
+        /* Кнопка с анимацией пульсации */
         #radar-widget-btn {
-          width: 60px; height: 60px;
-          border-radius: 50%;
+          width: 60px; height: 60px; border-radius: 50%;
           background: var(--rw-color) !important;
-          border: none !important;
-          cursor: pointer;
+          border: none !important; cursor: pointer;
           box-shadow: 0 8px 24px rgba(0, 240, 255, 0.35);
           display: flex; align-items: center; justify-content: center;
-          transition: transform 0.2s, box-shadow 0.2s;
+          transition: transform 0.2s;
+          animation: rw-pulse 2s infinite;
         }
-        #radar-widget-btn:hover {
-          transform: scale(1.08);
-          box-shadow: 0 12px 32px rgba(0, 240, 255, 0.5);
+        @keyframes rw-pulse {
+          0% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.7); }
+          70% { box-shadow: 0 0 0 15px rgba(0, 240, 255, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0); }
         }
+        #radar-widget-btn:hover { transform: scale(1.08); }
         #radar-widget-btn svg { width: 28px; height: 28px; color: #fff !important; }
-        #radar-widget-btn.hidden { display: none !important; }
+        #radar-widget-btn.hidden { display: none !important; animation: none; }
 
-        #radar-widget-window {
-          position: fixed;
+        /* Всплывающая подсказка (Teaser) */
+        #radar-teaser {
+          background: #fff !important; color: #000 !important;
+          padding: 10px 16px; border-radius: 20px;
+          font-size: 14px; font-weight: 600;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+          position: relative; cursor: pointer;
+          animation: rw-fade-in 0.5s ease;
+          display: flex; align-items: center; gap: 10px;
+          margin-bottom: 10px;
+        }
+        #radar-teaser::after {
+          content: ''; position: absolute;
           ${config.position === 'left' ? 'left: 24px;' : 'right: 24px;'}
-          bottom: 100px;
-          width: 380px;
-          max-width: calc(100vw - 32px);
-          height: 560px;
-          max-height: calc(100vh - 140px);
-          background: #0F0F1A !important;
-          border: 1px solid rgba(0, 240, 255, 0.3) !important;
-          border-radius: 20px;
-          box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
-          display: none;
-          flex-direction: column;
-          overflow: hidden;
-          color: #F8FAFC !important;
-          box-sizing: border-box !important;
+          bottom: -6px; width: 12px; height: 12px;
+          background: #fff; transform: rotate(45deg);
+        }
+        .rw-teaser-close {
+          font-size: 10px; color: #999; cursor: pointer; padding: 4px; margin-left: 5px; transition: color 0.2s;
+        }
+        .rw-teaser-close:hover { color: #000; }
+        @keyframes rw-fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Окно чата */
+        #radar-widget-window {
+          position: fixed; ${config.position === 'left' ? 'left: 24px;' : 'right: 24px;'} bottom: 100px;
+          width: 380px; max-width: calc(100vw - 32px); height: 560px; max-height: calc(100vh - 140px);
+          background: #0F0F1A !important; border: 1px solid rgba(0, 240, 255, 0.3) !important;
+          border-radius: 20px; box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+          display: none; flex-direction: column; overflow: hidden; color: #F8FAFC !important; box-sizing: border-box !important;
         }
         #radar-widget-window.open { display: flex !important; }
         #radar-widget-window * { box-sizing: border-box !important; }
 
-        .rw-header {
-          padding: 16px 20px;
-          background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(168, 85, 247, 0.08));
-          border-bottom: 1px solid rgba(255,255,255,0.08);
-          display: flex; align-items: center; gap: 12px; flex-shrink: 0;
-        }
-        .rw-avatar {
-          width: 40px; height: 40px; border-radius: 12px;
-          background: var(--rw-color) !important;
-          display: flex; align-items: center; justify-content: center;
-          color: #fff !important; font-weight: 800; font-size: 16px;
-        }
+        .rw-header { padding: 16px 20px; background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(168, 85, 247, 0.08)); border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+        .rw-avatar { width: 40px; height: 40px; border-radius: 12px; background: var(--rw-color) !important; display: flex; align-items: center; justify-content: center; color: #fff !important; font-weight: 800; font-size: 16px; }
         .rw-header-text { flex: 1; }
         .rw-title { font-size: 15px; font-weight: 700; color: #fff !important; }
         .rw-status { font-size: 12px; color: var(--rw-color) !important; display: flex; align-items: center; gap: 6px; }
-        .rw-status::before {
-          content: ''; width: 6px; height: 6px; border-radius: 50%;
-          background: var(--rw-color) !important; box-shadow: 0 0 8px var(--rw-color);
-        }
+        .rw-status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--rw-color) !important; box-shadow: 0 0 8px var(--rw-color); }
         
-        .rw-close {
-          width: 32px !important; height: 32px !important; border-radius: 8px !important;
-          background: rgba(255, 255, 255, 0.08) !important; 
-          border: 1px solid rgba(255, 255, 255, 0.15) !important;
-          cursor: pointer !important;
-          display: flex !important; align-items: center !important; justify-content: center !important;
-          padding: 0 !important; margin: 0 !important;
-          font-size: 20px !important; line-height: 1 !important;
-          color: var(--rw-color) !important;
-          font-family: Arial, sans-serif !important; font-weight: bold !important;
-          transition: 0.2s ease !important;
-        }
-        .rw-close:hover { 
-          background: var(--rw-color) !important; color: #0F0F1A !important; border-color: var(--rw-color) !important;
-        }
+        .rw-close { width: 32px !important; height: 32px !important; border-radius: 8px !important; background: rgba(255, 255, 255, 0.08) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; cursor: pointer !important; display: flex !important; align-items: center !important; justify-content: center !important; padding: 0 !important; margin: 0 !important; font-size: 20px !important; line-height: 1 !important; color: var(--rw-color) !important; font-family: Arial, sans-serif !important; font-weight: bold !important; transition: 0.2s ease !important; }
+        .rw-close:hover { background: var(--rw-color) !important; color: #0F0F1A !important; border-color: var(--rw-color) !important; }
 
-        .rw-body {
-          flex: 1; padding: 20px; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
-          display: flex; flex-direction: column; gap: 12px;
-          width: 100% !important; /* Жестко на всю ширину */
-        }
+        .rw-body { flex: 1; padding: 20px; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 12px; }
         .rw-body::-webkit-scrollbar { width: 6px; }
         .rw-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
 
-        .rw-msg {
-          max-width: 85%; padding: 12px 16px; border-radius: 16px; font-size: 14px; line-height: 1.5;
-          word-wrap: break-word; white-space: pre-wrap;
-        }
-        .rw-msg.bot {
-          align-self: flex-start; background: #16162A !important; border: 1px solid rgba(255,255,255,0.08) !important;
-          color: #F8FAFC !important; border-bottom-left-radius: 4px;
-        }
-        .rw-msg.user {
-          align-self: flex-end; background: var(--rw-color) !important; color: #fff !important; border-bottom-right-radius: 4px;
-        }
-        .rw-typing {
-          align-self: flex-start; display: flex; gap: 4px; padding: 14px 18px;
-          background: #16162A !important; border-radius: 16px; border-bottom-left-radius: 4px;
-        }
-        .rw-typing span {
-          width: 6px; height: 6px; border-radius: 50%; background: #64748B !important; animation: rwDot 1.4s infinite;
-        }
+        .rw-msg { max-width: 85%; padding: 12px 16px; border-radius: 16px; font-size: 14px; line-height: 1.5; word-wrap: break-word; white-space: pre-wrap; }
+        .rw-msg.bot { align-self: flex-start; background: #16162A !important; border: 1px solid rgba(255,255,255,0.08) !important; color: #F8FAFC !important; border-bottom-left-radius: 4px; }
+        .rw-msg.user { align-self: flex-end; background: var(--rw-color) !important; color: #fff !important; border-bottom-right-radius: 4px; }
+        .rw-typing { align-self: flex-start; display: flex; gap: 4px; padding: 14px 18px; background: #16162A !important; border-radius: 16px; border-bottom-left-radius: 4px; }
+        .rw-typing span { width: 6px; height: 6px; border-radius: 50%; background: #64748B !important; animation: rwDot 1.4s infinite; }
         .rw-typing span:nth-child(2) { animation-delay: 0.2s; }
         .rw-typing span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes rwDot {
-          0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
-          30% { opacity: 1; transform: translateY(-3px); }
-        }
+        @keyframes rwDot { 0%, 60%, 100% { opacity: 0.3; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
 
-        .rw-cta {
-          padding: 12px 14px; background: rgba(0, 240, 255, 0.08) !important; border: 1px solid var(--rw-color) !important;
-          border-radius: 12px; font-size: 13px; color: var(--rw-color) !important; text-align: center;
-        }
-        .rw-footer {
-          padding: 14px 16px; border-top: 1px solid rgba(255,255,255,0.08); background: #0A0A18 !important;
-          display: flex; gap: 8px; align-items: flex-end; flex-shrink: 0;
-          width: 100% !important; /* Жестко на всю ширину */
-        }
-        .rw-input {
-          flex: 1; padding: 12px 16px; background: #0F0F1A !important; border: 1px solid rgba(255,255,255,0.1) !important;
-          border-radius: 12px; color: #fff !important; font-family: inherit; font-size: 16px; resize: none; max-height: 100px; min-height: 44px; outline: none;
-        }
+        .rw-cta { padding: 12px 14px; background: rgba(0, 240, 255, 0.08) !important; border: 1px solid var(--rw-color) !important; border-radius: 12px; font-size: 13px; color: var(--rw-color) !important; text-align: center; }
+        
+        .rw-footer { padding: 14px 16px; border-top: 1px solid rgba(255,255,255,0.08); background: #0A0A18 !important; display: flex; gap: 8px; align-items: flex-end; flex-shrink: 0; }
+        .rw-input { flex: 1; padding: 12px 16px; background: #0F0F1A !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 12px; color: #fff !important; font-family: inherit; font-size: 16px; resize: none; max-height: 100px; min-height: 44px; outline: none; }
         .rw-input:focus { border-color: var(--rw-color) !important; background: #16162A !important; }
         .rw-input::placeholder { color: #64748B !important; }
-        .rw-send {
-          width: 44px; height: 44px; border-radius: 12px; background: var(--rw-color) !important; border: none !important;
-          color: #fff !important; cursor: pointer; display: flex; align-items: center; justify-content: center;
-        }
+        .rw-send { width: 44px; height: 44px; border-radius: 12px; background: var(--rw-color) !important; border: none !important; color: #fff !important; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .rw-send:disabled { opacity: 0.5; cursor: not-allowed; }
         .rw-send svg { width: 18px; height: 18px; }
 
-        .rw-note {
-          padding: 8px 16px 12px; text-align: center; font-size: 11px; color: #64748B !important; background: #0A0A18 !important;
-        }
+        .rw-note { padding: 8px 16px 12px; text-align: center; font-size: 11px; color: #64748B !important; background: #0A0A18 !important; }
         .rw-note a { color: var(--rw-color) !important; text-decoration: none; }
 
-        /* МОБИЛЬНАЯ ВЕРСИЯ */
+        /* ИСПРАВЛЕНО: Мобильная версия и клавиатура */
         @media (max-width: 640px) {
           #radar-widget-window {
-            position: fixed !important;
-            left: 0 !important; 
-            right: 0 !important;
-            width: 100% !important; /* ИСПРАВЛЕНО: 100% вместо 100vw */
-            max-width: 100% !important;
-            border-radius: 0 !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            border: none !important;
-            box-sizing: border-box !important;
+            position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+            width: 100vw !important; height: 100dvh !important; max-height: 100dvh !important; border-radius: 0 !important; margin: 0 !important; border: none !important;
           }
-          .rw-body {
-            padding-bottom: 20px !important;
+          /* Если клавиатура открыта (добавлен класс через JS) — убираем нижний отступ */
+          #radar-widget-window.kb-open .rw-footer {
+            padding-bottom: 14px !important; /* Фиксированный отступ без учета безопасной зоны */
+          }
+          #radar-widget-window.kb-open .rw-note {
+            display: none !important; /* Скрываем надпись "Работает на Radar Group" чтобы не мешала */
           }
         }
       </style>
@@ -309,6 +280,9 @@
     const bodyEl = document.getElementById('radar-widget-body');
     if (bodyEl) bodyEl.scrollTop = bodyEl.scrollHeight;
 
+    setTimeout(showTeaser, 4000);
+
+    // Слушатели для фикса клавиатуры
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', adjustMobileHeight);
       window.visualViewport.addEventListener('scroll', adjustMobileHeight);
@@ -425,12 +399,22 @@
     document.addEventListener('click', function(e) {
       const btn = e.target.closest('#radar-widget-btn');
       const closeBtn = e.target.closest('.rw-close');
+      const teaser = e.target.closest('#radar-teaser');
+      const teaserClose = e.target.closest('.rw-teaser-close');
 
-      if (btn) {
+      if (teaserClose) {
+        hideTeaser();
+        sessionStorage.setItem(TEASER_SHOWN_KEY, '1');
+        return;
+      }
+
+      if (teaser || btn) {
+        hideTeaser();
         const win = document.getElementById('radar-widget-window');
-        if (win) {
+        const btnEl = document.getElementById('radar-widget-btn');
+        if (win && btnEl) {
           win.classList.add('open');
-          btn.classList.add('hidden');
+          btnEl.classList.add('hidden');
           
           const bodyEl = document.getElementById('radar-widget-body');
           if (bodyEl) bodyEl.scrollTop = bodyEl.scrollHeight;
@@ -455,6 +439,7 @@
           win.style.height = '';
           win.style.maxHeight = '';
           win.style.top = '';
+          win.style.bottom = '';
         }
       }
     });
