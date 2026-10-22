@@ -55,6 +55,45 @@ export async function onRequestPost(context) {
       ).bind(clientId)
     ]);
 
+    // ============================================
+    // 🔥 ОТПРАВКА УВЕДОМЛЕНИЯ В TELEGRAM (АДМИНУ)
+    // ============================================
+    try {
+      const adminTgToken = env.BOT_TOKEN;
+      const adminChatId = env.CHAT_ID;
+      
+      if (adminTgToken && adminChatId) {
+        const ip = request.headers.get('cf-connecting-ip') || 'неизвестен';
+        
+        // Экранируем данные от сбоев HTML
+        const safeName = escapeHtml(name);
+        const safeCompany = escapeHtml(company || '—');
+        const safeEmail = escapeHtml(email);
+        
+        const text = 
+          `🔥 <b>НОВАЯ РЕГИСТРАЦИЯ</b>\n\n` +
+          `👤 <b>Имя:</b> ${safeName}\n` +
+          `🏢 <b>Компания:</b> ${safeCompany}\n` +
+          `📧 <b>Email:</b> ${safeEmail}\n` +
+          `🆔 <b>ID:</b> <code>${clientId}</code>\n` +
+          `🌐 <b>IP:</b> ${ip}\n` +
+          `🕐 ${new Date().toLocaleString('ru-RU')}`;
+
+        await fetch(`https://api.telegram.org/bot${adminTgToken}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            chat_id: adminChatId, 
+            text: text, 
+            parse_mode: 'HTML' 
+          })
+        });
+      }
+    } catch (tgErr) {
+      // Если упадет телеграм, регистрация все равно пройдет
+      console.error('Failed to send registration notification:', tgErr);
+    }
+
     const token = await createJWT({
       userId,
       clientId,
@@ -81,8 +120,21 @@ export async function onRequestPost(context) {
   }
 }
 
+// ============================================
+// ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+// ============================================
+
 function error(ru, en, status = 400) {
   return Response.json({ ok: false, error: { ru, en } }, { status });
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function generateKey(length) {
