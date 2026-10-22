@@ -47,7 +47,6 @@ export async function onRequestPut({ params, request, env }) {
        WHERE c.id = ?`
     ).bind(params.id).first();
 
-    // ОБНОВЛЕНО: Добавлены поля tariff_code, monthly_price, sub_currency, subscription_end, next_payment_due, admin_notes
     await env.radar_group_db.prepare(
       `UPDATE clients SET
          name = COALESCE(?, name),
@@ -91,6 +90,10 @@ export async function onRequestPut({ params, request, env }) {
     const settingsUpdates = {};
     if ('widget_enabled' in b) settingsUpdates.widget_enabled = b.widget_enabled ? 1 : 0;
     if ('bot_enabled' in b) settingsUpdates.bot_enabled = b.bot_enabled ? 1 : 0;
+    
+    // ИСПРАВЛЕНО: Добавлено сохранение флага Telegram Business
+    if ('business_bot_enabled' in b) settingsUpdates.business_bot_enabled = b.business_bot_enabled ? 1 : 0;
+    if ('business_connection_id' in b) settingsUpdates.business_connection_id = b.business_connection_id || null;
 
     if (Object.keys(settingsUpdates).length > 0) {
       const fields = Object.keys(settingsUpdates);
@@ -159,7 +162,7 @@ export async function onRequestDelete({ params, request, env }) {
       console.error('Webhook cleanup error:', e);
     }
 
-    // Удаляем связанные данные (платежи и заметки тоже удалятся благодаря ON DELETE CASCADE в SQL)
+    // Удаляем связанные данные
     await env.radar_group_db.batch([
       env.radar_group_db.prepare('DELETE FROM settings WHERE client_id = ?').bind(params.id),
       env.radar_group_db.prepare('DELETE FROM users WHERE client_id = ?').bind(params.id),
