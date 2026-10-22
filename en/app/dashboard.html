@@ -259,7 +259,6 @@
           } catch (e) {}
         }
 
-        // ИСПРАВЛЕНО: умный парсер дат
         let dateObj;
         if (typeof l.created_at === 'string' && (l.created_at.includes('-') || l.created_at.includes('T'))) {
           dateObj = new Date(l.created_at);

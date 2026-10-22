@@ -56,7 +56,7 @@
     <div class="sidebar-bottom">
       <button class="sidebar-logout" onclick="logout()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        <span>Log out</span>
+        <span>Logout</span>
       </button>
     </div>
   </aside>
@@ -89,7 +89,7 @@
           </div>
         </div>
         <div class="funnel-step">
-          <div class="funnel-label">Messaged</div>
+          <div class="funnel-label">Messaged bot</div>
           <div class="funnel-bar" id="barDialogs" style="width: 60%;">
             <span id="funnelDialogs">0</span>
           </div>
@@ -196,7 +196,7 @@
         headers: { 'Authorization': 'Bearer ' + token }
       });
       const data = await res.json();
-      if (!data.ok) throw new Error(data.error?.en || data.error?.ru || 'Error');
+      if (!data.ok) throw new Error(data.error?.en || 'Error');
 
       document.getElementById('funnelChat').textContent = data.funnel.chat_opened;
       document.getElementById('funnelDialogs').textContent = data.funnel.dialogs;

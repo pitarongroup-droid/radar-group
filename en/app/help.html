@@ -52,7 +52,7 @@
     <section class="dash-section" style="padding: 20px;">
       <div class="kb-search-wrap">
         <svg class="kb-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-        <input type="search" id="kbSearch" class="kb-search" placeholder="Search: token, prompt, leads, webhook..." autocomplete="off">
+        <input type="search" id="kbSearch" class="kb-search" placeholder="Search: token, prompt, leads, webhook, widget..." autocomplete="off">
         <button class="kb-search-clear" id="kbClear" style="display:none;" aria-label="Clear">✕</button>
       </div>
       <div class="kb-stats" id="kbStats"></div>
@@ -63,12 +63,12 @@
     <section class="dash-section" id="kbEmpty" style="display:none; text-align:center; padding:50px 20px;">
       <div style="font-size:48px; margin-bottom:12px;">🔍</div>
       <div style="font-size:16px; font-weight:700; color:var(--text); margin-bottom:8px;">Nothing found</div>
-      <div style="color:var(--text-muted); line-height:1.6; max-width:400px; margin:0 auto;">Try different words. If you didn't find the answer — contact us:<div style="margin-top:12px;">📧 <a href="mailto:info@radar-group.org" style="color:var(--cyan);">info@radar-group.org</a><br>💬 <a href="https://t.me/my_ai_TGAgency_bot" target="_blank" style="color:var(--cyan);">Telegram Support</a></div></div>
+      <div style="color:var(--text-muted); line-height:1.6; max-width:400px; margin:0 auto;">Try different keywords. If you can't find an answer — contact us:<div style="margin-top:12px;">📧 <a href="mailto:info@radar-group.org" style="color:var(--cyan);">info@radar-group.org</a><br>💬 <a href="https://t.me/my_ai_TGAgency_bot" target="_blank" style="color:var(--cyan);">Telegram support</a></div></div>
     </section>
 
     <section class="dash-section" style="text-align:center; background:var(--gradient-soft); border-color:var(--border-strong);">
       <div style="font-size:15px; font-weight:700; color:var(--text); margin-bottom:8px;">Didn't find an answer?</div>
-      <div style="font-size:14px; color:var(--text-muted); line-height:1.6; margin-bottom:16px;">Write to us — we'll reply within an hour</div>
+      <div style="font-size:14px; color:var(--text-muted); line-height:1.6; margin-bottom:16px;">Message us — we reply within an hour</div>
       <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
         <a href="https://t.me/my_ai_TGAgency_bot" target="_blank" class="btn btn-primary" style="padding:12px 24px;">💬 Telegram</a>
         <a href="mailto:info@radar-group.org" class="btn btn-outline" style="padding:12px 24px;">📧 Email</a>
@@ -133,7 +133,7 @@
 
 <script>
 const token = localStorage.getItem('token');
-if (!token) window.location.href = '/app/login.html';
+if (!token) window.location.href = '/en/app/login.html';
 
 try {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -147,7 +147,7 @@ function logout() {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
   document.cookie = 'token=; path=/; max-age=0';
-  window.location.href = '/app/login.html';
+  window.location.href = '/en/app/login.html';
 }
 
 const KB = [
@@ -157,26 +157,31 @@ const KB = [
     questions: [
       {
         q: 'How to start using the service?',
-        a: `<p>After registration, your account goes into <strong>"Pending"</strong> status. A Radar Group manager manually reviews the request and approves access.</p>
-            <p>Once approved:</p>
+        a: `<p>After registration, your account goes to the <strong>"Under review"</strong> status. A Radar Group manager manually checks the application and approves access.</p>
+            <p>Once access is approved:</p>
             <ol>
-              <li>Log in to your dashboard — you'll see the full menu</li>
+              <li>Log in to the dashboard — you will see the full menu</li>
               <li>Set up the widget in the <strong>"Widget"</strong> section</li>
-              <li>Or connect a Telegram bot in the <strong>"Telegram Bot"</strong> section</li>
-              <li>Insert the widget code on your site — from the <strong>"Integration"</strong> section</li>
+              <li>Or connect the Telegram bot in the <strong>"Telegram Bot"</strong> section</li>
+              <li>Paste the widget code on your website — from the <strong>"Integration"</strong> section</li>
             </ol>
-            <div class="kb-tip">💡 Approval usually takes 1–2 hours during business hours.</div>`
+            <div class="kb-tip">💡 Usually approval takes 1–2 hours during business hours.</div>`
       },
       {
-        q: 'Why is my account "Pending"?',
-        a: `<p>The <strong>"Pending"</strong> account is protection against spam and unpaid usage. Until the status is <code>approved</code>, you cannot:</p>
+        q: 'Why is my account "Under review"?',
+        a: `<p>The <strong>"Under review"</strong> account is protection against spam and unpaid usage. While the status is not <code>approved</code>, you cannot:</p>
             <ul>
               <li>Change widget and bot settings</li>
               <li>Get an API key</li>
-              <li>Insert the widget code on your site</li>
+              <li>Paste widget code on the website</li>
             </ul>
-            <p>What to do: contact a manager — contacts are in the banner at the top of the dashboard.</p>
+            <p>What to do: contact the manager — contacts in the banner at the top of the dashboard.</p>
             <div class="kb-warn">⚠️ If the account is <strong>"Suspended"</strong> — contact support.</div>`
+      },
+      {
+        q: 'How to change password or email?',
+        a: `<p>For now, changing password and email is through support. Write to <a href="mailto:info@radar-group.org">info@radar-group.org</a> or Telegram.</p>
+            <div class="kb-tip">💡 The self-service password change feature will appear later.</div>`
       }
     ]
   },
@@ -186,18 +191,52 @@ const KB = [
     questions: [
       {
         q: 'What is a widget and how does it work?',
-        a: `<p>A <strong>Widget</strong> is an AI manager in the form of a chat bubble on your website. Visitors write to it — it responds, qualifies, collects contacts, and passes you the lead.</p>
-            <p>Works 24/7. Requires no participation. Answers questions about products, prices, services.</p>`
+        a: `<p>The <strong>Widget</strong> is an AI Manager in the form of a chat bubble on your website. Visitors write to it — it responds, qualifies, collects contact and passes the lead to you.</p>
+            <p>Works 24/7. Does not require your participation. Answers questions about the product, prices, services.</p>`
       },
       {
-        q: 'How to insert the widget on a website?',
+        q: 'How to embed the widget on a website?',
         a: `<p>Open the <strong>"Integration"</strong> section in your dashboard:</p>
             <ol>
               <li>Copy your API key</li>
               <li>Copy the widget code</li>
               <li>Paste it before the closing <code>&lt;/body&gt;</code> tag</li>
             </ol>
-            <p>Instructions for specific platforms (WordPress, Tilda, Bitrix) — on the same page.</p>`
+            <p>Instructions for specific platforms (WordPress, Tilda, Bitrix) — on the same page.</p>
+            <div class="kb-tip">💡 After pasting, refresh the website and check — the widget bubble will appear in the bottom right corner.</div>`
+      },
+      {
+        q: 'What to write in the widget prompt?',
+        a: `<p>The <strong>Prompt</strong> is an instruction for AI: how it should communicate with your clients. Minimum 200 characters, maximum 4000.</p>
+            <p>What must be specified:</p>
+            <ol>
+              <li>Company name</li>
+              <li>Services and prices</li>
+              <li>What AI should learn from the client</li>
+              <li>How to respond to "expensive", "I'll think about it"</li>
+            </ol>
+            <div class="kb-tip">💡 In the "Widget" section there is a "What to write" button — a detailed guide.</div>`
+      },
+      {
+        q: 'How to change widget color, title, greeting?',
+        a: `<p>All in the <strong>"Widget"</strong> section → "🎨 Widget Appearance" section:</p>
+            <ul>
+              <li><strong>Title</strong> — what is visible in the widget header</li>
+              <li><strong>Greeting</strong> — first message to the client</li>
+              <li><strong>Button color</strong> — color of the bubble on the website</li>
+            </ul>
+            <p>Changes are applied instantly after saving.</p>`
+      },
+      {
+        q: 'Can I use my own AI key for the widget?',
+        a: `<p>Yes. In the "Widget" section → "🧠 AI and prompt" section:</p>
+            <ol>
+              <li>Select AI provider (OpenAI, ProxyAPI, Claude, Gemini, DeepSeek)</li>
+              <li>Paste your AI API Key</li>
+              <li>If needed — specify Base URL</li>
+            </ol>
+            <p><strong>If left empty — the widget will not work</strong> until the Radar Group manager connects a shared key for you.</p>
+            <div class="kb-tip">💡 Your own AI key — you pay the AI provider directly. If you don't have a key — write to the manager, they will connect the shared Radar key.</div>`
       }
     ]
   },
@@ -212,42 +251,100 @@ const KB = [
             <ol>
               <li>Create a bot at <a href="https://t.me/BotFather" target="_blank">@BotFather</a> and paste the token</li>
               <li>Specify your Admin ID (your chat_id)</li>
-              <li>Choose lead channels</li>
+              <li>Select lead channels</li>
               <li>Save</li>
             </ol>
             <p>What we do:</p>
             <ol>
-              <li>Contact you, gather product information</li>
+              <li>Contact you, collect information about the product</li>
               <li>Write a powerful prompt with an FSM qualification scenario</li>
-              <li>Set up AI key, work hours, reminders</li>
+              <li>Set up AI key, working hours, reminders</li>
               <li>Launch the bot</li>
-            </ol>`
+            </ol>
+            <div class="kb-tip">💡 Usually setup takes 1–2 days.</div>`
+      },
+      {
+        q: 'How is the Telegram bot different from the widget?',
+        a: `<p>These are <strong>two different products</strong>, each with its own setup:</p>
+            <ul>
+              <li><strong>Widget</strong> — on your website. For website visitors.</li>
+              <li><strong>Telegram bot</strong> — a separate bot in Telegram. For those who write in the messenger.</li>
+            </ul>
+            <p>You can use both at the same time. Or only one.</p>`
+      },
+      {
+        q: 'How to create a Telegram bot and get a token?',
+        a: `<p>Step by step:</p>
+            <ol>
+              <li>Open <a href="https://t.me/BotFather" target="_blank">@BotFather</a> in Telegram</li>
+              <li>Write the command <code>/newbot</code></li>
+              <li>Come up with a bot name</li>
+              <li>Come up with a username (must end with <code>_bot</code>)</li>
+              <li>BotFather will send a token like <code>123456:ABC-DEF...</code></li>
+              <li>Copy the token and paste it in the "Telegram Bot" section</li>
+            </ol>
+            <div class="kb-warn">⚠️ Do not show the token to anyone — it is access to the bot.</div>`
+      },
+      {
+        q: 'What is Admin ID and where to get it?',
+        a: `<p><strong>Admin ID</strong> is your personal Telegram ID where the bot will send notifications about new leads.</p>
+            <p>How to find out:</p>
+            <ol>
+              <li>Open <a href="https://t.me/userinfobot" target="_blank">@userinfobot</a></li>
+              <li>Press <code>Start</code></li>
+              <li>Copy your ID (a set of digits, e.g. <code>873975856</code>)</li>
+              <li>Paste it in the "Telegram Bot" section</li>
+            </ol>
+            <div class="kb-tip">💡 Don't forget to write <code>/start</code> to your bot — otherwise it won't be able to send notifications.</div>`
+      },
+      {
+        q: 'Do I need my own AI key for the bot?',
+        a: `<p>An AI key is needed for the bot to work. There are two options:</p>
+            <ol>
+              <li><strong>Your own key</strong> — send it to the manager, they will enter it in the admin panel</li>
+              <li><strong>Shared Radar key</strong> — we will connect it for you, by agreement</li>
+            </ol>
+            <p><strong>If there is no key — the bot does not respond to messages.</strong></p>
+            <div class="kb-warn">⚠️ The Radar Group key spends our money on every request.</div>`
+      },
+      {
+        q: "What to do if the bot doesn't respond?",
+        a: `<p>Check in order:</p>
+            <ol>
+              <li><strong>Bot Token</strong> — is it pasted correctly?</li>
+              <li><strong>Admin ID</strong> — is your ID specified?</li>
+              <li>Have you written <code>/start</code> to the bot?</li>
+              <li>Is the <strong>"Telegram bot"</strong> service enabled in your account?</li>
+            </ol>
+            <p>If everything is correct — write to support.</p>`
       },
       {
         q: 'What is Telegram Business and how does it work?',
-        a: `<p><strong>Telegram Business</strong> is a mode where the AI manager replies to clients <strong>on your behalf</strong> from your personal Telegram account.</p>
-            <p>Clients message your personal account, and the bot intercepts the message, generates a reply, and sends it as you. It looks like you are personally answering.</p>
-            <div class="kb-tip">💡 The feature is <strong>free</strong>. You don't need Telegram Premium.</div>`
+        a: `<p><strong>Telegram Business</strong> is a mode in which the AI Manager responds to clients <strong>on your behalf</strong> in your personal Telegram account.</p>
+            <p>Clients write to you in private messages, and the bot intercepts the message, generates a response and sends it on your behalf. It looks as if you yourself are sitting in the phone and responding to the client.</p>
+            <div class="kb-tip">💡 The feature is <strong>free</strong>. You do not need Telegram Premium, a regular account is enough.</div>`
       },
       {
-        q: 'How do I connect the bot to my personal account?',
-        a: `<p>Go to your personal Telegram settings:</p>
+        q: 'How to connect the bot to my personal account?',
+        a: `<p>This is done in the settings of your personal Telegram:</p>
             <ol>
-              <li>Open <strong>Settings → Telegram Business</strong>.</li>
-              <li>Tap <strong>Chatbots</strong>.</li>
-              <li>Enter your bot's username (e.g., <code>@my_ai_bot</code>).</li>
-              <li>Tap <strong>Add</strong>.</li>
-              <li>Allow <strong>Read messages</strong> and <strong>Reply to messages</strong>.</li>
-            </ol>`
+              <li>Open <strong>Settings → Telegram Business</strong> (or "Business").</li>
+              <li>Click <strong>Chatbots</strong>.</li>
+              <li>Enter your bot's username (e.g. <code>@my_ai_bot</code>).</li>
+              <li>Click <strong>Add</strong>.</li>
+              <li>Allow the bot <strong>"Read messages"</strong> and <strong>"Reply to messages"</strong>.</li>
+            </ol>
+            <div class="kb-tip">💡 After connecting, the "Connected" status will appear in the Radar Group dashboard.</div>`
       },
       {
-        q: 'Why isn\'t the bot replying in Business mode?',
-        a: `<p>Check the following:</p>
+        q: "Why doesn't the bot respond in Business mode?",
+        a: `<p>Check in order:</p>
             <ol>
-              <li><strong>Permissions:</strong> ensure "Read messages" and "Reply to messages" are enabled in Telegram Business.</li>
-              <li><strong>Secretary Mode:</strong> go to <a href="https://t.me/BotFather" target="_blank">@BotFather</a> → <code>/mybots</code> → select bot → <code>Bot Settings</code> → <code>Secretary Mode</code>. It must be <strong>ON</strong>.</li>
-              <li><strong>24-hour rule:</strong> Telegram allows bots to reply only in chats with incoming messages within the last 24 hours.</li>
-            </ol>`
+              <li><strong>Access rights:</strong> in Telegram Business settings, make sure the "Read messages" and "Reply to messages" rights are enabled.</li>
+              <li><strong>Secretary Mode:</strong> go to <a href="https://t.me/BotFather" target="_blank">@BotFather</a> → <code>/mybots</code> → select the bot → <code>Bot Settings</code> → <code>Secretary Mode</code>. The mode must be <strong>enabled</strong>.</li>
+              <li><strong>24-hour rule:</strong> Telegram allows the bot to respond only in those chats where <strong>there were incoming messages in the last 24 hours</strong>. Ask the client to write you a new message.</li>
+            </ol>
+            <div class="kb-warn">⚠️ If the bot responds but writes "BUSINESS_PEER_INVALID" — reconnect the bot in Telegram Business settings.</div>`
       }
     ]
   },
@@ -259,25 +356,85 @@ const KB = [
         q: 'Where will leads come from?',
         a: `<p>You have <strong>4 channels</strong>, enable any:</p>
             <ul>
-              <li><strong>📱 Telegram</strong> — fastest</li>
+              <li><strong>📱 Telegram</strong> — the fastest</li>
               <li><strong>📊 Google Sheets</strong> — table with history</li>
               <li><strong>🔗 Webhook</strong> — for CRM (Bitrix24, amoCRM, HubSpot)</li>
-              <li><strong>📧 Email</strong> — copy to email</li>
+              <li><strong>📧 Email</strong> — duplicate to email</li>
+            </ul>
+            <p>Each channel has its own settings. Check the box and fill in the fields.</p>`
+      },
+      {
+        q: 'How to set up Telegram for leads?',
+        a: `<p>Two options:</p>
+            <ul>
+              <li>For the <strong>widget</strong>: "Widget" section → "Where to send leads" → Telegram</li>
+              <li>For the <strong>bot</strong>: "Telegram Bot" section → "Where to send leads" → Telegram</li>
+            </ul>
+            <p>Enter the Bot Token and Admin ID. Done.</p>`
+      },
+      {
+        q: 'How to connect Google Sheets?',
+        a: `<p>Step by step (5 minutes):</p>
+            <ol>
+              <li>Create a <a href="https://sheets.new" target="_blank">new Google Sheets document</a></li>
+              <li>Extensions → Apps Script</li>
+              <li>Delete the code and paste the handler script (available in the hint in the dashboard)</li>
+              <li>Deploy → New deployment → Web app</li>
+              <li>Execute as: <strong>Me</strong></li>
+              <li>Who has access: <strong>Anyone</strong></li>
+              <li>Copy the URL and paste it in the <strong>Sheets URL</strong> field</li>
+            </ol>
+            <div class="kb-tip">💡 Full instructions — in the hint next to the field.</div>`
+      },
+      {
+        q: 'How to set up Webhook for CRM?',
+        a: `<p>Enter the webhook <strong>URL</strong> from your CRM and <strong>Secret</strong> (any string).</p>
+            <p>We will send a POST to your URL with the <code>X-Radar-Signature</code> signature (HMAC-SHA256).</p>
+            <p>Where to get the URL:</p>
+            <ul>
+              <li><strong>Bitrix24:</strong> Settings → Integrations → Inbound webhook</li>
+              <li><strong>amoCRM:</strong> Settings → Integrations → Create webhook</li>
+              <li><strong>HubSpot:</strong> Settings → Private Apps → Webhook</li>
             </ul>`
       }
     ]
   },
   {
     icon: '💰',
-    title: 'Billing and Pricing',
+    title: 'Billing and Plans',
     questions: [
       {
         q: 'How much does the widget cost?',
-        a: `<p><strong>Website Widget</strong> — from 200 BYN/month.</p>`
+        a: `<p><strong>Website Widget</strong> — from 200 BYN/month.</p>
+            <p>What's included:</p>
+            <ul>
+              <li>AI Manager on your website</li>
+              <li>Lead collection 24/7</li>
+              <li>Objection handling</li>
+              <li>Notifications to Telegram, Email, Sheets, CRM</li>
+              <li>Personal dashboard</li>
+            </ul>`
       },
       {
         q: 'How much does the Telegram bot cost?',
-        a: `<p><strong>Telegram bot</strong> — separate tariff. Contact the manager for exact pricing.</p>`
+        a: `<p><strong>Telegram Bot</strong> — separate plan. Check the exact price with the manager.</p>
+            <p>Includes everything the widget has, plus:</p>
+            <ul>
+              <li>FSM qualification scenario</li>
+              <li>4 follow-up stages</li>
+              <li>Quiet hours</li>
+              <li>Daily request limit</li>
+            </ul>`
+      },
+      {
+        q: 'How to pay for the subscription?',
+        a: `<p>The <strong>"Billing"</strong> section in the dashboard will show:</p>
+            <ul>
+              <li>Your current plan</li>
+              <li>Next billing date</li>
+              <li>Payment history</li>
+            </ul>
+            <p>Payment — through the manager. They will send the details in Telegram or email.</p>`
       }
     ]
   },
@@ -287,7 +444,29 @@ const KB = [
     questions: [
       {
         q: 'Who sees my dialogs with clients?',
-        a: `<p>Only you. Dialogs are stored in a secure database (Cloudflare D1), bound to your <code>client_id</code>.</p>`
+        a: `<p>Only you. Dialogs are stored in a secure database (Cloudflare D1), tied to your <code>client_id</code>.</p>
+            <p>Radar Group has technical access for support, but does not use client data for commercial purposes.</p>`
+      },
+      {
+        q: 'Can I delete all data?',
+        a: `<p>Yes. Write to support — we will delete all your data:</p>
+            <ul>
+              <li>Dialogs</li>
+              <li>Messages</li>
+              <li>Settings</li>
+              <li>Account</li>
+            </ul>
+            <p>After deletion, access cannot be restored.</p>`
+      },
+      {
+        q: 'Is my API key safe?',
+        a: `<p>Yes. The API key:</p>
+            <ul>
+              <li>Stored in an encrypted database</li>
+              <li>Used only to connect the widget with our servers</li>
+              <li>Visible only to you in the "Integration" section</li>
+            </ul>
+            <div class="kb-warn">⚠️ Do not publish the API key publicly.</div>`
       }
     ]
   }
@@ -299,7 +478,7 @@ const emptyEl = document.getElementById('kbEmpty');
 const statsEl = document.getElementById('kbStats');
 
 function normalize(s) {
-  return String(s).toLowerCase().replace(/ё/g, 'е');
+  return String(s).toLowerCase();
 }
 
 function highlight(text, query) {
@@ -366,8 +545,8 @@ function render(filter = '') {
   } else {
     emptyEl.style.display = 'none';
     statsEl.textContent = hasQuery
-      ? `Found: ${totalShown} answers`
-      : `Total: ${totalShown} questions in ${KB.length} categories`;
+      ? `Found: ${totalShown} ${totalShown === 1 ? 'answer' : 'answers'}`
+      : `Total: ${totalShown} ${totalShown === 1 ? 'question' : 'questions'} in ${KB.length} categories`;
   }
 }
 

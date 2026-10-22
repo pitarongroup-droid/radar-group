@@ -187,7 +187,6 @@
       }
 
       tbody.innerHTML = data.dialogs.map(d => {
-        // ИСПРАВЛЕНО: умный парсер дат
         let dateObj;
         if (typeof d.created_at === 'string' && (d.created_at.includes('-') || d.created_at.includes('T'))) {
           dateObj = new Date(d.created_at);

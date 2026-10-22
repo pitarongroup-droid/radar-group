@@ -141,6 +141,40 @@
             <div class="channel-header"><label class="channel-toggle"><input type="checkbox" id="botChTelegram"><span class="channel-label">📱 Telegram</span></label></div>
             <div class="channel-body"><div class="form-hint" style="margin:0;">💡 Лиды придут в чат, указанный в <strong>Admin ID</strong> выше.</div></div>
           </div>
+
+          <div class="form-group">
+            <div class="channel-header"><label class="channel-toggle"><input type="checkbox" id="botChSheets"><span class="channel-label">📊 Google Sheets</span></label></div>
+            <div class="channel-body">
+              <div class="form-row">
+                <label class="form-label">URL веб-приложения</label>
+                <input class="form-input" type="text" id="botSheetsUrl" placeholder="https://script.google.com/macros/s/.../exec">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="channel-header"><label class="channel-toggle"><input type="checkbox" id="botChWebhook"><span class="channel-label">🔗 Webhook (CRM)</span></label></div>
+            <div class="channel-body">
+              <div class="form-row">
+                <label class="form-label">URL</label>
+                <input class="form-input" type="text" id="botWebhookUrl" placeholder="https://...">
+              </div>
+              <div class="form-row">
+                <label class="form-label">Secret (HMAC-SHA256)</label>
+                <input class="form-input" type="text" id="botWebhookSecret" placeholder="shared secret">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="channel-header"><label class="channel-toggle"><input type="checkbox" id="botChEmail"><span class="channel-label">📧 Email</span></label></div>
+            <div class="channel-body">
+              <div class="form-row">
+                <label class="form-label">Email для уведомлений</label>
+                <input class="form-input" type="email" id="botNotificationEmail" placeholder="owner@example.com">
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -221,7 +255,6 @@ async function loadSettings() {
 
     document.getElementById('botContent').style.display = 'block';
 
-    // Отображение статуса Telegram Business
     const badge = document.getElementById('businessBadge');
     const statusBox = document.getElementById('businessStatusBox');
     
@@ -248,7 +281,6 @@ async function loadSettings() {
     document.getElementById('botTelegramToken').value = s.bot_telegram_token || '';
     document.getElementById('botTelegramAdminId').value = s.bot_telegram_admin_id || '';
 
-    // Примерное отображение username бота (если он сохранен в токене)
     if (s.bot_telegram_token) {
       const usernameMatch = s.bot_telegram_token.split(':')[1];
       if (usernameMatch) {
@@ -257,6 +289,14 @@ async function loadSettings() {
     }
 
     document.getElementById('botChTelegram').checked = s.bot_channel_telegram_enabled === 1;
+    document.getElementById('botChSheets').checked = s.bot_channel_sheets_enabled === 1;
+    document.getElementById('botChWebhook').checked = s.bot_channel_webhook_enabled === 1;
+    document.getElementById('botChEmail').checked = s.bot_channel_email_enabled === 1;
+
+    document.getElementById('botSheetsUrl').value = s.bot_sheets_url || '';
+    document.getElementById('botWebhookUrl').value = s.bot_webhook_url || '';
+    document.getElementById('botWebhookSecret').value = s.bot_webhook_secret || '';
+    document.getElementById('botNotificationEmail').value = s.bot_notification_email || '';
 
   } catch (err) {
     document.getElementById('accessBlocked').style.display = 'block';
@@ -271,7 +311,14 @@ async function saveBot() {
     const payload = {
       bot_telegram_token: document.getElementById('botTelegramToken').value.trim(),
       bot_telegram_admin_id: document.getElementById('botTelegramAdminId').value.trim() || null,
-      bot_channel_telegram_enabled: document.getElementById('botChTelegram').checked ? 1 : 0
+      bot_channel_telegram_enabled: document.getElementById('botChTelegram').checked ? 1 : 0,
+      bot_channel_sheets_enabled: document.getElementById('botChSheets').checked ? 1 : 0,
+      bot_channel_webhook_enabled: document.getElementById('botChWebhook').checked ? 1 : 0,
+      bot_channel_email_enabled: document.getElementById('botChEmail').checked ? 1 : 0,
+      bot_sheets_url: document.getElementById('botSheetsUrl').value.trim(),
+      bot_webhook_url: document.getElementById('botWebhookUrl').value.trim(),
+      bot_webhook_secret: document.getElementById('botWebhookSecret').value.trim(),
+      bot_notification_email: document.getElementById('botNotificationEmail').value.trim()
     };
 
     const res = await fetch('/api/settings', {
