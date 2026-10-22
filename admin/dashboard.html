@@ -77,7 +77,8 @@
       </div>
       <div class="stat-card">
         <div class="stat-card-label">Выручка</div>
-        <div class="stat-card-value" id="statRevenue">$0</div>
+        <!-- ИСПРАВЛЕНО: BYN вместо $ -->
+        <div class="stat-card-value" id="statRevenue">0 BYN</div>
         <div class="stat-card-meta">в месяц</div>
       </div>
     </section>
@@ -142,7 +143,8 @@
       document.getElementById('statClients').textContent = data.stats.clients;
       document.getElementById('statDialogs').textContent = data.stats.dialogs;
       document.getElementById('statLeads').textContent = data.stats.leads;
-      document.getElementById('statRevenue').textContent = '$' + Math.round(data.stats.revenue);
+      // ИСПРАВЛЕНО: Добавлен BYN
+      document.getElementById('statRevenue').textContent = Math.round(data.stats.revenue) + ' BYN';
 
       const tbody = document.getElementById('clientsTableBody');
       if (!data.recent_clients.length) {

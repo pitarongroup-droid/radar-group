@@ -2,14 +2,22 @@ export async function onRequestGet({ env }) {
   try {
     const monthAgo = Math.floor(Date.now() / 1000) - 30 * 86400;
     
-    // Выручка и количество платежей
-    const revenue = await env.radar_group_db.prepare(`SELECT COALESCE(SUM(amount), 0) as s FROM payments WHERE paid_at > ?`).bind(monthAgo).first();
-    const paymentsCount = await env.radar_group_db.prepare(`SELECT COUNT(*) as c FROM payments WHERE paid_at > ?`).bind(monthAgo).first();
+    // Выручка и количество платежей (с конвертацией в BYN)
+    const revenue = await env.radar_group_db.prepare(
+      `SELECT COALESCE(SUM(CASE WHEN currency = 'USD' THEN amount * 3.2 ELSE amount END), 0) as s 
+       FROM payments WHERE paid_at > ?`
+    ).bind(monthAgo).first();
+    
+    const paymentsCount = await env.radar_group_db.prepare(
+      `SELECT COUNT(*) as c FROM payments WHERE paid_at > ?`
+    ).bind(monthAgo).first();
     
     // Активные подписки
-    const activeSubs = await env.radar_group_db.prepare(`SELECT COUNT(*) as c FROM clients WHERE next_payment_due >= date('now')`).first();
+    const activeSubs = await env.radar_group_db.prepare(
+      `SELECT COUNT(*) as c FROM clients WHERE next_payment_due >= date('now')`
+    ).first();
     
-    // История
+    // История (без конвертации, показываем как есть: в USD или BYN)
     const { results: payments } = await env.radar_group_db.prepare(
       `SELECT p.*, c.name as client_name FROM payments p LEFT JOIN clients c ON c.id = p.client_id ORDER BY p.paid_at DESC LIMIT 50`
     ).all();

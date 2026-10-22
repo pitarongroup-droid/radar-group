@@ -57,7 +57,6 @@
     <section class="stats-grid">
       <div class="stat-card">
         <div class="stat-card-label">Выручка</div>
-        <!-- ИСПРАВЛЕНО: Добавлен id и BYN вместо $ -->
         <div class="stat-card-value" id="statRevenue">0 BYN</div>
         <div class="stat-card-meta">за текущий месяц</div>
       </div>
@@ -68,7 +67,6 @@
       </div>
       <div class="stat-card">
         <div class="stat-card-label">Средний чек</div>
-        <!-- ИСПРАВЛЕНО: Добавлен id и BYN вместо $ -->
         <div class="stat-card-value" id="statAvg">0 BYN</div>
         <div class="stat-card-meta">в месяц</div>
       </div>
@@ -116,7 +114,6 @@
       const data = await res.json();
       if (!data.ok) throw new Error(data.error?.ru || 'Ошибка');
 
-      // ИСПРАВЛЕНО: Используем ID элементов и выводим BYN
       document.getElementById('statRevenue').textContent = (data.stats?.revenue || 0) + ' BYN';
       document.getElementById('statSubs').textContent = data.stats?.active_subs || 0;
       document.getElementById('statAvg').textContent = (data.stats?.avg_check || 0) + ' BYN';
@@ -128,7 +125,6 @@
       }
 
       tbody.innerHTML = data.payments.map(p => {
-        // ИСПРАВЛЕНО: Берем paid_at (время оплаты), а не created_at
         const date = new Date(p.paid_at).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
         const period = `${new Date(p.period_start).toLocaleDateString('ru-RU')} — ${new Date(p.period_end).toLocaleDateString('ru-RU')}`;
 
