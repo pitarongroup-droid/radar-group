@@ -1,11 +1,11 @@
 // ============================================
-// Radar Group — Widget v2.4 (Ideal Layout + Teaser)
+// Radar Group — Widget v2.5 (Bulletproof Teaser & Layout)
 // ============================================
 
 (function () {
   'use strict';
 
-  console.log('🟢 [Radar Widget] Версия 2.4 загружена');
+  console.log('🟢 [Radar Widget] Версия 2.5 загружена');
 
   if (window.radarWidgetInitialized) return;
   window.radarWidgetInitialized = true;
@@ -84,8 +84,8 @@
     
     const root = document.getElementById('radar-widget-root');
     if (root) {
-      // Вставляем перед кнопкой, чтобы облачко было сверху
-      root.insertBefore(teaser, document.getElementById('radar-widget-btn'));
+      // ИСПРАВЛЕНО: prepend вставляет облачко в самое начало контейнера (визуально наверх)
+      root.prepend(teaser);
       sessionStorage.setItem(TEASER_SHOWN_KEY, '1');
     }
   }
@@ -102,7 +102,6 @@
         win.style.maxHeight = `${vv.height}px`;
         win.style.top = `${vv.offsetTop}px`;
         win.style.bottom = 'auto';
-        win.style.borderRadius = '0';
         
         // Если клавиатура открыта (высота уменьшилась)
         if (vv.height < window.innerHeight - 100) {
@@ -120,7 +119,6 @@
       win.style.maxHeight = '';
       win.style.top = '';
       win.style.bottom = '';
-      win.style.borderRadius = '20px';
       win.classList.remove('kb-open');
     }
   }
@@ -139,7 +137,7 @@
       <style>
         body.rw-no-scroll { overflow: hidden !important; position: fixed !important; width: 100% !important; height: 100% !important; touch-action: none !important; }
         
-        /* ИСПРАВЛЕНО: column-reverse ставит кнопку вниз, а облачко сверху */
+        /* ИСПРАВЛЕНО: Теперь это обычный flex column. Облачко физически первое - оно сверху. */
         #radar-widget-root { 
           --rw-color: ${config.color}; 
           position: fixed; 
@@ -149,7 +147,7 @@
           font-family: 'Manrope', -apple-system, sans-serif; 
           line-height: 1.4; 
           display: flex; 
-          flex-direction: column-reverse; 
+          flex-direction: column; 
           align-items: ${config.position === 'left' ? 'flex-start' : 'flex-end'}; 
           gap: 12px; 
         }
@@ -243,9 +241,14 @@
         .rw-note { padding: 8px 16px 12px; text-align: center; font-size: 11px; color: #64748B !important; background: #0A0A18 !important; }
         .rw-note a { color: var(--rw-color) !important; text-decoration: none; }
 
-        /* Мобильная версия (Клавиатура) */
+        /* ИСПРАВЛЕНО: Мобильная версия. Убрали фиксированную высоту, ее задает JS */
         @media (max-width: 640px) {
-          #radar-widget-window { position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100dvh !important; max-height: 100dvh !important; border-radius: 0 !important; margin: 0 !important; border: none !important; }
+          #radar-widget-window {
+            position: fixed !important; left: 0 !important; right: 0 !important;
+            width: 100% !important; max-width: 100% !important;
+            border-radius: 0 !important; margin: 0 !important; border: none !important;
+            /* top и height задаются через JS adjustMobileHeight */
+          }
           #radar-widget-window.kb-open .rw-footer { padding-bottom: 14px !important; }
           #radar-widget-window.kb-open .rw-note { display: none !important; }
         }
