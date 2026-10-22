@@ -56,6 +56,8 @@
         <h1 class="admin-header-title" id="pageTitle">Клиент</h1>
       </div>
       <div class="admin-header-actions" id="headerActions" style="display:none;">
+        <!-- НОВАЯ КНОПКА ВХОДА В КАБИНЕТ -->
+        <button class="btn btn-outline" onclick="loginAsClient()" style="border-color:var(--violet); color:var(--violet);">🚪 Войти в кабинет</button>
         <button class="btn btn-primary" onclick="saveAll()">💾 Сохранить всё</button>
       </div>
     </header>
@@ -210,7 +212,6 @@
               <option value="USD">$ USD</option><option value="EUR">€ EUR</option><option value="BYN">Br BYN</option><option value="RUB">₽ RUB</option>
             </select>
           </div>
-          <!-- Скрытое поле plan (оставлено для совместимости со старым ботом) -->
           <input type="hidden" id="clientPlan" value="basic">
           
           <div class="form-row">
@@ -389,7 +390,6 @@ function renderClient() {
   const c = clientData; const s = settingsData;
   document.getElementById('pageTitle').textContent = c.name || 'Клиент';
 
-  // ТАРИФЫ
   document.getElementById('tariffCode').value = c.tariff_code || 'start';
   document.getElementById('monthlyPrice').value = c.monthly_price || 200;
   document.getElementById('subCurrency').value = c.sub_currency || 'BYN';
@@ -397,7 +397,6 @@ function renderClient() {
   document.getElementById('nextPaymentDue').value = c.next_payment_due || '';
   document.getElementById('adminNotes').value = c.admin_notes || '';
 
-  // ДОСТУП
   document.getElementById('accountStatus').value = c.account_status || 'pending';
   document.getElementById('widgetEnabled').checked = s.widget_enabled === 1;
   document.getElementById('botEnabled').checked = s.bot_enabled === 1;
@@ -409,7 +408,6 @@ function renderClient() {
   document.getElementById('businessConnectionId').textContent = connId ? connId : 'не подключен';
   document.getElementById('businessConnectionId').style.color = connId ? 'var(--cyan)' : 'var(--text-dim)';
 
-  // ДАННЫЕ
   document.getElementById('clientName').value = c.name || '';
   document.getElementById('clientEmail').value = c.email || '';
   document.getElementById('clientPhone').value = c.phone || '';
@@ -420,14 +418,12 @@ function renderClient() {
   document.getElementById('clientPlan').value = c.plan || 'basic';
   document.getElementById('clientApiKey').textContent = c.api_key || '—';
 
-  // БОТ
   document.getElementById('botTelegramToken').value = s.bot_telegram_token || s.telegram_token || '';
   document.getElementById('botTelegramAdminId').value = s.bot_telegram_admin_id || s.telegram_admin_id || '';
   document.getElementById('botRemindersEnabled').checked = s.bot_reminders_enabled === 1;
   document.getElementById('botWorkHours').value = s.bot_work_hours || 'always';
   document.getElementById('botMaxDaily').value = s.bot_max_daily || 1000;
 
-  // ВИДЖЕТ
   document.getElementById('widgetPromptRu').value = s.prompt_ru || '';
   document.getElementById('widgetIndustry').value = s.industry || '';
   document.getElementById('widgetServices').value = s.services || '';
@@ -439,7 +435,6 @@ function renderClient() {
   document.getElementById('widgetColor').value = s.widget_color || '#00F0FF';
   document.getElementById('widgetColorText').value = s.widget_color || '#00F0FF';
 
-  // БОТ ПРОМПТ + AI
   document.getElementById('botPromptRu').value = s.bot_prompt_ru || '';
   document.getElementById('botGreetingRu').value = s.bot_greeting_ru || '';
   document.getElementById('botIndustry').value = s.bot_industry || '';
@@ -547,7 +542,6 @@ async function saveAll() {
   } catch (err) { showStatus('❌ ' + err.message, 'error'); }
 }
 
-// ИСПРАВЛЕННАЯ ФУНКЦИЯ ПОДТВЕРЖДЕНИЯ ОПЛАТЫ
 async function confirmPayment() {
   if (!confirm('Подтвердить оплату?\n\nСистема автоматически:\n1. Запишет платёж.\n2. Продлит подписку.\n3. Сохранит выбранный тариф.')) return;
 
@@ -575,6 +569,42 @@ async function confirmPayment() {
     alert('✅ Оплата проведена, тариф и даты обновлены!');
   } catch (err) {
     alert('❌ Ошибка: ' + err.message);
+  }
+}
+
+// НОВАЯ ФУНКЦИЯ ВХОДА В КАБИНЕТ КЛИЕНТА
+async function loginAsClient() {
+  if (!confirm('Вы уверены, что хотите войти в кабинет этого клиента?\n\nВы выйдете из своего админского аккаунта.')) return;
+  
+  const btn = event.target;
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = '⏳ Входим...';
+
+  try {
+    const res = await fetch('/api/admin/impersonate', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ client_id: clientId })
+    });
+    const data = await res.json();
+
+    if (data.ok && data.token) {
+      // Сохраняем токен клиента
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      
+      // Перекидываем в кабинет
+      window.location.href = '/app/dashboard.html';
+    } else {
+      alert('Ошибка: ' + (data.error?.ru || 'не удалось войти'));
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+  } catch (err) {
+    alert('Ошибка сети: ' + err.message);
+    btn.disabled = false;
+    btn.textContent = originalText;
   }
 }
 
