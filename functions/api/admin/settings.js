@@ -68,6 +68,11 @@ export async function onRequestPut({ request, env }) {
       ).bind(b.client_id).run();
     }
 
+    // ⚠️ НОВОЕ: Получаем состояние ДО обновления, чтобы отследить изменения
+    const before = await env.radar_group_db.prepare(
+      'SELECT business_bot_enabled, bot_enabled FROM settings WHERE client_id = ?'
+    ).bind(b.client_id).first();
+
     // ВИДЖЕТ
     await env.radar_group_db.prepare(
       `UPDATE settings SET
@@ -102,7 +107,6 @@ export async function onRequestPut({ request, env }) {
          use_radar_ai_key_widget = COALESCE(?, use_radar_ai_key_widget),
          use_radar_ai_key_bot = COALESCE(?, use_radar_ai_key_bot),
          
-         -- ИСПРАВЛЕНО: Добавлены эти две строки
          business_bot_enabled = COALESCE(?, business_bot_enabled),
          business_connection_id = COALESCE(?, business_connection_id),
          
@@ -140,7 +144,6 @@ export async function onRequestPut({ request, env }) {
       b.use_radar_ai_key_widget !== undefined ? (b.use_radar_ai_key_widget ? 1 : 0) : null,
       b.use_radar_ai_key_bot !== undefined ? (b.use_radar_ai_key_bot ? 1 : 0) : null,
       
-      // ИСПРАВЛЕНО: Передаем новые поля
       b.business_bot_enabled !== undefined ? (b.business_bot_enabled ? 1 : 0) : null,
       b.business_connection_id || null,
       
@@ -197,6 +200,31 @@ export async function onRequestPut({ request, env }) {
       b.bot_max_daily ?? null,
       b.client_id
     ).run();
+
+    // ============================================
+    // ⚠️ НОВОЕ: Уведомляем VPS, если изменилась галочка Business или сам бот
+    // ============================================
+    const businessChanged = b.business_bot_enabled !== undefined && before &&
+      (b.business_bot_enabled ? 1 : 0) !== before.business_bot_enabled;
+
+    const botChanged = b.bot_enabled !== undefined && before &&
+      (b.bot_enabled ? 1 : 0) !== before.bot_enabled;
+
+    if ((businessChanged || botChanged) && env.VPS_RELOAD_URL && env.BOT_SECRET) {
+      try {
+        await fetch(env.VPS_RELOAD_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Bot-Secret': env.BOT_SECRET
+          },
+          body: JSON.stringify({ client_id: b.client_id })
+        });
+        console.log('VPS reloaded due to settings change');
+      } catch (e) {
+        console.error('VPS reload failed:', e);
+      }
+    }
 
     return Response.json({ ok: true });
   } catch (err) {
