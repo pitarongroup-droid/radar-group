@@ -51,7 +51,7 @@ export async function onRequestPost({ request, env }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           url: webhookUrl,
-          allowed_updates: ['message', 'callback_query']
+          allowed_updates: ['message', 'callback_query', 'business_connection', 'business_message', 'edited_business_message']
         })
       }
     );
