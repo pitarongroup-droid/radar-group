@@ -190,12 +190,23 @@ export async function onRequestPost(context) {
         ).bind(activeDialogId, client.id).run();
       }
 
+      // Формируем уведомление
+      const dialogLog = (history || [])
+        .map(m => `• ${m.role === 'user' ? 'Клиент' : 'Бот'}: ${String(m.content).slice(0, 200)}`)
+        .join('\n');
+
+      // ИСПРАВЛЕНО: Пытаемся найти имя клиента в истории
+      let clientName = '';
+      const nameMatch = dialogLog.match(/(?:меня зовут|мое имя|я)\s+([А-ЯЁA-Z][а-яёa-z]+)/i);
+      if (nameMatch) clientName = nameMatch[1];
+
       // Записываем лид в базу
       if (activeDialogId && !isDemo) {
         await env.radar_group_db.prepare(
-          `UPDATE dialogs SET is_lead = 1, user_contact = ?, lead_data = ? WHERE id = ?`
+          `UPDATE dialogs SET is_lead = 1, user_contact = ?, user_name = COALESCE(?, user_name), lead_data = ? WHERE id = ?`
         ).bind(
           contact,
+          clientName || null, // <--- ИСПРАВЛЕНО: Сохраняем имя
           JSON.stringify({ contact, lang: langSafe, timestamp: new Date().toISOString() }),
           activeDialogId
         ).run();
@@ -210,19 +221,8 @@ export async function onRequestPost(context) {
         ).run();
       }
 
-      // Формируем уведомление
-      const dialogLog = (history || [])
-        .map(m => `• ${m.role === 'user' ? 'Клиент' : 'Бот'}: ${String(m.content).slice(0, 200)}`)
-        .join('\n');
-
-      // Пытаемся найти имя клиента в истории
-      let clientName = '';
-      const nameMatch = dialogLog.match(/(?:меня зовут|мое имя|я)\s+([А-ЯЁA-Z][а-яёa-z]+)/i);
-      if (nameMatch) clientName = nameMatch[1];
-
       const sourceName = client?.name || 'Radar Group (демо)';
       
-      // ИСПРАВЛЕНО: Обновлен формат сообщения для Telegram
       const leadText = `🔥 НОВЫЙ ЛИД\n\n` +
         `🌐 Источник: Виджет на сайте "${sourceName}"\n` +
         `📞 Контакт: ${contact}\n` +

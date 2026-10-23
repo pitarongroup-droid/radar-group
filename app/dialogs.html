@@ -187,7 +187,6 @@
       }
 
       tbody.innerHTML = data.dialogs.map(d => {
-        // ИСПРАВЛЕНО: умный парсер дат
         let dateObj;
         if (typeof d.created_at === 'string' && (d.created_at.includes('-') || d.created_at.includes('T'))) {
           dateObj = new Date(d.created_at);
@@ -199,9 +198,11 @@
           ? '—' 
           : dateObj.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
 
+        // ИСПРАВЛЕНО: Добавлен telegram_business
         const channelLabel = {
           widget: '🌐 Сайт',
           telegram: '💬 Telegram',
+          telegram_business: '💼 Telegram Business',
           whatsapp: '📱 WhatsApp'
         }[d.channel] || d.channel;
 
