@@ -19,6 +19,47 @@ function jsonResponse(data, status = 200) {
   return Response.json(data, { status, headers: CORS_HEADERS });
 }
 
+// --- ФУНКЦИИ УМНОГО ПАРСИНГА ---
+function extractCleanPhone(text) {
+  const match = text.match(/(\+?\d[\d\s\-\(\)]{8,18}\d)/);
+  if (match) {
+    let digits = match[0].replace(/\D/g, '');
+    if (digits.length >= 10 && digits.length <= 15) {
+      if (digits.length === 12 && digits.startsWith('375')) {
+        return `+375 (${digits.slice(3,5)}) ${digits.slice(5,8)}-${digits.slice(8,10)}-${digits.slice(10,12)}`;
+      }
+      if (digits.length === 11 && digits.startsWith('7')) {
+        return `+7 (${digits.slice(1,4)}) ${digits.slice(4,7)}-${digits.slice(7,9)}-${digits.slice(9,11)}`;
+      }
+      return `+${digits}`;
+    }
+  }
+  return null;
+}
+
+function extractNameFromText(text, history) {
+  const match = text.match(/(?:меня зовут|моё имя|мое имя|я)\s+([А-ЯЁA-Z][а-яёa-z]+)/i);
+  if (match) {
+    return match[1].charAt(0).toUpperCase() + match[1].slice(1).toLowerCase();
+  }
+  
+  const cleanText = text.trim();
+  if (cleanText.split(/\s+/).length === 1 && /^[А-ЯЁA-Z][а-яёa-z]+$/i.test(cleanText)) {
+    return cleanText.charAt(0).toUpperCase() + cleanText.slice(1).toLowerCase();
+  }
+
+  if (history && history.length > 0) {
+    for (const msg of history) {
+      if (msg.role === 'user') {
+        const m = msg.content.match(/(?:меня зовут|моё имя|мое имя|я)\s+([А-ЯЁA-Z][а-яёa-z]+)/i);
+        if (m) return m[1].charAt(0).toUpperCase() + m[1].slice(1).toLowerCase();
+      }
+    }
+  }
+  return null;
+}
+// -------------------------------
+
 const FALLBACK_PROMPT_RU = `Ты — опытный ИИ-менеджер компании Radar Group. Живой продавец-консультант. Ты НЕ скрываешь, что ты ИИ.
 
 НАШИ УСЛУГИ:
@@ -195,19 +236,19 @@ export async function onRequestPost(context) {
         .map(m => `• ${m.role === 'user' ? 'Клиент' : 'Бот'}: ${String(m.content).slice(0, 200)}`)
         .join('\n');
 
-      // ИСПРАВЛЕНО: Пытаемся найти имя клиента в истории
-      let clientName = '';
-      const nameMatch = dialogLog.match(/(?:меня зовут|мое имя|я)\s+([А-ЯЁA-Z][а-яёa-z]+)/i);
-      if (nameMatch) clientName = nameMatch[1];
+      // ИСПОЛЬЗУЕМ УМНЫЙ ПАРСИНГ
+      const cleanPhone = extractCleanPhone(contact);
+      const cleanName = extractNameFromText(contact, history) || "Клиент";
+      const finalContact = cleanPhone || contact;
 
       // Записываем лид в базу
       if (activeDialogId && !isDemo) {
         await env.radar_group_db.prepare(
-          `UPDATE dialogs SET is_lead = 1, user_contact = ?, user_name = COALESCE(?, user_name), lead_data = ? WHERE id = ?`
+          `UPDATE dialogs SET is_lead = 1, user_contact = ?, user_name = ?, lead_data = ? WHERE id = ?`
         ).bind(
-          contact,
-          clientName || null, // <--- ИСПРАВЛЕНО: Сохраняем имя
-          JSON.stringify({ contact, lang: langSafe, timestamp: new Date().toISOString() }),
+          finalContact,
+          cleanName, // <--- ИСПРАВЛЕНО: Сохраняем чистое имя
+          JSON.stringify({ contact: finalContact, lang: langSafe, timestamp: new Date().toISOString() }),
           activeDialogId
         ).run();
 
@@ -217,7 +258,7 @@ export async function onRequestPost(context) {
         ).bind(
           'evt_' + crypto.randomUUID().slice(0, 8),
           client.id, activeDialogId, langSafe,
-          JSON.stringify({ contact })
+          JSON.stringify({ contact: finalContact })
         ).run();
       }
 
@@ -225,8 +266,8 @@ export async function onRequestPost(context) {
       
       const leadText = `🔥 НОВЫЙ ЛИД\n\n` +
         `🌐 Источник: Виджет на сайте "${sourceName}"\n` +
-        `📞 Контакт: ${contact}\n` +
-        (clientName ? `👤 Имя: ${clientName}\n` : '') +
+        `📞 Контакт: ${finalContact}\n` +
+        `👤 Имя: ${cleanName}\n` +
         `🕐 ${new Date().toLocaleString('ru-RU')}\n\n` +
         `📝 Диалог:\n${dialogLog.slice(0, 3000)}`;
 
@@ -253,8 +294,8 @@ export async function onRequestPost(context) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              name: clientName || 'Клиент',
-              phone: contact,
+              name: cleanName,
+              phone: finalContact,
               message: history?.slice(-1)[0]?.content || '',
               client: sourceName,
               date: new Date().toISOString()
@@ -271,7 +312,7 @@ export async function onRequestPost(context) {
             event: 'lead.created', lang: langSafe,
             timestamp: new Date().toISOString(),
             client_id: client.id, dialog_id: activeDialogId, source: 'widget',
-            lead: { contact, name: clientName, message: history?.slice(-1)[0]?.content || '' }
+            lead: { contact: finalContact, name: cleanName, message: history?.slice(-1)[0]?.content || '' }
           });
           await fetch(settings.webhook_url, {
             method: 'POST',
@@ -293,7 +334,6 @@ export async function onRequestPost(context) {
         }).catch(() => {});
       }
 
-      // ИСПРАВЛЕНО: Возвращаем dialog_id, чтобы фронтенд его сохранил
       return jsonResponse({ ok: true, dialog_id: activeDialogId });
     }
 
