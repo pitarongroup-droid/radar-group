@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#08080F">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Диалог — Radar Group</title>
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"></noscript>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/app/sidebar.css">
+  <link rel="stylesheet" href="/app/dashboard.css">
+  <style>
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 24px;
+      background: var(--bg-elevated);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      min-height: 50vh;
+    }
+    .msg {
+      max-width: 80%;
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.5;
+      animation: messageIn 0.3s ease;
+    }
+    .msg.user {
+      align-self: flex-start;
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 4px;
+    }
+    .msg.assistant {
+      align-self: flex-end;
+      background: var(--cyan-soft);
+      color: var(--text);
+      border-bottom-right-radius: 4px;
+    }
+    .msg-role {
+      font-size: 10px;
+      text-transform: uppercase;
+      font-weight: 800;
+      margin-bottom: 4px;
+      opacity: 0.6;
+    }
+    .msg-time {
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-top: 4px;
+      text-align: right;
+    }
+    @keyframes messageIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar">
+    <a href="/app/dashboard.html" class="sidebar-logo">
+      <img src="/images/logo.webp" width="32">
+      <span class="sidebar-logo-text">RADAR</span>
+    </a>
+    <nav class="sidebar-nav">
+      <a href="/app/dashboard.html" class="sidebar-link"><span>Дашборд</span></a>
+      <a href="/app/dialogs.html" class="sidebar-link active"><span>Диалоги</span></a>
+    </nav>
+  </aside>
+
+  <main class="app-main">
+    <header class="app-header">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <a href="/app/dialogs.html" class="btn btn-outline" style="padding:8px 14px; font-size:13px;">← Назад</a>
+        <h1 class="app-header-title" id="pageTitle">Переписка</h1>
+      </div>
+    </header>
+
+    <div id="loading" class="dash-section" style="text-align:center; padding:40px;">
+      <div class="spinner" style="width:24px; height:24px; display:inline-block; border:2px solid rgba(0,240,255,.2); border-top-color:#00F0FF; border-radius:50%; animation:spin .8s linear infinite;"></div>
+      <div style="margin-top:16px; color:var(--text-muted);">Загрузка сообщений...</div>
+    </div>
+    
+    <section class="dash-section" id="content" style="display:none; padding: 0; background: transparent; border: none;">
+      <div class="chat-container" id="chatBox"></div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const token = localStorage.getItem('token');
+  if (!token) window.location.href = '/app/login.html';
+  
+  const dialogId = new URLSearchParams(location.search).get('id');
+
+  async function loadMessages() {
+    if (!dialogId) {
+      document.getElementById('loading').innerHTML = '<div style="color:var(--magenta);">Ошибка: не указан ID диалога</div>';
+      return;
+    }
+
+    try {
+      // Обращаемся к твоему файлу [id].js
+      const res = await fetch(`/api/dialogs/${dialogId}`, {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      const data = await res.json();
+      
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('content').style.display = 'block';
+      
+      if (!data.ok || !data.messages || !data.messages.length) {
+        document.getElementById('chatBox').innerHTML = '<div style="text-align:center; color:var(--text-muted); padding: 40px;">Сообщений пока нет</div>';
+        return;
+      }
+
+      document.getElementById('chatBox').innerHTML = data.messages.map(m => {
+        // Форматируем время
+        let timeStr = '';
+        if (m.created_at) {
+          const d = new Date(m.created_at * 1000);
+          if (!isNaN(d.getTime())) {
+            timeStr = d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+          }
+        }
+        
+        return `
+          <div class="msg ${m.role}">
+            <div class="msg-role">${m.role === 'user' ? 'Клиент' : 'ИИ-менеджер'}</div>
+            <div>${escapeHtml(m.content)}</div>
+            ${timeStr ? `<div class="msg-time">${timeStr}</div>` : ''}
+          </div>
+        `;
+      }).join('');
+      
+    } catch (e) {
+      document.getElementById('loading').innerHTML = '<div style="color:var(--magenta);">Ошибка загрузки диалога</div>';
+    }
+  }
+
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, ch => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[ch]));
+  }
+
+  loadMessages();
+</script>
+</body>
+</html>
