@@ -535,4 +535,22 @@
   .page-app-billing .data-table td:nth-child(2)::before { content: "Сумма"; }
   .page-app-billing .data-table td:nth-child(3)::before { content: "Период"; }
   .page-app-billing .data-table td:nth-child(4)::before { content: "Метод"; }
+    /* ============================================
+     АНГЛИЙСКИЕ ПОДПИСИ ДЛЯ МОБИЛЬНЫХ ТАБЛИЦ
+     ============================================ */
+  html[lang="en"] .page-app-dashboard .data-table td:nth-child(1)::before { content: "Date"; }
+  html[lang="en"] .page-app-dashboard .data-table td:nth-child(2)::before { content: "Name"; }
+  html[lang="en"] .page-app-dashboard .data-table td:nth-child(3)::before { content: "Contact"; }
+  html[lang="en"] .page-app-dashboard .data-table td:nth-child(4)::before { content: "Status"; }
+
+  html[lang="en"] .page-dialogs .data-table td:nth-child(1)::before { content: "Date"; }
+  html[lang="en"] .page-dialogs .data-table td:nth-child(2)::before { content: "Client"; }
+  html[lang="en"] .page-dialogs .data-table td:nth-child(3)::before { content: "Channel"; }
+  html[lang="en"] .page-dialogs .data-table td:nth-child(4)::before { content: "Messages"; }
+  html[lang="en"] .page-dialogs .data-table td:nth-child(5)::before { content: "Status"; }
+
+  html[lang="en"] .page-app-billing .data-table td:nth-child(1)::before { content: "Date"; }
+  html[lang="en"] .page-app-billing .data-table td:nth-child(2)::before { content: "Amount"; }
+  html[lang="en"] .page-app-billing .data-table td:nth-child(3)::before { content: "Period"; }
+  html[lang="en"] .page-app-billing .data-table td:nth-child(4)::before { content: "Method"; }
 }
