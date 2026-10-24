@@ -523,4 +523,16 @@
 }
 @media (max-width: 640px) {
   .app-help-btn { width: 32px; height: 32px; font-size: 14px; }
+    /* --- Подписи для кабинета клиента (Диалоги) --- */
+  .page-dialogs .data-table td:nth-child(1)::before { content: "Дата"; }
+  .page-dialogs .data-table td:nth-child(2)::before { content: "Клиент"; }
+  .page-dialogs .data-table td:nth-child(3)::before { content: "Канал"; }
+  .page-dialogs .data-table td:nth-child(4)::before { content: "Сообщений"; }
+  .page-dialogs .data-table td:nth-child(5)::before { content: "Статус"; }
+
+  /* --- Подписи для кабинета клиента (Оплаты) --- */
+  .page-app-billing .data-table td:nth-child(1)::before { content: "Дата"; }
+  .page-app-billing .data-table td:nth-child(2)::before { content: "Сумма"; }
+  .page-app-billing .data-table td:nth-child(3)::before { content: "Период"; }
+  .page-app-billing .data-table td:nth-child(4)::before { content: "Метод"; }
 }
