@@ -409,7 +409,7 @@ async function loadSettings() {
     document.getElementById('widgetColor').value = s.widget_color || '#00F0FF';
     document.getElementById('widgetColorText').value = s.widget_color || '#00F0FF';
 
-    // ⚠️ ЛОГИКА ПРОВЕРКИ ПРАВ АДМИНИСТРАТОРА
+    // ⚠️ ИСПРАВЛЕННАЯ ЛОГИКА ПРОВЕРКИ ПРАВ АДМИНИСТРАТОРА
     const configChannel = (chId, headerId, bodyId, allowField, enabledField, labelName) => {
       const ch = document.getElementById(chId);
       const header = document.getElementById(headerId);
@@ -422,7 +422,13 @@ async function loadSettings() {
         body.style.display = 'none'; // Скрываем поля ввода
         header.style.opacity = '0.5';
         header.style.cursor = 'not-allowed';
-        header.innerHTML = `<span style="color:var(--text-dim); font-size:13px;">${labelName} <span style="color:var(--magenta); font-size:11px;">(Недоступно на вашем тарифе)</span></span>`;
+        
+        // Безопасно меняем только текст лейбла, НЕ удаляя чекбокс
+        const labelSpan = header.querySelector('.channel-label');
+        if (labelSpan) {
+            labelSpan.innerHTML = `${labelName} <span style="color:var(--magenta); font-size:11px;">(Недоступно на вашем тарифе)</span>`;
+            labelSpan.style.color = 'var(--text-dim)';
+        }
       } else {
         // Если разрешено
         ch.checked = s[enabledField] === 1;
@@ -437,6 +443,11 @@ async function loadSettings() {
     document.getElementById('telegramToken').value = s.telegram_token || '';
     document.getElementById('telegramAdminId').value = s.telegram_admin_id || '';
     document.getElementById('sheetsUrl').value = s.sheets_url || '';
+    
+    // ⚠️ ДОБАВЛЕНО: Загрузка Webhook данных, которых не было!
+    document.getElementById('webhookUrl').value = s.webhook_url || '';
+    document.getElementById('webhookSecret').value = s.webhook_secret || '';
+    
     document.getElementById('notificationEmail').value = s.notification_email || '';
 
   } catch (err) {
@@ -469,14 +480,20 @@ async function saveWidget() {
       widget_welcome_ru: document.getElementById('widgetWelcomeRu').value.trim(),
       widget_color: document.getElementById('widgetColor').value,
       
-      channel_telegram_enabled: document.getElementById('chTelegram').checked ? 1 : 0,
-      channel_sheets_enabled: document.getElementById('chSheets').checked ? 1 : 0,
-      channel_webhook_enabled: document.getElementById('chWebhook').checked ? 1 : 0,
-      channel_email_enabled: document.getElementById('chEmail').checked ? 1 : 0,
+      // ⚠️ ИСПРАВЛЕНО: Используем опциональную цепочку (?.checked), чтобы избежать падения
+      channel_telegram_enabled: document.getElementById('chTelegram')?.checked ? 1 : 0,
+      channel_sheets_enabled: document.getElementById('chSheets')?.checked ? 1 : 0,
+      channel_webhook_enabled: document.getElementById('chWebhook')?.checked ? 1 : 0,
+      channel_email_enabled: document.getElementById('chEmail')?.checked ? 1 : 0,
       
       telegram_token: document.getElementById('telegramToken').value.trim(),
       telegram_admin_id: document.getElementById('telegramAdminId').value.trim() || null,
       sheets_url: document.getElementById('sheetsUrl').value.trim(),
+      
+      // ⚠️ ДОБАВЛЕНО: Отправка Webhook данных на бэкенд
+      webhook_url: document.getElementById('webhookUrl').value.trim(),
+      webhook_secret: document.getElementById('webhookSecret').value.trim(),
+      
       notification_email: document.getElementById('notificationEmail').value.trim()
     };
 
