@@ -210,13 +210,13 @@
         <div class="settings-form">
 
           <div class="form-group">
-            <div class="channel-header">
+            <div class="channel-header" id="header-telegram">
               <label class="channel-toggle">
                 <input type="checkbox" id="chTelegram">
                 <span class="channel-label">📱 Telegram</span>
               </label>
             </div>
-            <div class="channel-body">
+            <div class="channel-body" id="body-telegram">
               <div class="form-row">
                 <label class="form-label">Bot Token</label>
                 <input class="form-input" type="text" id="telegramToken" placeholder="123456:ABC-DEF..." autocomplete="off">
@@ -232,13 +232,13 @@
           </div>
 
           <div class="form-group">
-            <div class="channel-header">
+            <div class="channel-header" id="header-sheets">
               <label class="channel-toggle">
                 <input type="checkbox" id="chSheets">
                 <span class="channel-label">📊 Google Sheets</span>
               </label>
             </div>
-            <div class="channel-body">
+            <div class="channel-body" id="body-sheets">
               <div class="form-row">
                 <label class="form-label">URL веб-приложения</label>
                 <input class="form-input" type="text" id="sheetsUrl" placeholder="https://script.google.com/macros/s/.../exec">
@@ -247,13 +247,13 @@
           </div>
 
           <div class="form-group">
-            <div class="channel-header">
+            <div class="channel-header" id="header-webhook">
               <label class="channel-toggle">
                 <input type="checkbox" id="chWebhook">
                 <span class="channel-label">🔗 Webhook (CRM)</span>
               </label>
             </div>
-            <div class="channel-body">
+            <div class="channel-body" id="body-webhook">
               <div class="form-row">
                 <label class="form-label">URL</label>
                 <input class="form-input" type="text" id="webhookUrl" placeholder="https://...">
@@ -266,13 +266,13 @@
           </div>
 
           <div class="form-group">
-            <div class="channel-header">
+            <div class="channel-header" id="header-email">
               <label class="channel-toggle">
                 <input type="checkbox" id="chEmail">
                 <span class="channel-label">📧 Email</span>
               </label>
             </div>
-            <div class="channel-body">
+            <div class="channel-body" id="body-email">
               <div class="form-row">
                 <label class="form-label">Email для уведомлений</label>
                 <input class="form-input" type="email" id="notificationEmail" placeholder="owner@example.com">
@@ -409,10 +409,30 @@ async function loadSettings() {
     document.getElementById('widgetColor').value = s.widget_color || '#00F0FF';
     document.getElementById('widgetColorText').value = s.widget_color || '#00F0FF';
 
-    document.getElementById('chTelegram').checked = s.channel_telegram_enabled === 1;
-    document.getElementById('chSheets').checked = s.channel_sheets_enabled === 1;
-    document.getElementById('chWebhook').checked = s.channel_webhook_enabled === 1;
-    document.getElementById('chEmail').checked = s.channel_email_enabled === 1;
+    // ⚠️ ЛОГИКА ПРОВЕРКИ ПРАВ АДМИНИСТРАТОРА
+    const configChannel = (chId, headerId, bodyId, allowField, enabledField, labelName) => {
+      const ch = document.getElementById(chId);
+      const header = document.getElementById(headerId);
+      const body = document.getElementById(bodyId);
+
+      if (s[allowField] !== 1) {
+        // Если админ запретил
+        ch.checked = false;
+        ch.disabled = true;
+        body.style.display = 'none'; // Скрываем поля ввода
+        header.style.opacity = '0.5';
+        header.style.cursor = 'not-allowed';
+        header.innerHTML = `<span style="color:var(--text-dim); font-size:13px;">${labelName} <span style="color:var(--magenta); font-size:11px;">(Недоступно на вашем тарифе)</span></span>`;
+      } else {
+        // Если разрешено
+        ch.checked = s[enabledField] === 1;
+      }
+    };
+
+    configChannel('chTelegram', 'header-telegram', 'body-telegram', 'admin_allow_telegram', 'channel_telegram_enabled', '📱 Telegram');
+    configChannel('chSheets', 'header-sheets', 'body-sheets', 'admin_allow_sheets', 'channel_sheets_enabled', '📊 Google Sheets');
+    configChannel('chWebhook', 'header-webhook', 'body-webhook', 'admin_allow_webhook', 'channel_webhook_enabled', '🔗 Webhook (CRM)');
+    configChannel('chEmail', 'header-email', 'body-email', 'admin_allow_email', 'channel_email_enabled', '📧 Email');
 
     document.getElementById('telegramToken').value = s.telegram_token || '';
     document.getElementById('telegramAdminId').value = s.telegram_admin_id || '';
@@ -448,10 +468,12 @@ async function saveWidget() {
       widget_title_ru: document.getElementById('widgetTitleRu').value.trim(),
       widget_welcome_ru: document.getElementById('widgetWelcomeRu').value.trim(),
       widget_color: document.getElementById('widgetColor').value,
+      
       channel_telegram_enabled: document.getElementById('chTelegram').checked ? 1 : 0,
       channel_sheets_enabled: document.getElementById('chSheets').checked ? 1 : 0,
       channel_webhook_enabled: document.getElementById('chWebhook').checked ? 1 : 0,
       channel_email_enabled: document.getElementById('chEmail').checked ? 1 : 0,
+      
       telegram_token: document.getElementById('telegramToken').value.trim(),
       telegram_admin_id: document.getElementById('telegramAdminId').value.trim() || null,
       sheets_url: document.getElementById('sheetsUrl').value.trim(),
