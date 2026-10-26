@@ -288,10 +288,11 @@ async function loadSettings() {
       }
     }
 
-    document.getElementById('botChTelegram').checked = s.bot_channel_telegram_enabled === 1;
-    document.getElementById('botChSheets').checked = s.bot_channel_sheets_enabled === 1;
-    document.getElementById('botChWebhook').checked = s.bot_channel_webhook_enabled === 1;
-    document.getElementById('botChEmail').checked = s.bot_channel_email_enabled === 1;
+    // ИСПРАВЛЕНО: Добавлена защита от null при загрузке
+    if (document.getElementById('botChTelegram')) document.getElementById('botChTelegram').checked = s.bot_channel_telegram_enabled === 1;
+    if (document.getElementById('botChSheets')) document.getElementById('botChSheets').checked = s.bot_channel_sheets_enabled === 1;
+    if (document.getElementById('botChWebhook')) document.getElementById('botChWebhook').checked = s.bot_channel_webhook_enabled === 1;
+    if (document.getElementById('botChEmail')) document.getElementById('botChEmail').checked = s.bot_channel_email_enabled === 1;
 
     document.getElementById('botSheetsUrl').value = s.bot_sheets_url || '';
     document.getElementById('botWebhookUrl').value = s.bot_webhook_url || '';
@@ -311,10 +312,11 @@ async function saveBot() {
     const payload = {
       bot_telegram_token: document.getElementById('botTelegramToken').value.trim(),
       bot_telegram_admin_id: document.getElementById('botTelegramAdminId').value.trim() || null,
-      bot_channel_telegram_enabled: document.getElementById('botChTelegram').checked ? 1 : 0,
-      bot_channel_sheets_enabled: document.getElementById('botChSheets').checked ? 1 : 0,
-      bot_channel_webhook_enabled: document.getElementById('botChWebhook').checked ? 1 : 0,
-      bot_channel_email_enabled: document.getElementById('botChEmail').checked ? 1 : 0,
+      // ИСПРАВЛЕНО: Используется ?. для предотвращения падения скрипта
+      bot_channel_telegram_enabled: document.getElementById('botChTelegram')?.checked ? 1 : 0,
+      bot_channel_sheets_enabled: document.getElementById('botChSheets')?.checked ? 1 : 0,
+      bot_channel_webhook_enabled: document.getElementById('botChWebhook')?.checked ? 1 : 0,
+      bot_channel_email_enabled: document.getElementById('botChEmail')?.checked ? 1 : 0,
       bot_sheets_url: document.getElementById('botSheetsUrl').value.trim(),
       bot_webhook_url: document.getElementById('botWebhookUrl').value.trim(),
       bot_webhook_secret: document.getElementById('botWebhookSecret').value.trim(),
