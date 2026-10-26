@@ -208,12 +208,12 @@
         </div>
       </section>
 
-      <!-- 📬 КАНАЛЫ ВИДЖЕТА (УПРОЩЕННЫЕ) -->
+      <!-- 📬 КАНАЛЫ ВИДЖЕТА (С ПОЛЯМИ ВВОДА) -->
       <section class="dash-section">
         <div class="dash-section-header">
           <h2 class="dash-section-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            Каналы (Права доступа)
+            Каналы виджета (Права доступа)
           </h2>
         </div>
         <div class="settings-form">
@@ -228,6 +228,11 @@
                 </label>
               </div>
             </div>
+            <!-- ДОБАВЛЕНЫ ПОЛЯ ДЛЯ ТЕЛЕГРАМА -->
+            <div class="channel-body" id="telegramWrapper">
+              <input class="form-input" type="text" id="widgetTelegramToken" placeholder="Bot Token (виджет)">
+              <input class="form-input" type="text" id="widgetTelegramAdminId" placeholder="Admin ID (виджет)">
+            </div>
           </div>
 
           <div class="form-group">
@@ -240,9 +245,8 @@
                 </label>
               </div>
             </div>
-            <!-- Добавлен id="sheetsWrapper" -->
             <div class="channel-body" id="sheetsWrapper">
-              <input class="form-input" type="text" id="sheetsUrl" placeholder="URL веб-приложения (клиент вставит сам)">
+              <input class="form-input" type="text" id="sheetsUrl" placeholder="URL веб-приложения">
             </div>
           </div>
 
@@ -256,7 +260,6 @@
                 </label>
               </div>
             </div>
-            <!-- Добавлены поля и id="webhookWrapper" -->
             <div class="channel-body" id="webhookWrapper">
               <input class="form-input" type="text" id="webhookUrl" placeholder="URL вебхука">
               <input class="form-input" type="text" id="webhookSecret" placeholder="Secret">
@@ -273,7 +276,6 @@
                 </label>
               </div>
             </div>
-            <!-- Добавлено поле и id="emailWrapper" -->
             <div class="channel-body" id="emailWrapper">
               <input class="form-input" type="email" id="notificationEmail" placeholder="owner@example.com">
             </div>
@@ -287,7 +289,7 @@
         <div class="dash-section-header">
           <h2 class="dash-section-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/></svg>
-            Telegram-бот клиента
+            Telegram-бот клиента (VPS)
           </h2>
         </div>
 
@@ -451,6 +453,7 @@ function showError(msg) {
 // ФУНКЦИЯ ДЛЯ СКРЫТИЯ/ПОКАЗА ПОЛЕЙ ВВОДА
 function toggleChannelInputs() {
   const pairs = [
+    { toggle: 'allowTelegram', wrapper: 'telegramWrapper' },
     { toggle: 'allowSheets', wrapper: 'sheetsWrapper' },
     { toggle: 'allowWebhook', wrapper: 'webhookWrapper' },
     { toggle: 'allowEmail', wrapper: 'emailWrapper' }
@@ -460,14 +463,13 @@ function toggleChannelInputs() {
     const toggleEl = document.getElementById(pair.toggle);
     const wrapperEl = document.getElementById(pair.wrapper);
     if (toggleEl && wrapperEl) {
-      // Если галка стоит - показываем (flex), если нет - скрываем (none)
       wrapperEl.style.display = toggleEl.checked ? 'flex' : 'none';
     }
   });
 }
 
 // Вешаем слушатели на чекбоксы при загрузке
-['allowSheets', 'allowWebhook', 'allowEmail'].forEach(id => {
+['allowTelegram', 'allowSheets', 'allowWebhook', 'allowEmail'].forEach(id => {
   const el = document.getElementById(id);
   if (el) {
     el.addEventListener('change', toggleChannelInputs);
@@ -478,7 +480,6 @@ function toggleChannelInputs() {
 function renderClient() {
   const c = clientData; const s = settingsData;
   
-  // БЕЗОПАСНАЯ ЗАПИСЬ
   const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
   const setChk = (id, val) => { const el = document.getElementById(id); if (el) el.checked = val; };
   const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
@@ -526,13 +527,17 @@ function renderClient() {
   setTxt('statusWebhook', s.channel_webhook_enabled === 1 ? 'Клиент: вкл' : 'Клиент: выкл');
   setTxt('statusEmail', s.channel_email_enabled === 1 ? 'Клиент: вкл' : 'Клиент: выкл');
 
+  // Поля виджета
+  setVal('widgetTelegramToken', s.telegram_token || '');
+  setVal('widgetTelegramAdminId', s.telegram_admin_id || '');
   setVal('sheetsUrl', s.sheets_url || '');
   setVal('webhookUrl', s.webhook_url || '');
   setVal('webhookSecret', s.webhook_secret || '');
   setVal('notificationEmail', s.notification_email || '');
 
-  setVal('botTelegramToken', s.bot_telegram_token || s.telegram_token || '');
-  setVal('botTelegramAdminId', s.bot_telegram_admin_id || s.telegram_admin_id || '');
+  // Поля бота (VPS)
+  setVal('botTelegramToken', s.bot_telegram_token || '');
+  setVal('botTelegramAdminId', s.bot_telegram_admin_id || '');
   setChk('botRemindersEnabled', s.bot_reminders_enabled === 1);
   setVal('botWorkHours', s.bot_work_hours || 'always');
   setVal('botMaxDaily', s.bot_max_daily || 1000);
@@ -559,7 +564,6 @@ function renderClient() {
   updateCounter('widgetPromptRu', 'counterWidgetPrompt');
   updateCounter('botPromptRu', 'counterBotPrompt');
   
-  // Вызываем функцию, чтобы скрыть/показать поля при загрузке страницы
   toggleChannelInputs();
 }
 
@@ -638,6 +642,8 @@ async function saveAll() {
       channel_webhook_enabled: document.getElementById('allowWebhook').checked ? undefined : 0,
       channel_email_enabled: document.getElementById('allowEmail').checked ? undefined : 0,
       
+      telegram_token: document.getElementById('widgetTelegramToken').value.trim(),
+      telegram_admin_id: document.getElementById('widgetTelegramAdminId').value.trim() || null,
       sheets_url: document.getElementById('sheetsUrl').value.trim(),
       webhook_url: document.getElementById('webhookUrl').value.trim(),
       webhook_secret: document.getElementById('webhookSecret').value.trim(),
@@ -677,7 +683,6 @@ async function saveAll() {
     const data2 = await res2.json();
     if (!data2.ok) throw new Error(data2.error?.ru || 'Ошибка сохранения настроек');
     
-    // Обновляем статусы визуально
     const updateStatus = (allowId, statusId) => {
       const allow = document.getElementById(allowId);
       const status = document.getElementById(statusId);
