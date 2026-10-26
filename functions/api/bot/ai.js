@@ -18,24 +18,31 @@ export async function onRequestPost({ request, env }) {
       return Response.json({ ok: false, error: 'client_id and messages required' }, { status: 400 });
     }
 
-    const s = await env.radar_group_db.prepare(
-      `SELECT bot_prompt_ru, bot_prompt_en, bot_ai_provider, bot_ai_api_key,
-              bot_ai_base_url, bot_reminders_enabled, use_radar_ai_key_bot
-       FROM settings WHERE client_id = ?`
+    // ⚠️ ИСПРАВЛЕНО: Запрашиваем данные из settings И clients одновременно (JOIN)
+    const data = await env.radar_group_db.prepare(
+      `SELECT c.account_status, s.bot_enabled, s.bot_prompt_ru, s.bot_prompt_en, 
+              s.bot_ai_provider, s.bot_ai_api_key, s.bot_ai_base_url, 
+              s.bot_reminders_enabled, s.use_radar_ai_key_bot
+       FROM settings s
+       JOIN clients c ON c.id = s.client_id
+       WHERE s.client_id = ?`
     ).bind(client_id).first();
 
-    if (!s) {
+    if (!data) {
       return Response.json({ ok: false, error: 'Settings not found' }, { status: 404 });
     }
 
-    // ⚠️ Логика ключа:
-    // 1. Свой ключ клиента — приоритет
-    // 2. Fallback на ключ Radar — только если админ разрешил (use_radar_ai_key_bot = 1)
+    // ⚠️ ИСПРАВЛЕНО: Проверяем, что аккаунт одобрен и галочка бота включена
+    if (data.account_status !== 'approved' || data.bot_enabled !== 1) {
+      return Response.json({ ok: false, error: 'Bot disabled or account blocked' }, { status: 403 });
+    }
+
+    // Логика ключа (осталась твоя, она правильная)
     let apiKey = null;
 
-    if (s.bot_ai_api_key) {
-      apiKey = s.bot_ai_api_key;
-    } else if (s.use_radar_ai_key_bot === 1 && env.OPENAI_API_KEY) {
+    if (data.bot_ai_api_key) {
+      apiKey = data.bot_ai_api_key;
+    } else if (data.use_radar_ai_key_bot === 1 && env.OPENAI_API_KEY) {
       apiKey = env.OPENAI_API_KEY;
     }
 
@@ -43,11 +50,11 @@ export async function onRequestPost({ request, env }) {
       return Response.json({ ok: false, error: 'No AI key' }, { status: 503 });
     }
 
-    const provider = s.bot_ai_provider || 'proxyapi';
-    const baseUrl = s.bot_ai_base_url || null;
-    const systemPrompt = s.bot_prompt_ru || s.bot_prompt_en || '';
+    const provider = data.bot_ai_provider || 'proxyapi';
+    const baseUrl = data.bot_ai_base_url || null;
+    const systemPrompt = data.bot_prompt_ru || data.bot_prompt_en || '';
 
-    if (mode === 'reminder' && s.bot_reminders_enabled !== 1) {
+    if (mode === 'reminder' && data.bot_reminders_enabled !== 1) {
       return Response.json({ ok: false, error: 'Reminders disabled' }, { status: 403 });
     }
 
@@ -98,7 +105,7 @@ async function callOpenAI({ provider, apiKey, baseUrl, systemPrompt, messages })
     body: JSON.stringify({
       model: 'gpt-4o-mini',
       messages: [{ role: 'system', content: systemPrompt }, ...messages],
-      temperature: 0.7, max_tokens: 150, // ИСПРАВЛЕНО: 150 токенов для коротких ответов
+      temperature: 0.7, max_tokens: 150, // Твой лимит 150
       frequency_penalty: 0.6, presence_penalty: 0.6
     })
   });
@@ -119,7 +126,7 @@ async function callClaude({ apiKey, baseUrl, systemPrompt, messages }) {
     },
     body: JSON.stringify({
       model: 'claude-3-5-sonnet-20241022',
-      max_tokens: 150, system: systemPrompt, messages // ИСПРАВЛЕНО: 150 токенов
+      max_tokens: 150, system: systemPrompt, messages // Твой лимит 150
     })
   });
   const data = await res.json();
@@ -142,7 +149,7 @@ async function callGemini({ apiKey, baseUrl, systemPrompt, messages }) {
     body: JSON.stringify({
       systemInstruction: { parts: [{ text: systemPrompt }] },
       contents,
-      generationConfig: { temperature: 0.7, maxOutputTokens: 150 } // ИСПРАВЛЕНО: 150 токенов
+      generationConfig: { temperature: 0.7, maxOutputTokens: 150 } // Твой лимит 150
     })
   });
   const data = await res.json();

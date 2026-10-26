@@ -207,16 +207,26 @@ export async function onRequestPost(context) {
     const isDemo = !api_key;
 
     if (api_key) {
+      // ⚠️ ИСПРАВЛЕНО: Добавлен account_status в запрос
       client = await env.radar_group_db.prepare(
-        `SELECT id, name, status FROM clients WHERE api_key = ?`
+        `SELECT id, name, status, account_status FROM clients WHERE api_key = ?`
       ).bind(api_key).first();
 
       if (!client) return jsonResponse({ error: 'Неверный API-ключ' }, 401);
-      if (client.status === 'suspended') return jsonResponse({ error: 'Виджет отключён' }, 403);
+      
+      // ⚠️ ИСПРАВЛЕНО: Проверка нового статуса
+      if (client.status === 'suspended' || client.account_status !== 'approved') {
+        return jsonResponse({ error: 'Виджет отключён' }, 403);
+      }
 
       settings = await env.radar_group_db.prepare(
         `SELECT * FROM settings WHERE client_id = ?`
       ).bind(client.id).first();
+
+      // ⚠️ ИСПРАВЛЕНО: Проверка что услуга виджета включена
+      if (!settings || settings.widget_enabled !== 1) {
+        return jsonResponse({ error: 'Услуга виджета не подключена' }, 403);
+      }
     }
 
     // ЛИД

@@ -18,7 +18,7 @@ export async function onRequestGet({ request, env }) {
 
     // Найти клиента по api_key
     const client = await env.radar_group_db.prepare(
-      'SELECT id, name, status FROM clients WHERE api_key = ?'
+      'SELECT id, name, status, account_status FROM clients WHERE api_key = ?'
     ).bind(apiKey).first();
 
     if (!client) {
@@ -28,7 +28,8 @@ export async function onRequestGet({ request, env }) {
       );
     }
 
-    if (client.status === 'suspended') {
+    // ⚠️ ИСПРАВЛЕНО: Проверка и старого статуса и нового account_status
+    if (client.status === 'suspended' || client.account_status !== 'approved') {
       return Response.json(
         { ok: false, error: { ru: 'Виджет отключён', en: 'Widget disabled' } },
         { status: 403 }
@@ -38,9 +39,17 @@ export async function onRequestGet({ request, env }) {
     // Настройки виджета
     const s = await env.radar_group_db.prepare(
       `SELECT widget_color, widget_title_ru, widget_title_en,
-              widget_welcome_ru, widget_welcome_en, widget_position
+              widget_welcome_ru, widget_welcome_en, widget_position, widget_enabled
        FROM settings WHERE client_id = ?`
     ).bind(client.id).first();
+
+    // ⚠️ ИСПРАВЛЕНО: Проверка, что услуга виджета включена
+    if (!s || s.widget_enabled !== 1) {
+      return Response.json(
+        { ok: false, error: { ru: 'Услуга виджета не подключена', en: 'Widget service not enabled' } },
+        { status: 403 }
+      );
+    }
 
     const isEn = lang === 'en';
 
@@ -60,7 +69,7 @@ export async function onRequestGet({ request, env }) {
     }, {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Cache-Control': 'public, max-age=300'
+        'Cache-Control': 'no-store' // ⚠️ ИСПРАВЛЕНО: Отключаем кэш
       }
     });
 
