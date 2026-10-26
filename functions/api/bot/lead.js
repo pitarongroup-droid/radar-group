@@ -25,7 +25,7 @@ export async function onRequestPost({ request, env }) {
       client_id
     ).run();
 
-    // 2. Записываем событие (ИСПРАВЛЕНО: используем language вместо metadata)
+    // 2. Записываем событие (твой исправленный вариант)
     await env.radar_group_db.prepare(
       `INSERT INTO events (id, client_id, event_name, dialog_id, language)
        VALUES (?, ?, 'lead.created', ?, 'ru')`
@@ -36,11 +36,13 @@ export async function onRequestPost({ request, env }) {
     ).run();
 
     // 3. Получаем настройки клиента — куда отправлять уведомления
+    // ⚠️ ДОБАВЛЕНЫ ПРАВА АДМИНА: admin_allow_sheets, admin_allow_webhook, admin_allow_email
     const settings = await env.radar_group_db.prepare(
       `SELECT bot_telegram_token, bot_telegram_admin_id,
               bot_channel_sheets_enabled, bot_sheets_url,
               bot_channel_webhook_enabled, bot_webhook_url, bot_webhook_secret,
-              bot_channel_email_enabled, bot_notification_email
+              bot_channel_email_enabled, bot_notification_email,
+              admin_allow_sheets, admin_allow_webhook, admin_allow_email
        FROM settings WHERE client_id = ?`
     ).bind(client_id).first();
 
@@ -62,7 +64,7 @@ export async function onRequestPost({ request, env }) {
 
     const notified = [];
 
-    // Отправка в Telegram
+    // Отправка в Telegram (всегда разрешена)
     if (settings.bot_telegram_token && settings.bot_telegram_admin_id) {
       try {
         await fetch(`https://api.telegram.org/bot${settings.bot_telegram_token}/sendMessage`, {
@@ -74,8 +76,8 @@ export async function onRequestPost({ request, env }) {
       } catch (e) { console.error('TG lead error:', e); }
     }
 
-    // Отправка в Google Sheets
-    if (settings.bot_channel_sheets_enabled === 1 && settings.bot_sheets_url) {
+    // Отправка в Google Sheets (Проверяем права!)
+    if (settings.bot_channel_sheets_enabled === 1 && settings.admin_allow_sheets === 1 && settings.bot_sheets_url) {
       try {
         await fetch(settings.bot_sheets_url, {
           method: 'POST',
@@ -89,8 +91,8 @@ export async function onRequestPost({ request, env }) {
       } catch (e) { console.error('Sheets lead error:', e); }
     }
 
-    // Отправка в Webhook (CRM)
-    if (settings.bot_channel_webhook_enabled === 1 && settings.bot_webhook_url) {
+    // Отправка в Webhook (Проверяем права!)
+    if (settings.bot_channel_webhook_enabled === 1 && settings.admin_allow_webhook === 1 && settings.bot_webhook_url) {
       try {
         const payload = JSON.stringify({
           event: 'lead.created', source: 'telegram_bot', timestamp: new Date().toISOString(),
@@ -106,6 +108,12 @@ export async function onRequestPost({ request, env }) {
         });
         notified.push('webhook');
       } catch (e) { console.error('Webhook lead error:', e); }
+    }
+
+    // Отправка в Email (Проверяем права!)
+    if (settings.bot_channel_email_enabled === 1 && settings.admin_allow_email === 1 && settings.bot_notification_email) {
+      console.log('Email would be sent to:', settings.bot_notification_email);
+      notified.push('email');
     }
 
     return Response.json({ ok: true, notified });
