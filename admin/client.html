@@ -438,75 +438,82 @@ function showError(msg) {
 
 function renderClient() {
   const c = clientData; const s = settingsData;
-  document.getElementById('pageTitle').textContent = c.name || 'Клиент';
-
-  document.getElementById('tariffCode').value = c.tariff_code || 'start';
-  document.getElementById('monthlyPrice').value = c.monthly_price || 200;
-  document.getElementById('subCurrency').value = c.sub_currency || 'BYN';
-  document.getElementById('subscriptionEnd').value = c.subscription_end || '';
-  document.getElementById('nextPaymentDue').value = c.next_payment_due || '';
-  document.getElementById('adminNotes').value = c.admin_notes || '';
-
-  document.getElementById('accountStatus').value = c.account_status || 'pending';
-  document.getElementById('widgetEnabled').checked = s.widget_enabled === 1;
-  document.getElementById('botEnabled').checked = s.bot_enabled === 1;
-  document.getElementById('useRadarKeyWidget').checked = s.use_radar_ai_key_widget === 1;
-  document.getElementById('useRadarKeyBot').checked = s.use_radar_ai_key_bot === 1;
   
-  document.getElementById('businessBotEnabled').checked = s.business_bot_enabled === 1;
+  // БЕЗОПАСНАЯ ЗАПИСЬ (знак ?. предотвращает падение, если поля нет)
+  const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+  const setChk = (id, val) => { const el = document.getElementById(id); if (el) el.checked = val; };
+  const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+  setTxt('pageTitle', c.name || 'Клиент');
+
+  setVal('tariffCode', c.tariff_code || 'start');
+  setVal('monthlyPrice', c.monthly_price || 200);
+  setVal('subCurrency', c.sub_currency || 'BYN');
+  setVal('subscriptionEnd', c.subscription_end || '');
+  setVal('nextPaymentDue', c.next_payment_due || '');
+  setVal('adminNotes', c.admin_notes || '');
+
+  setVal('accountStatus', c.account_status || 'pending');
+  setChk('widgetEnabled', s.widget_enabled === 1);
+  setChk('botEnabled', s.bot_enabled === 1);
+  setChk('useRadarKeyWidget', s.use_radar_ai_key_widget === 1);
+  setChk('useRadarKeyBot', s.use_radar_ai_key_bot === 1);
+  
+  setChk('businessBotEnabled', s.business_bot_enabled === 1);
   const connId = s.business_connection_id;
-  document.getElementById('businessConnectionId').textContent = connId ? connId : 'не подключен';
-  document.getElementById('businessConnectionId').style.color = connId ? 'var(--cyan)' : 'var(--text-dim)';
+  setTxt('businessConnectionId', connId ? connId : 'не подключен');
+  const connEl = document.getElementById('businessConnectionId');
+  if (connEl) connEl.style.color = connId ? 'var(--cyan)' : 'var(--text-dim)';
 
-  document.getElementById('clientName').value = c.name || '';
-  document.getElementById('clientEmail').value = c.email || '';
-  document.getElementById('clientPhone').value = c.phone || '';
-  document.getElementById('clientCompany').value = c.company || '';
-  document.getElementById('clientSiteUrl').value = c.site_url || '';
-  document.getElementById('clientLanguage').value = c.language || 'ru';
-  document.getElementById('clientCurrency').value = c.currency || 'USD';
-  document.getElementById('clientPlan').value = c.plan || 'basic';
-  document.getElementById('clientApiKey').textContent = c.api_key || '—';
+  setVal('clientName', c.name || '');
+  setVal('clientEmail', c.email || '');
+  setVal('clientPhone', c.phone || '');
+  setVal('clientCompany', c.company || '');
+  setVal('clientSiteUrl', c.site_url || '');
+  setVal('clientLanguage', c.language || 'ru');
+  setVal('clientCurrency', c.currency || 'USD');
+  setVal('clientPlan', c.plan || 'basic');
+  setTxt('clientApiKey', c.api_key || '—');
 
-  // УПРОЩЕННАЯ ЛОГИКА КАНАЛОВ (Только разрешения)
-  document.getElementById('allowTelegram').checked = s.admin_allow_telegram === 1;
-  document.getElementById('allowSheets').checked = s.admin_allow_sheets === 1;
-  document.getElementById('allowWebhook').checked = s.admin_allow_webhook === 1;
-  document.getElementById('allowEmail').checked = s.admin_allow_email === 1;
+  // Админские разрешения
+  setChk('allowTelegram', s.admin_allow_telegram === 1);
+  setChk('allowSheets', s.admin_allow_sheets === 1);
+  setChk('allowWebhook', s.admin_allow_webhook === 1);
+  setChk('allowEmail', s.admin_allow_email === 1);
 
-  // Показываем админу статус клиента
-  document.getElementById('statusTelegram').textContent = s.channel_telegram_enabled === 1 ? 'Клиент: вкл' : 'Клиент: выкл';
-  document.getElementById('statusSheets').textContent = s.channel_sheets_enabled === 1 ? 'Клиент: вкл' : 'Клиент: выкл';
-  document.getElementById('statusWebhook').textContent = s.channel_webhook_enabled === 1 ? 'Клиент: вкл' : 'Клиент: выкл';
-  document.getElementById('statusEmail').textContent = s.channel_email_enabled === 1 ? 'Клиент: вкл' : 'Клиент: выкл';
+  // Статусы клиента
+  setTxt('statusTelegram', s.channel_telegram_enabled === 1 ? 'Клиент: вкл' : 'Клиент: выкл');
+  setTxt('statusSheets', s.channel_sheets_enabled === 1 ? 'Клиент: вкл' : 'Клиент: выкл');
+  setTxt('statusWebhook', s.channel_webhook_enabled === 1 ? 'Клиент: вкл' : 'Клиент: выкл');
+  setTxt('statusEmail', s.channel_email_enabled === 1 ? 'Клиент: вкл' : 'Клиент: выкл');
 
-  document.getElementById('sheetsUrl').value = s.sheets_url || '';
-  document.getElementById('notificationEmail').value = s.notification_email || '';
+  setVal('sheetsUrl', s.sheets_url || '');
+  setVal('notificationEmail', s.notification_email || '');
 
-  document.getElementById('botTelegramToken').value = s.bot_telegram_token || s.telegram_token || '';
-  document.getElementById('botTelegramAdminId').value = s.bot_telegram_admin_id || s.telegram_admin_id || '';
-  document.getElementById('botRemindersEnabled').checked = s.bot_reminders_enabled === 1;
-  document.getElementById('botWorkHours').value = s.bot_work_hours || 'always';
-  document.getElementById('botMaxDaily').value = s.bot_max_daily || 1000;
+  setVal('botTelegramToken', s.bot_telegram_token || s.telegram_token || '');
+  setVal('botTelegramAdminId', s.bot_telegram_admin_id || s.telegram_admin_id || '');
+  setChk('botRemindersEnabled', s.bot_reminders_enabled === 1);
+  setVal('botWorkHours', s.bot_work_hours || 'always');
+  setVal('botMaxDaily', s.bot_max_daily || 1000);
 
-  document.getElementById('widgetPromptRu').value = s.prompt_ru || '';
-  document.getElementById('widgetIndustry').value = s.industry || '';
-  document.getElementById('widgetServices').value = s.services || '';
-  document.getElementById('aiProvider').value = s.ai_provider || 'proxyapi';
-  document.getElementById('aiApiKey').value = s.ai_api_key || '';
-  document.getElementById('aiBaseUrl').value = s.ai_base_url || '';
-  document.getElementById('widgetTitleRu').value = s.widget_title_ru || 'ИИ-менеджер';
-  document.getElementById('widgetWelcomeRu').value = s.widget_welcome_ru || 'Здравствуйте! Чем помочь?';
-  document.getElementById('widgetColor').value = s.widget_color || '#00F0FF';
-  document.getElementById('widgetColorText').value = s.widget_color || '#00F0FF';
+  setVal('widgetPromptRu', s.prompt_ru || '');
+  setVal('widgetIndustry', s.industry || '');
+  setVal('widgetServices', s.services || '');
+  setVal('aiProvider', s.ai_provider || 'proxyapi');
+  setVal('aiApiKey', s.ai_api_key || '');
+  setVal('aiBaseUrl', s.ai_base_url || '');
+  setVal('widgetTitleRu', s.widget_title_ru || 'ИИ-менеджер');
+  setVal('widgetWelcomeRu', s.widget_welcome_ru || 'Здравствуйте! Чем помочь?');
+  setVal('widgetColor', s.widget_color || '#00F0FF');
+  setVal('widgetColorText', s.widget_color || '#00F0FF');
 
-  document.getElementById('botPromptRu').value = s.bot_prompt_ru || '';
-  document.getElementById('botGreetingRu').value = s.bot_greeting_ru || '';
-  document.getElementById('botIndustry').value = s.bot_industry || '';
-  document.getElementById('botServices').value = s.bot_services || '';
-  document.getElementById('botAiProvider').value = s.bot_ai_provider || 'proxyapi';
-  document.getElementById('botAiApiKey').value = s.bot_ai_api_key || '';
-  document.getElementById('botAiBaseUrl').value = s.bot_ai_base_url || '';
+  setVal('botPromptRu', s.bot_prompt_ru || '');
+  setVal('botGreetingRu', s.bot_greeting_ru || '');
+  setVal('botIndustry', s.bot_industry || '');
+  setVal('botServices', s.bot_services || '');
+  setVal('botAiProvider', s.bot_ai_provider || 'proxyapi');
+  setVal('botAiApiKey', s.bot_ai_api_key || '');
+  setVal('botAiBaseUrl', s.bot_ai_base_url || '');
 
   updateCounter('widgetPromptRu', 'counterWidgetPrompt');
   updateCounter('botPromptRu', 'counterBotPrompt');
@@ -528,8 +535,10 @@ function updateCounter(inputId, counterId) {
 });
 
 const colorInput = document.getElementById('widgetColor'); const colorText = document.getElementById('widgetColorText');
-colorInput.addEventListener('input', () => { colorText.value = colorInput.value.toUpperCase(); });
-colorText.addEventListener('input', () => { const val = colorText.value.trim(); if (/^#[0-9A-Fa-f]{6}$/.test(val)) colorInput.value = val; });
+if (colorInput && colorText) {
+  colorInput.addEventListener('input', () => { colorText.value = colorInput.value.toUpperCase(); });
+  colorText.addEventListener('input', () => { const val = colorText.value.trim(); if (/^#[0-9A-Fa-f]{6}$/.test(val)) colorInput.value = val; });
+}
 
 function copyApiKey() {
   const key = document.getElementById('clientApiKey').textContent.trim();
@@ -569,8 +578,8 @@ async function saveAll() {
     const data1 = await res1.json();
     if (!data1.ok) throw new Error(data1.error?.ru || 'Ошибка сохранения клиента');
 
-    // Отправляем только админские разрешения!
-    // Если ты выключаешь разрешение, мы принудительно выключаем канал и у клиента.
+    // Отправляем только разрешения и данные. 
+    // Если админ запрещает - принудительно ставим 0 у клиента.
     const settingsPayload = {
       client_id: clientId,
       use_radar_ai_key_widget: document.getElementById('useRadarKeyWidget').checked ? 1 : 0,
@@ -582,7 +591,8 @@ async function saveAll() {
       admin_allow_webhook: document.getElementById('allowWebhook').checked ? 1 : 0,
       admin_allow_email: document.getElementById('allowEmail').checked ? 1 : 0,
       
-      // Если админ запретил — принудительно ставим 0 (чтобы не было лидов)
+      // Если админ разрешает (галка стоит), мы НЕ ТРОГАЕМ выбор клиента (отправляем undefined).
+      // Если запрещает (галка снята), принудительно ставим 0.
       channel_telegram_enabled: document.getElementById('allowTelegram').checked ? undefined : 0,
       channel_sheets_enabled: document.getElementById('allowSheets').checked ? undefined : 0,
       channel_webhook_enabled: document.getElementById('allowWebhook').checked ? undefined : 0,
@@ -614,7 +624,6 @@ async function saveAll() {
       bot_ai_base_url: document.getElementById('botAiBaseUrl').value.trim()
     };
 
-    // Очищаем payload от undefined (чтобы не перезаписать выбор клиента, если он разрешен)
     Object.keys(settingsPayload).forEach(key => {
       if (settingsPayload[key] === undefined) delete settingsPayload[key];
     });
@@ -625,13 +634,6 @@ async function saveAll() {
     });
     const data2 = await res2.json();
     if (!data2.ok) throw new Error(data2.error?.ru || 'Ошибка сохранения настроек');
-    
-    // Обновляем статусы на странице
-    document.getElementById('statusTelegram').textContent = settingsPayload.channel_telegram_enabled === 0 ? 'Клиент: выкл' : document.getElementById('statusTelegram').textContent;
-    document.getElementById('statusSheets').textContent = settingsPayload.channel_sheets_enabled === 0 ? 'Клиент: выкл' : document.getElementById('statusSheets').textContent;
-    document.getElementById('statusWebhook').textContent = settingsPayload.channel_webhook_enabled === 0 ? 'Клиент: выкл' : document.getElementById('statusWebhook').textContent;
-    document.getElementById('statusEmail').textContent = settingsPayload.channel_email_enabled === 0 ? 'Клиент: выкл' : document.getElementById('statusEmail').textContent;
-
     showStatus('✅ Все изменения сохранены', 'success');
   } catch (err) { showStatus('❌ ' + err.message, 'error'); }
 }
