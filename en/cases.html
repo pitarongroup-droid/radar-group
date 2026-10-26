@@ -8,7 +8,7 @@
   <meta name="format-detection" content="telephone=no">
 
   <title>Cases: how AI Manager trains for different niches | Radar Group</title>
-  <meta name="description" content="6 scenarios showing how the AI Manager studies the client's product and sells it: auto service, online school, dentistry, lawyers, beauty salon, home renovation.">
+  <meta name="description" content="7 scenarios showing how the AI Manager studies the client's product and sells it: auto service, online school, dentistry, lawyers, beauty salon, home renovation, moving & cargo.">
   <link rel="canonical" href="https://radar-group.org/en/cases.html">
 
   <link rel="alternate" hreflang="ru" href="https://radar-group.org/cases.html">
@@ -100,38 +100,166 @@
     <div class="section-header">
       <span class="section-label">Cases</span>
       <h2>How the AI Manager trains for your product</h2>
-      <p class="section-sub">Six examples. One mechanism: we study the product, audience and objections, then train the bot — and it sells like the best manager.</p>
+      <p class="section-sub">Seven examples. One mechanism: we study the product, audience and objections, then train the bot — and it sells like the best manager.</p>
     </div>
 
-    <article class="case reveal">
-      <div class="case-header">
-        <div class="case-num" aria-hidden="true">01</div>
-        <h3>Auto service / garage</h3>
-      </div>
-      <div class="case-problem">
-        <strong>What we studied:</strong> car models, typical works, price ranges, timelines, warranty on works and parts.
-      </div>
-      <div class="case-dialog">
-        <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">how much is an oil change on a Camry?</span></div>
-        <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">For a 2019 Camry — $120 with labor and filter, if the oil is ours. $40 if you bring your own. What oil do you use? 🙂</span></div>
-      </div>
-      <div class="case-result"><strong>Result:</strong> the bot knows prices and warranties, handles "too expensive" and books with full details.</div>
-    </article>
+    <div class="cases-accordion" id="casesAccordion">
 
-    <article class="case reveal">
-      <div class="case-header">
-        <div class="case-num" aria-hidden="true">02</div>
-        <h3>Online school / courses</h3>
-      </div>
-      <div class="case-problem">
-        <strong>What we studied:</strong> course programs, formats, duration, prices, installments, alumni reviews.
-      </div>
-      <div class="case-dialog">
-        <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">want to learn Python, how much is it?</span></div>
-        <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">The course is 8 weeks, $300 or 4 payments of $80. The first trial lesson is free. Are you starting from zero or already coding? 🙂</span></div>
-      </div>
-      <div class="case-result"><strong>Result:</strong> "too expensive" handled through installments and value, not discounts.</div>
-    </article>
+      <article class="case-item">
+        <button class="case-toggle" type="button" aria-expanded="false">
+          <span class="case-num" aria-hidden="true">01</span>
+          <span class="case-title">Auto service / garage</span>
+          <span class="case-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="case-body">
+          <div class="case-body-inner">
+            <div class="case-problem"><strong>What we studied:</strong> car models, typical works, price ranges, timelines, warranty on works and parts.</div>
+            <div class="case-dialog">
+              <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">hi, how much is an oil change on a Camry?</span></div>
+              <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">Hello! For a 2019 Camry — $120 with labor and filter, if the oil is ours. $40 if you bring your own. What year is your car and what oil do you use? 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">2019, I bring my own oil</span></div>
+              <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">Then $40 for labor. Warranty on the work — 6 months. When would you like to come in? We have slots tomorrow at 10:00 and 14:00. 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">tomorrow at 10</span></div>
+              <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">Booked for tomorrow at 10:00. Please leave your name and phone — I'll confirm the appointment. 🙂</span></div>
+            </div>
+            <div class="case-result"><strong>Result:</strong> the bot quoted the price, handled "I bring my own oil", offered slots and closed the booking.</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="case-item">
+        <button class="case-toggle" type="button" aria-expanded="false">
+          <span class="case-num" aria-hidden="true">02</span>
+          <span class="case-title">Online school / courses</span>
+          <span class="case-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="case-body">
+          <div class="case-body-inner">
+            <div class="case-problem"><strong>What we studied:</strong> course programs, formats, duration, prices, installments, alumni reviews.</div>
+            <div class="case-dialog">
+              <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">want to learn Python, how much is it?</span></div>
+              <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">The course is 8 weeks, $300 or 4 payments of $80. The first trial lesson is free. Are you starting from zero or already coding? 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">from zero, but $300 is too much</span></div>
+              <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">I hear you! That's why there's an installment plan of $80 — start without a big payment. And the first lesson is free: see the format, then decide. Shall I sign you up for the trial? 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">sure</span></div>
+              <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">Great! Leave your name and Telegram — I'll send the lesson link and schedule. 🙂</span></div>
+            </div>
+            <div class="case-result"><strong>Result:</strong> "too expensive" handled through installments and a free trial, not discounts.</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="case-item">
+        <button class="case-toggle" type="button" aria-expanded="false">
+          <span class="case-num" aria-hidden="true">03</span>
+          <span class="case-title">Dentistry / dental clinic</span>
+          <span class="case-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="case-body">
+          <div class="case-body-inner">
+            <div class="case-problem"><strong>What we studied:</strong> treatment directions, price ranges, duration, warranty, payment plans, doctors' specializations, booking rules.</div>
+            <div class="case-dialog">
+              <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">how much is teeth cleaning?</span></div>
+              <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">Professional cleaning is $70 and takes about 45 minutes, including ultrasound and polishing. If there's tartar, the doctor confirms the exact plan at the appointment. When was your last cleaning? 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">a year ago, but I'm afraid to go</span></div>
+              <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">I understand, that's very common. We have sedation and a doctor who works with anxious patients. You can start with a consultation — 15 minutes, no treatment. Shall I book it? 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">yes, please</span></div>
+              <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">Great! Leave your name and phone — I'll pick the right doctor and a convenient time. 🙂</span></div>
+            </div>
+            <div class="case-result"><strong>Result:</strong> the bot eased the fear, offered a soft entry via consultation and closed the appointment.</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="case-item">
+        <button class="case-toggle" type="button" aria-expanded="false">
+          <span class="case-num" aria-hidden="true">04</span>
+          <span class="case-title">Lawyers / legal services</span>
+          <span class="case-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="case-body">
+          <div class="case-body-inner">
+            <div class="case-problem"><strong>What we studied:</strong> practice areas, consultation format, fees, timelines, required documents, confidentiality rules.</div>
+            <div class="case-dialog">
+              <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">need to challenge a traffic fine</span></div>
+              <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">We handle traffic fines. The initial review is $30 and is included in the fee if we take the case. Please send a photo of the resolution and the date you received it. Have you appealed within 10 days? 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">got it 3 days ago, sending the photo now</span></div>
+              <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">Great, the deadline is not missed. The review takes 1–2 days; if successful, we'll represent you in court. Let's set up a call to discuss the details. Is today after 15:00 convenient? 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">yes, that works</span></div>
+              <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">Booked for 15:30. Please leave your name and phone — the lawyer will call you at the scheduled time. 🙂</span></div>
+            </div>
+            <div class="case-result"><strong>Result:</strong> the bot checked the deadline, explained the process and booked a call without giving legal advice.</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="case-item">
+        <button class="case-toggle" type="button" aria-expanded="false">
+          <span class="case-num" aria-hidden="true">05</span>
+          <span class="case-title">Beauty salon</span>
+          <span class="case-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="case-body">
+          <div class="case-body-inner">
+            <div class="case-problem"><strong>What we studied:</strong> service menu, price list, duration, masters, contraindications, aftercare, booking slots.</div>
+            <div class="case-dialog">
+              <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">how much is balayage?</span></div>
+              <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">Balayage starts at $120 depending on hair length and density; with toner and care it's up to $180. It takes 3–4 hours. What's your current color and length? 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">dark, shoulder-length. bit pricey</span></div>
+              <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">For your length it'll be closer to $120–140. Plus aftercare — the color lasts much longer. Shall I book a free consultation with a colorist to get an exact quote? 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">yes</span></div>
+              <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">Great! Leave your name and phone — the colorist will reach out and pick a time. 🙂</span></div>
+            </div>
+            <div class="case-result"><strong>Result:</strong> the bot clarified parameters, upsold aftercare and handled "too pricey" via consultation.</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="case-item">
+        <button class="case-toggle" type="button" aria-expanded="false">
+          <span class="case-num" aria-hidden="true">06</span>
+          <span class="case-title">Home renovation</span>
+          <span class="case-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="case-body">
+          <div class="case-body-inner">
+            <div class="case-problem"><strong>What we studied:</strong> estimate ranges, work stages, timelines, warranty, materials and what affects the final price.</div>
+            <div class="case-dialog">
+              <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">how much to renovate a 2-room apartment?</span></div>
+              <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">Turnkey renovation starts at $250/m² for cosmetic work and $450/m² with engineering. For a 55 m² flat that's roughly $13,750–$24,750. Do you have a design project or need measurements? 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">no project, 60 sqm</span></div>
+              <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">For 60 m² turnkey it's around $15,000–$27,000; more precise after measurement. Measurement and estimate are free. When can our surveyor visit? 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">Saturday afternoon</span></div>
+              <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">Saturday afternoon — perfect. Leave your name, phone and address — I'll confirm the time with the surveyor. 🙂</span></div>
+            </div>
+            <div class="case-result"><strong>Result:</strong> the bot calculated the range by area, explained the price factors and booked a free measurement.</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="case-item">
+        <button class="case-toggle" type="button" aria-expanded="false">
+          <span class="case-num" aria-hidden="true">07</span>
+          <span class="case-title">Moving &amp; cargo</span>
+          <span class="case-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="case-body">
+          <div class="case-body-inner">
+            <div class="case-problem"><strong>What we studied:</strong> cargo types, tariffs (hourly / fixed), floors, elevator availability, furniture disassembly, packing, timelines, and movers' work.</div>
+            <div class="case-dialog">
+              <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">hi, I need a home move</span></div>
+              <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">Hello! What are we moving, and do you need furniture disassembly? 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">a sofa and two armchairs, no disassembly. From Angarskaya 10-2 (1st floor, no elevator) to Pobediteley 127 (3rd floor, with elevator)</span></div>
+              <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">Got it! The volume fits a van + 2 movers, roughly $80–100 for 2 hours. When are you planning the move? 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Client:</span><span class="msg-text">tomorrow at 10</span></div>
+              <div class="msg ai"><span class="msg-role">AI:</span><span class="msg-text">Perfect, tomorrow at 10:00 is available. Leave your name and phone — I'll confirm the order and send the vehicle details. 🙂</span></div>
+            </div>
+            <div class="case-result"><strong>Result:</strong> the bot collected all move parameters (cargo, addresses, floors, elevator, date), quoted a price range and closed with contacts.</div>
+          </div>
+        </div>
+      </article>
+
+    </div>
   </div>
 </section>
 
@@ -236,5 +364,39 @@
 
 <script src="../script.js" defer></script>
 <script src="../robot.js" defer></script>
+<script>
+(function () {
+  var accordion = document.getElementById('casesAccordion');
+  if (!accordion) return;
+
+  accordion.addEventListener('click', function (e) {
+    var toggle = e.target.closest('.case-toggle');
+    if (!toggle || !accordion.contains(toggle)) return;
+
+    var item = toggle.closest('.case-item');
+    var isOpen = item.classList.contains('is-open');
+
+    accordion.querySelectorAll('.case-item.is-open').forEach(function (el) {
+      if (el !== item) {
+        el.classList.remove('is-open');
+        var t = el.querySelector('.case-toggle');
+        if (t) t.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    item.classList.toggle('is-open', !isOpen);
+    toggle.setAttribute('aria-expanded', String(!isOpen));
+
+    if (!isOpen) {
+      setTimeout(function () {
+        var rect = item.getBoundingClientRect();
+        if (rect.bottom > window.innerHeight) {
+          item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }, 380);
+    }
+  });
+})();
+</script>
 </body>
 </html>

@@ -8,7 +8,7 @@
   <meta name="format-detection" content="telephone=no">
 
   <title>Кейсы: как ИИ-менеджер обучается под разные ниши | Radar Group</title>
-  <meta name="description" content="6 сценариев, как ИИ-менеджер изучает продукт клиента и продаёт его: автосервис, онлайн-школа, стоматология, юристы, салон красоты, ремонт квартир.">
+  <meta name="description" content="7 сценариев, как ИИ-менеджер изучает продукт клиента и продаёт его: автосервис, онлайн-школа, стоматология, юристы, салон красоты, ремонт квартир, грузоперевозки.">
   <meta name="keywords" content="ии-менеджер кейсы, ии-продавец под нишу, обучение бота под продукт, автоматизация продаж услуги, отработка возражений ии">
   <meta name="author" content="Radar Group">
   <meta name="robots" content="index, follow, max-image-preview:large">
@@ -21,7 +21,7 @@
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Radar Group">
   <meta property="og:title" content="Кейсы: как ИИ-менеджер обучается под ваш продукт">
-  <meta property="og:description" content="6 сценариев, как ИИ-менеджер изучает продукт клиента и продаёт его.">
+  <meta property="og:description" content="7 сценариев, как ИИ-менеджер изучает продукт клиента и продаёт его.">
   <meta property="og:url" content="https://radar-group.org/cases.html">
   <meta property="og:image" content="https://radar-group.org/images/og-image.jpg">
   <meta property="og:locale" content="ru_RU">
@@ -111,38 +111,166 @@
     <div class="section-header">
       <span class="section-label">Кейсы</span>
       <h2>Как ИИ-менеджер обучается под ваш продукт</h2>
-      <p class="section-sub">Шесть примеров. Одна механика: мы изучаем продукт, аудиторию и возражения, потом обучаем бота — и он продаёт как лучший менеджер.</p>
+      <p class="section-sub">Семь примеров. Одна механика: мы изучаем продукт, аудиторию и возражения, потом обучаем бота — и он продаёт как лучший менеджер.</p>
     </div>
 
-    <article class="case reveal">
-      <div class="case-header">
-        <div class="case-num" aria-hidden="true">01</div>
-        <h3>Автосервис / СТО</h3>
-      </div>
-      <div class="case-problem">
-        <strong>Что изучили:</strong> модели машин, типовые работы, вилки цен, сроки, гарантии на работы и запчасти.
-      </div>
-      <div class="case-dialog">
-        <div class="msg client"><span class="msg-role">Клиент:</span><span class="msg-text">сколько стоит замена масла на камри?</span></div>
-        <div class="msg ai"><span class="msg-role">ИИ:</span><span class="msg-text">Для Camry 2019 — 120$ с работой и фильтром, если масло наше. Со своим — 40$. Какое масло заливаете? 🙂</span></div>
-      </div>
-      <div class="case-result"><strong>Результат:</strong> бот знает цены, гарантии, отвечает на «дорого» и записывает с полными параметрами.</div>
-    </article>
+    <div class="cases-accordion" id="casesAccordion">
 
-    <article class="case reveal">
-      <div class="case-header">
-        <div class="case-num" aria-hidden="true">02</div>
-        <h3>Онлайн-школа / Курсы</h3>
-      </div>
-      <div class="case-problem">
-        <strong>Что изучили:</strong> программы курсов, форматы, длительность, цены, рассрочку, отзывы выпускников.
-      </div>
-      <div class="case-dialog">
-        <div class="msg client"><span class="msg-role">Клиент:</span><span class="msg-text">хочу научиться Python, сколько стоит?</span></div>
-        <div class="msg ai"><span class="msg-role">ИИ:</span><span class="msg-text">Курс — 8 недель, 300$ или 4 платежа по 80$. Первый пробный урок бесплатный. Вы с нуля или уже программировали? 🙂</span></div>
-      </div>
-      <div class="case-result"><strong>Результат:</strong> возражение «дорого» отработано через рассрочку и ценность, а не скидку.</div>
-    </article>
+      <article class="case-item">
+        <button class="case-toggle" type="button" aria-expanded="false">
+          <span class="case-num" aria-hidden="true">01</span>
+          <span class="case-title">Автосервис / СТО</span>
+          <span class="case-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="case-body">
+          <div class="case-body-inner">
+            <div class="case-problem"><strong>Что изучили:</strong> модели машин, типовые работы, вилки цен, сроки, гарантии на работы и запчасти.</div>
+            <div class="case-dialog">
+              <div class="msg client"><span class="msg-role">Клиент:</span><span class="msg-text">здравствуйте, сколько стоит замена масла на камри?</span></div>
+              <div class="msg ai"><span class="msg-role">ИИ:</span><span class="msg-text">Здравствуйте! Для Camry 2019 — 120$ с работой и фильтром, если масло наше. Со своим — 40$. Какой у вас год и какое масло заливаете? 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Клиент:</span><span class="msg-text">2019, масло своё</span></div>
+              <div class="msg ai"><span class="msg-role">ИИ:</span><span class="msg-text">Тогда 40$ за работу. Гарантия на работу — 6 месяцев. Когда удобно приехать? Есть свободные слоты завтра в 10:00 и 14:00. 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Клиент:</span><span class="msg-text">давайте завтра в 10</span></div>
+              <div class="msg ai"><span class="msg-role">ИИ:</span><span class="msg-text">Записал на завтра в 10:00. Оставьте имя и телефон — подтвержу запись. 🙂</span></div>
+            </div>
+            <div class="case-result"><strong>Результат:</strong> бот назвал цену, отработал «со своим маслом», предложил слоты и довёл до записи.</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="case-item">
+        <button class="case-toggle" type="button" aria-expanded="false">
+          <span class="case-num" aria-hidden="true">02</span>
+          <span class="case-title">Онлайн-школа / Курсы</span>
+          <span class="case-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="case-body">
+          <div class="case-body-inner">
+            <div class="case-problem"><strong>Что изучили:</strong> программы курсов, форматы, длительность, цены, рассрочку, отзывы выпускников.</div>
+            <div class="case-dialog">
+              <div class="msg client"><span class="msg-role">Клиент:</span><span class="msg-text">хочу научиться Python, сколько стоит?</span></div>
+              <div class="msg ai"><span class="msg-role">ИИ:</span><span class="msg-text">Курс — 8 недель, 300$ или 4 платежа по 80$. Первый пробный урок бесплатный. Вы с нуля или уже программировали? 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Клиент:</span><span class="msg-text">с нуля, но 300 дорого</span></div>
+              <div class="msg ai"><span class="msg-role">ИИ:</span><span class="msg-text">Понимаю! Поэтому и есть рассрочка по 80$ — старт без большой суммы. А первый урок бесплатный: посмотрите формат и решите. Записать вас на пробный? 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Клиент:</span><span class="msg-text">давайте</span></div>
+              <div class="msg ai"><span class="msg-role">ИИ:</span><span class="msg-text">Отлично! Оставьте имя и Telegram — пришлю ссылку на урок и расписание. 🙂</span></div>
+            </div>
+            <div class="case-result"><strong>Результат:</strong> возражение «дорого» отработано через рассрочку и бесплатный пробный, а не скидку.</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="case-item">
+        <button class="case-toggle" type="button" aria-expanded="false">
+          <span class="case-num" aria-hidden="true">03</span>
+          <span class="case-title">Стоматология / Клиника</span>
+          <span class="case-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="case-body">
+          <div class="case-body-inner">
+            <div class="case-problem"><strong>Что изучили:</strong> направления лечения, вилки цен, длительность, гарантии, рассрочку, специализации врачей, правила записи.</div>
+            <div class="case-dialog">
+              <div class="msg client"><span class="msg-role">Клиент:</span><span class="msg-text">сколько стоит чистка зубов?</span></div>
+              <div class="msg ai"><span class="msg-role">ИИ:</span><span class="msg-text">Профессиональная чистка — 70$, около 45 минут, включая ультразвук и полировку. Если есть камень, точный план врач подтвердит на приёме. Когда была последняя чистка? 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Клиент:</span><span class="msg-text">год назад, но я боюсь идти</span></div>
+              <div class="msg ai"><span class="msg-role">ИИ:</span><span class="msg-text">Понимаю, это частая история. У нас есть приём с седацией и врач, который работает с тревожными пациентами. Можно начать с консультации — 15 минут, без лечения. Записать? 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Клиент:</span><span class="msg-text">да, давайте</span></div>
+              <div class="msg ai"><span class="msg-role">ИИ:</span><span class="msg-text">Отлично! Оставьте имя и телефон — подберу врача и удобное время. 🙂</span></div>
+            </div>
+            <div class="case-result"><strong>Результат:</strong> бот снял страх, предложил мягкий вход через консультацию и довёл до записи.</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="case-item">
+        <button class="case-toggle" type="button" aria-expanded="false">
+          <span class="case-num" aria-hidden="true">04</span>
+          <span class="case-title">Юристы / Юридические услуги</span>
+          <span class="case-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="case-body">
+          <div class="case-body-inner">
+            <div class="case-problem"><strong>Что изучили:</strong> практики, формат консультаций, стоимость, сроки, перечень документов, конфиденциальность.</div>
+            <div class="case-dialog">
+              <div class="msg client"><span class="msg-role">Клиент:</span><span class="msg-text">нужно обжаловать штраф ГИБДД</span></div>
+              <div class="msg ai"><span class="msg-role">ИИ:</span><span class="msg-text">Работаем со штрафами. Первичный разбор — 30$, входит в стоимость, если берём дело. Пришлите фото постановления и дату получения. Обжаловали в течение 10 дней? 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Клиент:</span><span class="msg-text">получил 3 дня назад, фото сейчас пришлю</span></div>
+              <div class="msg ai"><span class="msg-role">ИИ:</span><span class="msg-text">Отлично, срок не пропущен. Разбор займёт 1–2 дня, при положительном исходе — представим в суде. Давайте созвонимся, чтобы обсудить детали. Удобно сегодня после 15:00? 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Клиент:</span><span class="msg-text">да, удобно</span></div>
+              <div class="msg ai"><span class="msg-role">ИИ:</span><span class="msg-text">Записал на 15:30. Оставьте имя и телефон — юрист наберёт в назначенное время. 🙂</span></div>
+            </div>
+            <div class="case-result"><strong>Результат:</strong> бот проверил сроки, объяснил процесс и записал на созвон без юридических консультаций.</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="case-item">
+        <button class="case-toggle" type="button" aria-expanded="false">
+          <span class="case-num" aria-hidden="true">05</span>
+          <span class="case-title">Салон красоты</span>
+          <span class="case-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="case-body">
+          <div class="case-body-inner">
+            <div class="case-problem"><strong>Что изучили:</strong> меню услуг, прайс, длительность, мастеров, противопоказания, уход после, свободные слоты.</div>
+            <div class="case-dialog">
+              <div class="msg client"><span class="msg-role">Клиент:</span><span class="msg-text">сколько стоит балаяж?</span></div>
+              <div class="msg ai"><span class="msg-role">ИИ:</span><span class="msg-text">Балаяж от 120$ в зависимости от длины и густоты, с тонированием и уходом — до 180$. По времени 3–4 часа. У вас сейчас какой цвет и длина? 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Клиент:</span><span class="msg-text">тёмный, до плеч. дороговато</span></div>
+              <div class="msg ai"><span class="msg-role">ИИ:</span><span class="msg-text">Для вашей длины это будет ближе к 120–140$. Плюс уход после — волосы дольше держат цвет. Записать на бесплатную консультацию к колористу, чтобы посчитать точно? 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Клиент:</span><span class="msg-text">да</span></div>
+              <div class="msg ai"><span class="msg-role">ИИ:</span><span class="msg-text">Отлично! Оставьте имя и телефон — колорист свяжется и подберёт время. 🙂</span></div>
+            </div>
+            <div class="case-result"><strong>Результат:</strong> бот уточнил параметры, допродал уход и отработал «дорого» через консультацию.</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="case-item">
+        <button class="case-toggle" type="button" aria-expanded="false">
+          <span class="case-num" aria-hidden="true">06</span>
+          <span class="case-title">Ремонт квартир</span>
+          <span class="case-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="case-body">
+          <div class="case-body-inner">
+            <div class="case-problem"><strong>Что изучили:</strong> вилки смет, этапы работ, сроки, гарантии, материалы и что влияет на итоговую цену.</div>
+            <div class="case-dialog">
+              <div class="msg client"><span class="msg-role">Клиент:</span><span class="msg-text">сколько стоит ремонт двушки?</span></div>
+              <div class="msg ai"><span class="msg-role">ИИ:</span><span class="msg-text">Ремонт под ключ — от 250$/м² за косметический и от 450$/м² с инженерией. Для 55 м² это примерно 13 750–24 750$. У вас есть дизайн-проект или нужны замеры? 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Клиент:</span><span class="msg-text">проекта нет, 60 квадратов</span></div>
+              <div class="msg ai"><span class="msg-role">ИИ:</span><span class="msg-text">Для 60 м² под ключ выйдет ориентировочно 15 000–27 000$, точнее — после замера. Замер и смета бесплатные. Когда удобно принять замерщика? 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Клиент:</span><span class="msg-text">в субботу днём</span></div>
+              <div class="msg ai"><span class="msg-role">ИИ:</span><span class="msg-text">Отлично, суббота днём. Оставьте имя, телефон и адрес — согласую время с замерщиком. 🙂</span></div>
+            </div>
+            <div class="case-result"><strong>Результат:</strong> бот посчитал вилку по площади, объяснил факторы цены и записал на бесплатный замер.</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="case-item">
+        <button class="case-toggle" type="button" aria-expanded="false">
+          <span class="case-num" aria-hidden="true">07</span>
+          <span class="case-title">Грузоперевозки / Квартирный переезд</span>
+          <span class="case-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="case-body">
+          <div class="case-body-inner">
+            <div class="case-problem"><strong>Что изучили:</strong> типы грузов, тарифы (почасовые / фиксированные), этажность, наличие лифта, разборку мебели, упаковку, сроки и работу грузчиков.</div>
+            <div class="case-dialog">
+              <div class="msg client"><span class="msg-role">Клиент:</span><span class="msg-text">здравствуйте, нужен квартирный переезд</span></div>
+              <div class="msg ai"><span class="msg-role">ИИ:</span><span class="msg-text">Здравствуйте! Что перевозим и нужна ли разборка мебели? 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Клиент:</span><span class="msg-text">диван и два кресла, разбирать не нужно. Ангарская 10-2 (1 этаж, без лифта) → Победителей 127 (3 этаж, с лифтом)</span></div>
+              <div class="msg ai"><span class="msg-role">ИИ:</span><span class="msg-text">Понял! По объёму хватит газели + 2 грузчика, ориентировочно 80–100$ за 2 часа. Когда планируете переезд? 🙂</span></div>
+              <div class="msg client"><span class="msg-role">Клиент:</span><span class="msg-text">завтра в 10</span></div>
+              <div class="msg ai"><span class="msg-role">ИИ:</span><span class="msg-text">Отлично, завтра в 10:00 свободно. Оставьте имя и телефон — подтвержу заявку и пришлю данные машины. 🙂</span></div>
+            </div>
+            <div class="case-result"><strong>Результат:</strong> бот собрал параметры (груз, адреса, этажи, лифт, дату), назвал вилку цены и довёл до контактов.</div>
+          </div>
+        </div>
+      </article>
+
+    </div>
   </div>
 </section>
 
@@ -252,5 +380,39 @@
 
 <script src="script.js" defer></script>
 <script src="robot.js" defer></script>
+<script>
+(function () {
+  var accordion = document.getElementById('casesAccordion');
+  if (!accordion) return;
+
+  accordion.addEventListener('click', function (e) {
+    var toggle = e.target.closest('.case-toggle');
+    if (!toggle || !accordion.contains(toggle)) return;
+
+    var item = toggle.closest('.case-item');
+    var isOpen = item.classList.contains('is-open');
+
+    accordion.querySelectorAll('.case-item.is-open').forEach(function (el) {
+      if (el !== item) {
+        el.classList.remove('is-open');
+        var t = el.querySelector('.case-toggle');
+        if (t) t.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    item.classList.toggle('is-open', !isOpen);
+    toggle.setAttribute('aria-expanded', String(!isOpen));
+
+    if (!isOpen) {
+      setTimeout(function () {
+        var rect = item.getBoundingClientRect();
+        if (rect.bottom > window.innerHeight) {
+          item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }, 380);
+    }
+  });
+})();
+</script>
 </body>
 </html>

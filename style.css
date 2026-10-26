@@ -2244,3 +2244,147 @@ body::before {
 .lead-channel-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--cyan-soft); border: 1px solid rgba(0, 240, 255, 0.2); display: flex; align-items: center; justify-content: center; color: var(--cyan); flex-shrink: 0; }
 .lead-channel-text h4 { font-size: 16px; font-weight: 700; margin-bottom: 4px; color: var(--text); }
 .lead-channel-text p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+/* ============================================
+   КЕЙСЫ-АККОРДЕОН
+   ============================================ */
+.cases-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.case-item {
+  position: relative;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
+}
+
+.case-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  padding: 1px;
+  background: var(--gradient);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.case-item:hover::before,
+.case-item.is-open::before { opacity: 1; }
+
+.case-item:hover { border-color: rgba(148, 163, 184, 0.2); }
+
+.case-item.is-open {
+  box-shadow: 0 16px 40px rgba(0, 240, 255, 0.06);
+}
+
+.case-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.25s;
+}
+
+.case-toggle:hover { background: var(--bg-hover); }
+
+.case-toggle:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: -2px;
+}
+
+.case-item .case-num {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--gradient-cta);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #FFFFFF;
+  font-size: 16px;
+  box-shadow: 0 6px 20px rgba(0, 240, 255, 0.25);
+  transition: transform 0.3s ease;
+}
+
+.case-item.is-open .case-toggle .case-num {
+  transform: scale(1.05);
+}
+
+.case-title {
+  flex: 1 1 auto;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--text);
+}
+
+.case-icon {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(148, 163, 184, 0.08);
+  color: var(--text-muted);
+  transition: transform 0.3s ease, background 0.3s, color 0.3s;
+}
+
+.case-item.is-open .case-icon {
+  transform: rotate(180deg);
+  background: var(--cyan-soft);
+  color: var(--cyan);
+}
+
+.case-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.35s ease;
+}
+
+.case-item.is-open .case-body {
+  grid-template-rows: 1fr;
+}
+
+.case-body-inner {
+  overflow: hidden;
+  min-height: 0;
+  padding: 0 24px;
+}
+
+.case-item.is-open .case-body-inner {
+  padding-bottom: 24px;
+}
+
+.case-body-inner .case-problem { margin-top: 4px; margin-bottom: 16px; }
+.case-body-inner .case-dialog { margin-bottom: 16px; }
+.case-body-inner .case-result { margin-top: 0; }
+
+@media (max-width: 640px) {
+  .case-toggle { padding: 16px 18px; gap: 12px; }
+  .case-item .case-num { width: 38px; height: 38px; font-size: 14px; border-radius: 10px; }
+  .case-title { font-size: 15px; }
+  .case-body-inner { padding: 0 18px; }
+  .case-item.is-open .case-body-inner { padding-bottom: 18px; }
+}
