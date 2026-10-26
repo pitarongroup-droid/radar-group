@@ -208,7 +208,7 @@
         </div>
       </section>
 
-      <!-- 📬 КАНАЛЫ ВИДЖЕТА (С АДМИНСКИМИ ГАЛКАМИ) -->
+      <!-- 📬 КАНАЛЫ ВИДЖЕТА -->
       <section class="dash-section">
         <div class="dash-section-header">
           <h2 class="dash-section-title">
@@ -221,6 +221,9 @@
           <div class="form-group">
             <div class="channel-header">
               <label class="channel-toggle"><input type="checkbox" id="chTelegram"><span class="channel-label">📱 Telegram</span></label>
+              <label style="font-size:12px; color:var(--magenta); display:flex; align-items:center; gap:5px;">
+                <input type="checkbox" id="allowTelegram" style="accent-color:var(--magenta);"> Разрешено админом
+              </label>
             </div>
           </div>
 
@@ -426,6 +429,29 @@ function showError(msg) {
   document.getElementById('errorText').textContent = msg;
 }
 
+// Умная связка галочек (если ставим левую, включается правая)
+function setupChannelToggles() {
+  const pairs = [
+    { left: 'chTelegram', right: 'allowTelegram' },
+    { left: 'chSheets', right: 'allowSheets' },
+    { left: 'chWebhook', right: 'allowWebhook' },
+    { left: 'chEmail', right: 'allowEmail' }
+  ];
+
+  pairs.forEach(pair => {
+    const leftEl = document.getElementById(pair.left);
+    const rightEl = document.getElementById(pair.right);
+    if (leftEl && rightEl) {
+      leftEl.addEventListener('change', () => {
+        if (leftEl.checked) rightEl.checked = true;
+      });
+      rightEl.addEventListener('change', () => {
+        if (!rightEl.checked) leftEl.checked = false;
+      });
+    }
+  });
+}
+
 function renderClient() {
   const c = clientData; const s = settingsData;
   document.getElementById('pageTitle').textContent = c.name || 'Клиент';
@@ -458,13 +484,14 @@ function renderClient() {
   document.getElementById('clientPlan').value = c.plan || 'basic';
   document.getElementById('clientApiKey').textContent = c.api_key || '—';
 
-  // Каналы виджета
+  // Каналы виджета (левые)
   document.getElementById('chTelegram').checked = s.channel_telegram_enabled === 1;
   document.getElementById('chSheets').checked = s.channel_sheets_enabled === 1;
   document.getElementById('chWebhook').checked = s.channel_webhook_enabled === 1;
   document.getElementById('chEmail').checked = s.channel_email_enabled === 1;
   
-  // Админские разрешения
+  // Админские разрешения (правые)
+  document.getElementById('allowTelegram').checked = s.admin_allow_telegram === 1;
   document.getElementById('allowSheets').checked = s.admin_allow_sheets === 1;
   document.getElementById('allowWebhook').checked = s.admin_allow_webhook === 1;
   document.getElementById('allowEmail').checked = s.admin_allow_email === 1;
@@ -499,6 +526,9 @@ function renderClient() {
 
   updateCounter('widgetPromptRu', 'counterWidgetPrompt');
   updateCounter('botPromptRu', 'counterBotPrompt');
+  
+  // Активируем умную связку
+  setupChannelToggles();
 }
 
 function updatePriceFromTariff() {
@@ -564,14 +594,18 @@ async function saveAll() {
       use_radar_ai_key_bot: document.getElementById('useRadarKeyBot').checked ? 1 : 0,
       business_bot_enabled: document.getElementById('businessBotEnabled').checked ? 1 : 0,
       
-      // Каналы и права
+      // Каналы (левые)
       channel_telegram_enabled: document.getElementById('chTelegram').checked ? 1 : 0,
       channel_sheets_enabled: document.getElementById('chSheets').checked ? 1 : 0,
       channel_webhook_enabled: document.getElementById('chWebhook').checked ? 1 : 0,
       channel_email_enabled: document.getElementById('chEmail').checked ? 1 : 0,
+      
+      // Разрешения админа (правые)
+      admin_allow_telegram: document.getElementById('allowTelegram').checked ? 1 : 0,
       admin_allow_sheets: document.getElementById('allowSheets').checked ? 1 : 0,
       admin_allow_webhook: document.getElementById('allowWebhook').checked ? 1 : 0,
       admin_allow_email: document.getElementById('allowEmail').checked ? 1 : 0,
+      
       sheets_url: document.getElementById('sheetsUrl').value.trim(),
       notification_email: document.getElementById('notificationEmail').value.trim(),
 
