@@ -15,48 +15,45 @@
   <link rel="stylesheet" href="/app/sidebar.css">
   <link rel="stylesheet" href="/app/dashboard.css">
   <style>
-    .pending-banner {
+    .status-banner {
       padding: 24px 28px;
-      background: linear-gradient(135deg, rgba(255, 200, 0, 0.1) 0%, rgba(255, 0, 128, 0.05) 100%);
-      border: 2px solid rgba(255, 200, 0, 0.4);
       border-radius: var(--radius);
       margin-bottom: 24px;
       display: flex;
       gap: 18px;
       align-items: flex-start;
+      transition: all 0.3s ease;
     }
-    .pending-banner-icon {
+    .status-banner-icon {
       flex-shrink: 0;
       width: 52px;
       height: 52px;
       border-radius: 14px;
-      background: rgba(255, 200, 0, 0.15);
-      border: 1px solid rgba(255, 200, 0, 0.3);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #FFC800;
       font-size: 26px;
+      transition: all 0.3s ease;
     }
-    .pending-banner-text h2 {
+    .status-banner-text h2 {
       font-size: 18px;
       font-weight: 800;
-      color: #FFC800;
       margin-bottom: 8px;
+      transition: all 0.3s ease;
     }
-    .pending-banner-text p {
+    .status-banner-text p {
       font-size: 14px;
       color: var(--text-muted);
       line-height: 1.55;
       margin-bottom: 6px;
     }
-    .pending-banner-text p strong { color: var(--text); }
-    .pending-banner-text a {
+    .status-banner-text p strong { color: var(--text); }
+    .status-banner-text a {
       color: var(--cyan);
       text-decoration: none;
       font-weight: 600;
     }
-    .pending-banner-text a:hover { text-decoration: underline; }
+    .status-banner-text a:hover { text-decoration: underline; }
   </style>
 </head>
 <body class="page-app-dashboard">
@@ -117,11 +114,11 @@
       </div>
     </header>
 
-    <div class="pending-banner" id="pendingBanner" style="display:none;">
-      <div class="pending-banner-icon">⏳</div>
-      <div class="pending-banner-text">
-        <h2>Аккаунт на проверке</h2>
-        <p>
+    <div class="status-banner" id="statusBanner" style="display:none;">
+      <div class="status-banner-icon" id="bannerIcon">⏳</div>
+      <div class="status-banner-text">
+        <h2 id="bannerTitle">Аккаунт на проверке</h2>
+        <p id="bannerDesc">
           Ваш аккаунт ожидает подтверждения от менеджера <strong>Radar Group</strong>.
           Настройки и услуги станут доступны после одобрения.
         </p>
@@ -209,13 +206,41 @@
 
       if (res.status === 403) {
         const data = await res.json();
-        if (data.account_status === 'pending' || data.account_status === 'suspended') {
-          document.getElementById('pendingBanner').style.display = 'flex';
-          document.querySelectorAll('a[href*="widget"], a[href*="bot"], a[href*="integration"]').forEach(el => {
-            el.style.opacity = '0.4';
-            el.style.pointerEvents = 'none';
-          });
+        const banner = document.getElementById('statusBanner');
+        const icon = document.getElementById('bannerIcon');
+        const title = document.getElementById('bannerTitle');
+        const desc = document.getElementById('bannerDesc');
+
+        if (data.account_status === 'pending') {
+          // Желтый баннер для pending
+          banner.style.display = 'flex';
+          banner.style.background = 'linear-gradient(135deg, rgba(255, 200, 0, 0.1) 0%, rgba(255, 0, 128, 0.05) 100%)';
+          banner.style.border = '2px solid rgba(255, 200, 0, 0.4)';
+          icon.textContent = '⏳';
+          icon.style.background = 'rgba(255, 200, 0, 0.15)';
+          icon.style.border = '1px solid rgba(255, 200, 0, 0.3)';
+          icon.style.color = '#FFC800';
+          title.textContent = 'Аккаунт на проверке';
+          title.style.color = '#FFC800';
+          desc.innerHTML = 'Ваш аккаунт ожидает подтверждения от менеджера <strong>Radar Group</strong>. Настройки и услуги станут доступны после одобрения.';
+        } else if (data.account_status === 'suspended') {
+          // Красный баннер для suspended
+          banner.style.display = 'flex';
+          banner.style.background = 'linear-gradient(135deg, rgba(255, 0, 128, 0.1) 0%, rgba(255, 0, 128, 0.05) 100%)';
+          banner.style.border = '2px solid rgba(255, 0, 128, 0.4)';
+          icon.textContent = '⛔';
+          icon.style.background = 'rgba(255, 0, 128, 0.15)';
+          icon.style.border = '1px solid rgba(255, 0, 128, 0.3)';
+          icon.style.color = 'var(--magenta)';
+          title.textContent = 'Аккаунт заблокирован';
+          title.style.color = 'var(--magenta)';
+          desc.innerHTML = 'Доступ к настройкам и услугам приостановлен. Пожалуйста, свяжитесь с менеджером для выяснения причин.';
         }
+
+        document.querySelectorAll('a[href*="widget"], a[href*="bot"], a[href*="integration"]').forEach(el => {
+          el.style.opacity = '0.4';
+          el.style.pointerEvents = 'none';
+        });
         return false;
       }
       return true;
@@ -259,7 +284,7 @@
           } catch (e) {}
         }
 
-        // ИСПРАВЛЕНО: умный парсер дат
+        // ИСПРАВЛЕНО: умный парсер дат (сохранен)
         let dateObj;
         if (typeof l.created_at === 'string' && (l.created_at.includes('-') || l.created_at.includes('T'))) {
           dateObj = new Date(l.created_at);
