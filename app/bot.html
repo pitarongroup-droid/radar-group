@@ -294,16 +294,25 @@ async function loadSettings() {
       }
     }
 
-    // ⚠️ ЛОГИКА ПРОВЕРКИ ПРАВ АДМИНИСТРАТОРА ДЛЯ КАНАЛОВ БОТА
+    // ⚠️ ИСПРАВЛЕННАЯ ЛОГИКА ПРОВЕРКИ ПРАВ АДМИНИСТРАТОРА
     const configChannel = (chId, headerId, bodyId, allowField, enabledField, labelName) => {
       const ch = document.getElementById(chId);
       const header = document.getElementById(headerId);
       const body = document.getElementById(bodyId);
 
-      if (s[allowField] === 0) { // Если админ запретил
-        ch.checked = false; ch.disabled = true; body.style.display = 'none';
-        header.style.opacity = '0.5'; header.style.cursor = 'not-allowed';
-        header.innerHTML = `<span style="color:var(--text-dim); font-size:13px;">${labelName} <span style="color:var(--magenta); font-size:11px;">(Недоступно на вашем тарифе)</span></span>`;
+      if (s[allowField] !== 1) { // Если админ запретил (или поля нет)
+        ch.checked = false; 
+        ch.disabled = true; 
+        body.style.display = 'none';
+        header.style.opacity = '0.5'; 
+        header.style.cursor = 'not-allowed';
+        
+        // Безопасно меняем ТОЛЬКО текст, не удаляя чекбокс
+        const labelSpan = header.querySelector('.channel-label');
+        if (labelSpan) {
+            labelSpan.innerHTML = `${labelName} <span style="color:var(--magenta); font-size:11px;">(Недоступно на вашем тарифе)</span>`;
+            labelSpan.style.color = 'var(--text-dim)';
+        }
       } else {
         ch.checked = s[enabledField] === 1;
       }
@@ -332,10 +341,11 @@ async function saveBot() {
     const payload = {
       bot_telegram_token: document.getElementById('botTelegramToken').value.trim(),
       bot_telegram_admin_id: document.getElementById('botTelegramAdminId').value.trim() || null,
-      bot_channel_telegram_enabled: document.getElementById('botChTelegram').checked ? 1 : 0,
-      bot_channel_sheets_enabled: document.getElementById('botChSheets').checked ? 1 : 0,
-      bot_channel_webhook_enabled: document.getElementById('botChWebhook').checked ? 1 : 0,
-      bot_channel_email_enabled: document.getElementById('botChEmail').checked ? 1 : 0,
+      // ИСПРАВЛЕНО: Используется ?. для предотвращения падения скрипта
+      bot_channel_telegram_enabled: document.getElementById('botChTelegram')?.checked ? 1 : 0,
+      bot_channel_sheets_enabled: document.getElementById('botChSheets')?.checked ? 1 : 0,
+      bot_channel_webhook_enabled: document.getElementById('botChWebhook')?.checked ? 1 : 0,
+      bot_channel_email_enabled: document.getElementById('botChEmail')?.checked ? 1 : 0,
       bot_sheets_url: document.getElementById('botSheetsUrl').value.trim(),
       bot_webhook_url: document.getElementById('botWebhookUrl').value.trim(),
       bot_webhook_secret: document.getElementById('botWebhookSecret').value.trim(),

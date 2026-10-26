@@ -385,14 +385,20 @@ async function loadSettings() {
     document.getElementById('widgetColor').value = s.widget_color || '#00F0FF';
     document.getElementById('widgetColorText').value = s.widget_color || '#00F0FF';
 
-    document.getElementById('chTelegram').checked = s.channel_telegram_enabled === 1;
-    document.getElementById('chSheets').checked = s.channel_sheets_enabled === 1;
-    document.getElementById('chWebhook').checked = s.channel_webhook_enabled === 1;
-    document.getElementById('chEmail').checked = s.channel_email_enabled === 1;
+    // Безопасная установка чекбоксов
+    if (document.getElementById('chTelegram')) document.getElementById('chTelegram').checked = s.channel_telegram_enabled === 1;
+    if (document.getElementById('chSheets')) document.getElementById('chSheets').checked = s.channel_sheets_enabled === 1;
+    if (document.getElementById('chWebhook')) document.getElementById('chWebhook').checked = s.channel_webhook_enabled === 1;
+    if (document.getElementById('chEmail')) document.getElementById('chEmail').checked = s.channel_email_enabled === 1;
 
     document.getElementById('telegramToken').value = s.telegram_token || '';
     document.getElementById('telegramAdminId').value = s.telegram_admin_id || '';
     document.getElementById('sheetsUrl').value = s.sheets_url || '';
+    
+    // ДОБАВЛЕНО: Загрузка Webhook данных
+    document.getElementById('webhookUrl').value = s.webhook_url || '';
+    document.getElementById('webhookSecret').value = s.webhook_secret || '';
+    
     document.getElementById('notificationEmail').value = s.notification_email || '';
 
   } catch (err) {
@@ -424,13 +430,21 @@ async function saveWidget() {
       widget_title_en: document.getElementById('widgetTitleRu').value.trim(),
       widget_welcome_en: document.getElementById('widgetWelcomeRu').value.trim(),
       widget_color: document.getElementById('widgetColor').value,
-      channel_telegram_enabled: document.getElementById('chTelegram').checked ? 1 : 0,
-      channel_sheets_enabled: document.getElementById('chSheets').checked ? 1 : 0,
-      channel_webhook_enabled: document.getElementById('chWebhook').checked ? 1 : 0,
-      channel_email_enabled: document.getElementById('chEmail').checked ? 1 : 0,
+      
+      // Безопасное чтение чекбоксов
+      channel_telegram_enabled: document.getElementById('chTelegram')?.checked ? 1 : 0,
+      channel_sheets_enabled: document.getElementById('chSheets')?.checked ? 1 : 0,
+      channel_webhook_enabled: document.getElementById('chWebhook')?.checked ? 1 : 0,
+      channel_email_enabled: document.getElementById('chEmail')?.checked ? 1 : 0,
+      
       telegram_token: document.getElementById('telegramToken').value.trim(),
       telegram_admin_id: document.getElementById('telegramAdminId').value.trim() || null,
       sheets_url: document.getElementById('sheetsUrl').value.trim(),
+      
+      // ДОБАВЛЕНО: Отправка Webhook данных
+      webhook_url: document.getElementById('webhookUrl').value.trim(),
+      webhook_secret: document.getElementById('webhookSecret').value.trim(),
+      
       notification_email: document.getElementById('notificationEmail').value.trim()
     };
 
