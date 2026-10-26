@@ -240,7 +240,10 @@
                 </label>
               </div>
             </div>
-            <div class="channel-body"><input class="form-input" type="text" id="sheetsUrl" placeholder="URL веб-приложения (клиент вставит сам)"></div>
+            <!-- Добавлен id="sheetsWrapper" -->
+            <div class="channel-body" id="sheetsWrapper">
+              <input class="form-input" type="text" id="sheetsUrl" placeholder="URL веб-приложения (клиент вставит сам)">
+            </div>
           </div>
 
           <div class="form-group">
@@ -253,6 +256,11 @@
                 </label>
               </div>
             </div>
+            <!-- Добавлены поля и id="webhookWrapper" -->
+            <div class="channel-body" id="webhookWrapper">
+              <input class="form-input" type="text" id="webhookUrl" placeholder="URL вебхука">
+              <input class="form-input" type="text" id="webhookSecret" placeholder="Secret">
+            </div>
           </div>
 
           <div class="form-group">
@@ -264,6 +272,10 @@
                   <input type="checkbox" id="allowEmail" style="width:18px; height:18px; accent-color:var(--cyan);"> Разрешить
                 </label>
               </div>
+            </div>
+            <!-- Добавлено поле и id="emailWrapper" -->
+            <div class="channel-body" id="emailWrapper">
+              <input class="form-input" type="email" id="notificationEmail" placeholder="owner@example.com">
             </div>
           </div>
 
@@ -436,10 +448,37 @@ function showError(msg) {
   document.getElementById('errorText').textContent = msg;
 }
 
+// ФУНКЦИЯ ДЛЯ СКРЫТИЯ/ПОКАЗА ПОЛЕЙ ВВОДА
+function toggleChannelInputs() {
+  const pairs = [
+    { toggle: 'allowSheets', wrapper: 'sheetsWrapper' },
+    { toggle: 'allowWebhook', wrapper: 'webhookWrapper' },
+    { toggle: 'allowEmail', wrapper: 'emailWrapper' }
+  ];
+
+  pairs.forEach(pair => {
+    const toggleEl = document.getElementById(pair.toggle);
+    const wrapperEl = document.getElementById(pair.wrapper);
+    if (toggleEl && wrapperEl) {
+      // Если галка стоит - показываем (flex), если нет - скрываем (none)
+      wrapperEl.style.display = toggleEl.checked ? 'flex' : 'none';
+    }
+  });
+}
+
+// Вешаем слушатели на чекбоксы при загрузке
+['allowSheets', 'allowWebhook', 'allowEmail'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener('change', toggleChannelInputs);
+  }
+});
+
+
 function renderClient() {
   const c = clientData; const s = settingsData;
   
-  // БЕЗОПАСНАЯ ЗАПИСЬ (знак ?. предотвращает падение, если поля нет)
+  // БЕЗОПАСНАЯ ЗАПИСЬ
   const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
   const setChk = (id, val) => { const el = document.getElementById(id); if (el) el.checked = val; };
   const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
@@ -488,6 +527,8 @@ function renderClient() {
   setTxt('statusEmail', s.channel_email_enabled === 1 ? 'Клиент: вкл' : 'Клиент: выкл');
 
   setVal('sheetsUrl', s.sheets_url || '');
+  setVal('webhookUrl', s.webhook_url || '');
+  setVal('webhookSecret', s.webhook_secret || '');
   setVal('notificationEmail', s.notification_email || '');
 
   setVal('botTelegramToken', s.bot_telegram_token || s.telegram_token || '');
@@ -517,6 +558,9 @@ function renderClient() {
 
   updateCounter('widgetPromptRu', 'counterWidgetPrompt');
   updateCounter('botPromptRu', 'counterBotPrompt');
+  
+  // Вызываем функцию, чтобы скрыть/показать поля при загрузке страницы
+  toggleChannelInputs();
 }
 
 function updatePriceFromTariff() {
@@ -578,8 +622,6 @@ async function saveAll() {
     const data1 = await res1.json();
     if (!data1.ok) throw new Error(data1.error?.ru || 'Ошибка сохранения клиента');
 
-    // Отправляем только разрешения и данные. 
-    // Если админ запрещает - принудительно ставим 0 у клиента.
     const settingsPayload = {
       client_id: clientId,
       use_radar_ai_key_widget: document.getElementById('useRadarKeyWidget').checked ? 1 : 0,
@@ -591,14 +633,14 @@ async function saveAll() {
       admin_allow_webhook: document.getElementById('allowWebhook').checked ? 1 : 0,
       admin_allow_email: document.getElementById('allowEmail').checked ? 1 : 0,
       
-      // Если админ разрешает (галка стоит), мы НЕ ТРОГАЕМ выбор клиента (отправляем undefined).
-      // Если запрещает (галка снята), принудительно ставим 0.
       channel_telegram_enabled: document.getElementById('allowTelegram').checked ? undefined : 0,
       channel_sheets_enabled: document.getElementById('allowSheets').checked ? undefined : 0,
       channel_webhook_enabled: document.getElementById('allowWebhook').checked ? undefined : 0,
       channel_email_enabled: document.getElementById('allowEmail').checked ? undefined : 0,
       
       sheets_url: document.getElementById('sheetsUrl').value.trim(),
+      webhook_url: document.getElementById('webhookUrl').value.trim(),
+      webhook_secret: document.getElementById('webhookSecret').value.trim(),
       notification_email: document.getElementById('notificationEmail').value.trim(),
 
       bot_telegram_token: document.getElementById('botTelegramToken').value.trim(),
@@ -634,6 +676,18 @@ async function saveAll() {
     });
     const data2 = await res2.json();
     if (!data2.ok) throw new Error(data2.error?.ru || 'Ошибка сохранения настроек');
+    
+    // Обновляем статусы визуально
+    const updateStatus = (allowId, statusId) => {
+      const allow = document.getElementById(allowId);
+      const status = document.getElementById(statusId);
+      if (allow && status && !allow.checked) status.textContent = 'Клиент: выкл';
+    };
+    updateStatus('allowTelegram', 'statusTelegram');
+    updateStatus('allowSheets', 'statusSheets');
+    updateStatus('allowWebhook', 'statusWebhook');
+    updateStatus('allowEmail', 'statusEmail');
+
     showStatus('✅ Все изменения сохранены', 'success');
   } catch (err) { showStatus('❌ ' + err.message, 'error'); }
 }
