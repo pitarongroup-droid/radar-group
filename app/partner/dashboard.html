@@ -28,7 +28,6 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         <span>Мои клиенты</span>
       </a>
-      <!-- Пока другие страницы не нужны, но можно добавить "Выплаты" позже -->
     </nav>
     <div class="sidebar-bottom">
       <button class="sidebar-logout" onclick="logout()">
@@ -120,24 +119,33 @@
 </div>
 
 <script>
-  // В реальном проекте здесь будет проверка токена и извлечение ID партнера из JWT.
-  // Пока мы берем ID из URL (?partner_id=prt_test), чтобы можно было протестировать.
-  const urlParams = new URLSearchParams(window.location.search);
-  const partnerId = urlParams.get('partner_id') || 'prt_test'; // prt_test - тестовый ID по умолчанию
+  // Берем токен партнера, а не ID из ссылки
+  const token = localStorage.getItem('partner_token');
+  if (!token) {
+    window.location.href = '/app/partner/login.html';
+  }
 
   function logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    document.cookie = 'token=; path=/; max-age=0';
-    window.location.href = '/app/login.html';
+    localStorage.removeItem('partner_token');
+    localStorage.removeItem('partner_user');
+    window.location.href = '/app/partner/login.html';
   }
 
   async function loadPartnerDashboard() {
     try {
-      const res = await fetch(`/api/partner/dashboard?partner_id=${partnerId}`);
+      // Передаем токен в заголовке для безопасности
+      const res = await fetch('/api/partner/dashboard', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
       const data = await res.json();
       
-      if (!data.ok) throw new Error(data.error?.ru || 'Ошибка загрузки');
+      if (!data.ok) {
+        if (res.status === 401 || res.status === 403) {
+          logout(); // Если токен протух, выкидываем на логин
+          return;
+        }
+        throw new Error(data.error || 'Ошибка загрузки');
+      }
 
       // 1. Устанавливаем имя и ссылку
       document.getElementById('partnerName').textContent = data.partner.name;

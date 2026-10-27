@@ -1,22 +1,37 @@
 export async function onRequestGet({ request, env }) {
   try {
-    const url = new URL(request.url);
-    // Пока берем ID партнера из URL (для теста). Позже заменим на проверку токена.
-    const partnerId = url.searchParams.get('partner_id') || 'prt_test'; 
+    // 1. Берем токен из заголовка
+    const auth = request.headers.get('Authorization') || '';
+    const token = auth.replace('Bearer ', '');
+    if (!token) return Response.json({ ok: false, error: 'Нет токена' }, { status: 401 });
 
-    // 1. Получаем данные партнера
+    // 2. Расшифровываем токен (проверяем, что это партнер)
+    let payload;
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      payload = JSON.parse(atob(base64));
+    } catch (e) {
+      return Response.json({ ok: false, error: 'Неверный токен' }, { status: 401 });
+    }
+
+    if (payload.role !== 'partner' || !payload.partnerId) {
+      return Response.json({ ok: false, error: 'Доступ запрещен' }, { status: 403 });
+    }
+
+    const partnerId = payload.partnerId;
+
+    // 3. Дальше весь код остается тем же (получаем данные партнера и статистику)
     const partner = await env.radar_group_db.prepare(
       'SELECT name, ref_code FROM partners WHERE id = ?'
     ).bind(partnerId).first();
 
     if (!partner) return Response.json({ ok: false, error: 'Партнер не найден' });
 
-    // 2. Считаем общее количество приведенных клиентов
     const totalClients = await env.radar_group_db.prepare(
       'SELECT COUNT(*) as c FROM clients WHERE referred_by = ?'
     ).bind(partnerId).first();
 
-    // 3. Считаем количество клиентов, которые уже оплатили (для лестницы)
     const paidClients = await env.radar_group_db.prepare(
       `SELECT COUNT(DISTINCT p.client_id) as c 
        FROM payments p 
@@ -24,23 +39,19 @@ export async function onRequestGet({ request, env }) {
        WHERE c.referred_by = ?`
     ).bind(partnerId).first();
 
-    // 4. Считаем баланс (только статус pending — то, что еще не выплачено)
     const balance = await env.radar_group_db.prepare(
       `SELECT COALESCE(SUM(commission_amount), 0) as s 
        FROM commissions WHERE partner_id = ? AND status = 'pending'`
     ).bind(partnerId).first();
 
-    // 5. Считаем общий заработок за всё время
     const totalEarned = await env.radar_group_db.prepare(
       `SELECT COALESCE(SUM(commission_amount), 0) as s 
        FROM commissions WHERE partner_id = ?`
     ).bind(partnerId).first();
 
     const paidCount = paidClients.c || 0;
-    // Определяем текущий процент
     const currentRate = paidCount > 10 ? 10 : 6;
 
-    // 6. Получаем последних 10 приведенных клиентов
     const { results: recentClients } = await env.radar_group_db.prepare(
       `SELECT c.id, c.name, c.email, c.account_status, c.created_at,
               (SELECT COALESCE(SUM(amount), 0) FROM payments WHERE client_id = c.id) as total_paid
@@ -51,10 +62,7 @@ export async function onRequestGet({ request, env }) {
 
     return Response.json({
       ok: true,
-      partner: { 
-        name: partner.name, 
-        ref_code: partner.ref_code 
-      },
+      partner: { name: partner.name, ref_code: partner.ref_code },
       stats: {
         total_clients: totalClients.c || 0,
         paid_clients: paidCount,
@@ -65,6 +73,6 @@ export async function onRequestGet({ request, env }) {
       recent_clients: recentClients || []
     });
   } catch (err) {
-    return Response.json({ ok: false, error: { ru: err.message } }, { status: 500 });
+    return Response.json({ ok: false, error: err.message }, { status: 500 });
   }
 }
