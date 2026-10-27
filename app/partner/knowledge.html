@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#08080F">
+  <meta name="robots" content="noindex, nofollow">
+  <title>База знаний — Radar Group</title>
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/app/sidebar.css">
+  <link rel="stylesheet" href="/app/dashboard.css">
+  <style>
+    /* Стили для аккордеонов (спойлеров) */
+    .accordion-item { margin-bottom: 10px; border: 1px solid var(--border); border-radius: 10px; background: rgba(255,255,255,0.02); overflow: hidden; }
+    .accordion-header { padding: 16px 20px; font-size: 15px; font-weight: 700; color: var(--text); cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; transition: background 0.2s; }
+    .accordion-header:hover { background: rgba(255,255,255,0.05); }
+    .accordion-content { display: none; padding: 0 20px 20px; color: var(--text-muted); font-size: 14px; line-height: 1.6; }
+    .accordion-item.active .accordion-content { display: block; }
+    .accordion-item.active .accordion-header { color: var(--cyan); border-bottom: 1px solid var(--border); margin-bottom: 15px; }
+    .accordion-item.active .accordion-header svg { transform: rotate(180deg); }
+    .accordion-header svg { transition: transform 0.3s; }
+    
+    /* Стили для скриптов */
+    .script-box { background: #12121A; border-left: 3px solid var(--cyan); padding: 15px; border-radius: 0 8px 8px 0; font-family: monospace; font-size: 13px; color: #E2E8F0; margin: 10px 0; position: relative; padding-right: 80px; }
+    .copy-btn { position: absolute; top: 10px; right: 10px; background: rgba(0, 240, 255, 0.1); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.3); padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; transition: 0.2s; font-family: var(--font); }
+    .copy-btn:hover { background: var(--cyan); color: #000; }
+    
+    /* Стили для возражений */
+    .objection-title { color: #FF0080; font-weight: 700; margin-top: 15px; font-size: 15px; }
+    .objection-answer { color: var(--text); margin-bottom: 10px; padding-left: 15px; border-left: 2px solid var(--cyan); }
+    .warning-box { background: rgba(255, 200, 0, 0.1); border: 1px solid rgba(255, 200, 0, 0.3); padding: 15px; border-radius: 8px; color: #FFC800; margin: 15px 0; font-size: 14px; }
+  </style>
+</head>
+<body class="page-app-dashboard">
+
+<div class="app-layout">
+  <aside class="sidebar">
+    <a href="/app/partner/dashboard.html" class="sidebar-logo">
+      <img src="/images/logo.webp" alt="Radar Group" width="32" height="32">
+      <span class="sidebar-logo-text">PARTNER</span>
+    </a>
+    <nav class="sidebar-nav">
+      <a href="/app/partner/dashboard.html" class="sidebar-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Дашборд и клиенты</span>
+      </a>
+      <a href="/app/partner/knowledge.html" class="sidebar-link active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span>База знаний</span>
+      </a>
+    </nav>
+    <div class="sidebar-bottom">
+      <button class="sidebar-logout" onclick="logout()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Выйти</span>
+      </button>
+    </div>
+  </aside>
+
+  <main class="app-main">
+    <header class="app-header">
+      <h1 class="app-header-title">🎓 База знаний и скрипты</h1>
+    </header>
+
+    <section class="dash-section">
+      <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">
+        Изучите эти материалы, чтобы продавать продукт Radar Group максимально эффективно. Если у вас возникнут вопросы, пишите вашему менеджеру.
+      </p>
+
+      <!-- 1. САМОЕ ВАЖНОЕ -->
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          🚨 КАК РЕГИСТРИРОВАТЬ КЛИЕНТА (Чтобы получить оплату)
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="accordion-content">
+          <div class="warning-box">
+            <strong>Внимание!</strong> Система засчитывает вам клиента ТОЛЬКО в том случае, если он перешел по вашей уникальной ссылке перед регистрацией.
+          </div>
+          <p><strong>Как это работает:</strong></p>
+          <ol style="padding-left: 20px; line-height: 1.8;">
+            <li>Вы копируете свою реферальную ссылку на главной странице дашборда (вида <code>radar-group.org/?ref=prt_xxxx</code>).</li>
+            <li>Отправляете её потенциальному клиенту.</li>
+            <li>Клиент кликает по ссылке. В его браузере на 30 дней сохраняется Cookie с вашим кодом.</li>
+            <li>Клиент переходит на сайт и регистрируется.</li>
+            <li>Система видит Cookie и навсегда привязывает этого клиента к вам.</li>
+          </ol>
+          <p style="margin-top: 15px; color: #FF0080;"><strong>Важно:</strong> Если клиент просто зайдет на сайт и зарегистрируется сам (без перехода по вашей ссылке), система не узнает, что это ваш клиент, и вы не получите процент.</p>
+        </div>
+      </div>
+
+      <!-- 2. ТЕСТОВЫЙ ПЕРИОД -->
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          🎁 Как работают 2 тестовых дня
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="accordion-content">
+          <p>Мы хотим, чтобы клиенты покупали осознанно. Поэтому у нас есть тестовый период.</p>
+          <ul style="padding-left: 20px; line-height: 1.8;">
+            <li><strong>Как включить:</strong> Вы приводите клиента, он регистрируется. Вы пишете вашему менеджеру (или в поддержку) с просьбой включить тестовый период на 2 дня.</li>
+            <li><strong>Что получает клиент:</strong> Полный доступ к настройкам виджета/бота, возможность протестировать промпты и посмотреть, как ИИ отвечает на реальные сообщения.</li>
+            <li><strong>Ограничения:</strong> Тестовый период не оплачивается. Если клиент решает продолжить, менеджер выставляет счет, и после оплаты клиент переходит на полноценный тариф.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 3. ИНТЕГРАЦИИ -->
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          ⚙️ Какие интеграции мы предлагаем
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="accordion-content">
+          <p>ИИ-менеджер может быть внедрен в любую точку, где у бизнеса общаются с клиентами:</p>
+          <ul style="padding-left: 20px; line-height: 1.8;">
+            <li>💬 <strong>Telegram-бот:</strong> Отдельный бот с уникальным именем, который продает ваш продукт.</li>
+            <li>💼 <strong>Telegram Business:</strong> ИИ подключается к личному аккаунту владельца и отвечает от его имени.</li>
+            <li>🌐 <strong>Виджет на сайт:</strong> Красивый чат-кружок в правом нижнем углу сайта.</li>
+            <li>📊 <strong>CRM и Google Sheets:</strong> Все собранные лиды автоматически улетают в таблицу или в вашу CRM (amoCRM, Bitrix24).</li>
+            <li>📧 <strong>Email и Webhooks:</strong> Уведомления о новых лидах приходят на почту или в Telegram.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 4. СКРИПТЫ -->
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          💬 Шаблоны сообщений для холодной рассылки
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="accordion-content">
+          <p>Отправляйте эти сообщения владельцам бизнеса в Telegram, Instagram или WhatsApp.</p>
+          
+          <strong>Скрипт №1 (В лоб):</strong>
+          <div class="script-box">
+            Привет! Заметил, что вы продаете [название услуги]. У вас есть менеджер, который отвечает клиентам ночью и в выходные? Если нет, мы можем внедрить ИИ-менеджера, который будет продавать за вас 24/7 и не будет брать зарплату. Скинуть короткое демо?
+            <button class="copy-btn" onclick="copyText(this)">Копировать</button>
+          </div>
+
+          <strong>Скрипт №2 (Через боль):</strong>
+          <div class="script-box">
+            Здравствуйте! Часто ли у вас теряются клиенты, потому что не успеваете отвечать в личку? Мы делаем ИИ-менеджеров, которые отвечают за 3 секунды, знают весь ваш ассортимент и закрывают на оплату. Работает автономно. Хотите посмотреть, как это будет выглядеть для вашего бизнеса?
+            <button class="copy-btn" onclick="copyText(this)">Копировать</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. ВОЗРАЖЕНИЯ -->
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          🛡️ Как отвечать на возражения
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="accordion-content">
+          
+          <div class="objection-title">Клиент: "Это дорого / У меня нет на это бюджета"</div>
+          <div class="objection-answer">
+            Ответ: "Давайте посчитаем. Средний чек у вас [сумма]? Если ИИ спасет хотя бы одного клиента в месяц, он уже окупит свою стоимость. Плюс, вам не нужно платить ему зарплату и налоги. Выгода очевидна."
+          </div>
+
+          <div class="objection-title">Клиент: "У меня уже есть менеджеры"</div>
+          <div class="objection-answer">
+            Ответ: "Это отлично! ИИ не заменит ваших людей, он станет их помощником. Он будет брать на себя ночные смены, отвечать на рутинные вопросы (цены, адрес) и собирать контакты, пока ваши менеджеры спят. Меньше рутины — больше времени на закрытие крупных сделок."
+          </div>
+
+          <div class="objection-title">Клиент: "Это сложно, мне некогда разбираться"</div>
+          <div class="objection-answer">
+            Ответ: "Вам не придется ничего настраивать. Мы берем всё на себя. Мы изучаем ваш бизнес, обучаем ИИ и даем вам готовый результат. От вас нужно только 30 минут на созвон."
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+  </main>
+</div>
+
+<script>
+  const token = localStorage.getItem('partner_token');
+  if (!token) {
+    window.location.href = '/app/partner/login.html';
+  }
+
+  function logout() {
+    localStorage.removeItem('partner_token');
+    localStorage.removeItem('partner_user');
+    window.location.href = '/app/partner/login.html';
+  }
+
+  function toggleAccordion(header) {
+    const item = header.parentElement;
+    item.classList.toggle('active');
+  }
+
+  function copyText(btn) {
+    const box = btn.parentElement;
+    const textToCopy = box.innerText.replace('Копировать', '').trim();
+    
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      btn.textContent = '✅ Скопировано';
+      setTimeout(() => btn.textContent = 'Копировать', 2000);
+    });
+  }
+</script>
+</body>
+</html>
