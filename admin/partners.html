@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#08080F">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Админ — Партнеры</title>
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/app/dashboard.css">
+  <link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body class="page-dashboard">
+
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <a href="/admin/dashboard.html" class="admin-sidebar-logo">
+      <img src="/images/logo.webp" alt="Radar" width="32" height="32">
+      <span class="admin-sidebar-logo-text">ADMIN</span>
+    </a>
+    <nav class="admin-sidebar-nav">
+      <a href="/admin/dashboard.html" class="admin-sidebar-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+        <span>Обзор</span>
+      </a>
+      <a href="/admin/clients.html" class="admin-sidebar-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Клиенты</span>
+      </a>
+      <a href="/admin/partners.html" class="admin-sidebar-link active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4.5L18.5 21 12 16.5 5.5 21l2-7.5L2 9h7z"/></svg>
+        <span>Партнеры</span>
+      </a>
+      <a href="/admin/logs.html" class="admin-sidebar-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <span>Логи</span>
+      </a>
+    </nav>
+    <div class="admin-sidebar-bottom">
+      <button class="sidebar-logout" onclick="logout()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Выйти</span>
+      </button>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <header class="admin-header">
+      <h1 class="admin-header-title">Партнеры</h1>
+      <button class="btn btn-primary" onclick="document.getElementById('createForm').style.display='block'">+ Новый партнер</button>
+    </header>
+
+    <!-- Форма создания (скрыта по умолчанию) -->
+    <section class="dash-section" id="createForm" style="display:none; border-color: var(--cyan); background: rgba(0, 240, 255, 0.05);">
+      <div class="dash-section-header">
+        <h2 class="dash-section-title">Создать партнера</h2>
+      </div>
+      <div class="settings-form" style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+        <div class="form-row">
+          <label class="form-label">Имя</label>
+          <input class="form-input" type="text" id="pName" placeholder="Иван Иванов">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Email (для входа)</label>
+          <input class="form-input" type="email" id="pEmail" placeholder="partner@email.com">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Пароль</label>
+          <input class="form-input" type="text" id="pPassword" placeholder="Минимум 8 символов" value="12345678">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Реф-код (латиницей)</label>
+          <input class="form-input" type="text" id="pRefCode" placeholder="ivan_partner">
+        </div>
+      </div>
+      <div style="margin-top:20px; display:flex; gap:10px;">
+        <button class="btn btn-primary" onclick="createPartner()">Сохранить</button>
+        <button class="btn btn-outline" onclick="document.getElementById('createForm').style.display='none'">Отмена</button>
+      </div>
+      <div id="createStatus" class="form-status" style="margin-top:10px;"></div>
+    </section>
+
+    <section class="dash-section">
+      <table class="clients-table">
+        <thead>
+          <tr>
+            <th>Партнер</th>
+            <th>Реф-код</th>
+            <th>Клиентов</th>
+            <th>Баланс (к выплате)</th>
+            <th>Выплачено всего</th>
+          </tr>
+        </thead>
+        <tbody id="partnersTable">
+          <tr><td colspan="5" class="empty-state">Загрузка...</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</div>
+
+<script>
+  const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  if (!token || user.role !== 'admin') window.location.href = '/app/login.html';
+
+  function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    document.cookie = 'token=; path=/; max-age=0';
+    window.location.href = '/app/login.html';
+  }
+
+  async function loadPartners() {
+    const tbody = document.getElementById('partnersTable');
+    try {
+      const res = await fetch('/api/admin/partners', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error);
+
+      if (!data.partners.length) {
+        tbody.innerHTML = `<tr><td colspan="5" class="empty-state">Пока нет партнеров</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = data.partners.map(p => `
+        <tr>
+          <td>
+            <div style="font-weight:600;">${escapeHtml(p.name)}</div>
+            <div style="font-size:12px; color:var(--text-dim);">${escapeHtml(p.email)}</div>
+          </td>
+          <td><code style="color:var(--cyan);">${p.ref_code}</code></td>
+          <td>${p.clients_count}</td>
+          <td style="color:#FFC800; font-weight:700;">${Math.round(p.pending_balance)} BYN</td>
+          <td>${Math.round(p.total_paid)} BYN</td>
+        </tr>
+      `).join('');
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="5" class="empty-state">Ошибка: ${err.message}</td></tr>`;
+    }
+  }
+
+  async function createPartner() {
+    const name = document.getElementById('pName').value.trim();
+    const email = document.getElementById('pEmail').value.trim();
+    const password = document.getElementById('pPassword').value;
+    const ref_code = document.getElementById('pRefCode').value.trim();
+    const status = document.getElementById('createStatus');
+
+    if (!name || !email || !password || !ref_code) {
+      status.className = 'form-status error';
+      status.textContent = 'Заполните все поля';
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/admin/partners', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ name, email, password, ref_code })
+      });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error);
+
+      status.className = 'form-status success';
+      status.textContent = '✅ Партнер создан!';
+      
+      // Очищаем форму и обновляем таблицу
+      document.getElementById('pName').value = '';
+      document.getElementById('pEmail').value = '';
+      document.getElementById('pRefCode').value = '';
+      
+      setTimeout(() => {
+        document.getElementById('createForm').style.display = 'none';
+        status.textContent = '';
+        loadPartners();
+      }, 1500);
+
+    } catch (err) {
+      status.className = 'form-status error';
+      status.textContent = '❌ ' + err.message;
+    }
+  }
+
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+  }
+
+  loadPartners();
+</script>
+
+</body>
+</html>
