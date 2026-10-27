@@ -39,6 +39,11 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
         <span>Логи</span>
       </a>
+      <!-- ДОБАВЛЕНО: Ссылка на Финансы вернулась -->
+      <a href="/admin/billing.html" class="admin-sidebar-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        <span>Финансы</span>
+      </a>
     </nav>
     <div class="admin-sidebar-bottom">
       <button class="sidebar-logout" onclick="logout()">
@@ -54,7 +59,7 @@
       <button class="btn btn-primary" onclick="document.getElementById('createForm').style.display='block'">+ Новый партнер</button>
     </header>
 
-    <!-- Форма создания (скрыта по умолчанию) -->
+    <!-- Форма создания -->
     <section class="dash-section" id="createForm" style="display:none; border-color: var(--cyan); background: rgba(0, 240, 255, 0.05);">
       <div class="dash-section-header">
         <h2 class="dash-section-title">Создать партнера</h2>
@@ -93,10 +98,11 @@
             <th>Клиентов</th>
             <th>Баланс (к выплате)</th>
             <th>Выплачено всего</th>
+            <th>Действие</th>
           </tr>
         </thead>
         <tbody id="partnersTable">
-          <tr><td colspan="5" class="empty-state">Загрузка...</td></tr>
+          <tr><td colspan="6" class="empty-state">Загрузка...</td></tr>
         </tbody>
       </table>
     </section>
@@ -125,24 +131,34 @@
       if (!data.ok) throw new Error(data.error);
 
       if (!data.partners.length) {
-        tbody.innerHTML = `<tr><td colspan="5" class="empty-state">Пока нет партнеров</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="empty-state">Пока нет партнеров</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = data.partners.map(p => `
-        <tr>
-          <td>
-            <div style="font-weight:600;">${escapeHtml(p.name)}</div>
-            <div style="font-size:12px; color:var(--text-dim);">${escapeHtml(p.email)}</div>
-          </td>
-          <td><code style="color:var(--cyan);">${p.ref_code}</code></td>
-          <td>${p.clients_count}</td>
-          <td style="color:#FFC800; font-weight:700;">${Math.round(p.pending_balance)} BYN</td>
-          <td>${Math.round(p.total_paid)} BYN</td>
-        </tr>
-      `).join('');
+      tbody.innerHTML = data.partners.map(p => {
+        // Если баланс больше 0, показываем активную кнопку выплаты
+        const payoutBtn = p.pending_balance > 0 
+          ? `<button class="btn btn-outline" style="border-color:var(--cyan); color:var(--cyan); padding:6px 12px; font-size:12px;" onclick="payoutPartner('${p.id}', ${p.pending_balance})">💸 Выплатить</button>`
+          : `<span style="color:var(--text-dim); font-size:12px;">Нет долгов</span>`;
+
+        return `
+          <tr>
+            <td>
+              <div style="font-weight:600;">${escapeHtml(p.name)}</div>
+              <div style="font-size:12px; color:var(--text-dim);">${escapeHtml(p.email)}</div>
+            </td>
+            <td><code style="color:var(--cyan);">${p.ref_code}</code></td>
+            <td>${p.clients_count}</td>
+            <td style="color:${p.pending_balance > 0 ? '#FFC800' : 'var(--text-dim)'}; font-weight:700;">
+              ${Math.round(p.pending_balance)} BYN
+            </td>
+            <td>${Math.round(p.total_paid)} BYN</td>
+            <td>${payoutBtn}</td>
+          </tr>
+        `;
+      }).join('');
     } catch (err) {
-      tbody.innerHTML = `<tr><td colspan="5" class="empty-state">Ошибка: ${err.message}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" class="empty-state">Ошибка: ${err.message}</td></tr>`;
     }
   }
 
@@ -171,7 +187,6 @@
       status.className = 'form-status success';
       status.textContent = '✅ Партнер создан!';
       
-      // Очищаем форму и обновляем таблицу
       document.getElementById('pName').value = '';
       document.getElementById('pEmail').value = '';
       document.getElementById('pRefCode').value = '';
@@ -185,6 +200,28 @@
     } catch (err) {
       status.className = 'form-status error';
       status.textContent = '❌ ' + err.message;
+    }
+  }
+
+  async function payoutPartner(partnerId, amount) {
+    if (!confirm(`Вы уверены, что выплатили партнеру ${amount} BYN?\n\nБаланс обнулится, а деньги перейдут в "Выплачено всего".`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/admin/partners/payout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ partner_id: partnerId })
+      });
+      const data = await res.json();
+      
+      if (!data.ok) throw new Error(data.error);
+      
+      alert('✅ Выплата успешно зафиксирована!');
+      loadPartners(); // Обновляем таблицу
+    } catch (err) {
+      alert('❌ Ошибка: ' + err.message);
     }
   }
 
