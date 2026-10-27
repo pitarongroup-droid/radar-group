@@ -14,6 +14,35 @@
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/app/dashboard.css">
   <link rel="stylesheet" href="/admin/admin.css">
+  <style>
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .filter-tab {
+      padding: 8px 16px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .filter-tab:hover {
+      color: var(--text);
+      border-color: var(--border-strong);
+    }
+    .filter-tab.active {
+      background: var(--gradient-cta);
+      color: #FFFFFF;
+      border-color: transparent;
+      box-shadow: 0 4px 14px rgba(0, 240, 255, 0.25);
+    }
+  </style>
 </head>
 <body class="page-logs">
 
@@ -54,14 +83,24 @@
       <h1 class="admin-header-title">Логи</h1>
     </header>
 
-    <!-- НОВАЯ ПАНЕЛЬ ФИЛЬТРОВ -->
+    <!-- ОБНОВЛЕННАЯ ПАНЕЛЬ ФИЛЬТРОВ -->
     <section class="dash-section" style="margin-bottom: 15px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
       <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-        <div style="display:flex; gap:5px; align-items:center;">
-          <input type="date" id="dateFrom" class="form-input" style="padding:8px; width:140px; color-scheme: dark;">
-          <span style="color:var(--text-muted);">—</span>
-          <input type="date" id="dateTo" class="form-input" style="padding:8px; width:140px; color-scheme: dark;">
+        
+        <!-- НОВЫЕ КНОПКИ БЫСТРОГО ВЫБОРА -->
+        <div class="filter-tabs" id="quickFilters" style="margin-right: 10px;">
+          <button class="filter-tab active" data-days="all">Всё время</button>
+          <button class="filter-tab" data-days="1">Сегодня</button>
+          <button class="filter-tab" data-days="7">7 дней</button>
+          <button class="filter-tab" data-days="30">30 дней</button>
         </div>
+
+        <div style="display:flex; gap:5px; align-items:center;">
+          <input type="date" id="dateFrom" class="form-input" style="padding:8px; width:130px; color-scheme: dark;">
+          <span style="color:var(--text-muted);">—</span>
+          <input type="date" id="dateTo" class="form-input" style="padding:8px; width:130px; color-scheme: dark;">
+        </div>
+        
         <button class="btn btn-primary" onclick="loadLogs()" style="padding:8px 16px;">🔍 Применить</button>
         <button class="btn btn-outline" onclick="resetFilters()" style="padding:8px 16px;">Сбросить</button>
       </div>
@@ -113,7 +152,6 @@
     if (dateTo) params.append('date_to', dateTo);
 
     try {
-      // Передаем параметры в API
       const res = await fetch('/api/admin/logs?' + params.toString());
       const data = await res.json();
       if (!data.ok) throw new Error(data.error?.ru || 'Ошибка');
@@ -164,10 +202,45 @@
     }
   }
 
-  // Функция сброса фильтров
+  // Обработка быстрых кнопок
+  document.querySelectorAll('#quickFilters .filter-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('#quickFilters .filter-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      const days = tab.dataset.days;
+      const today = new Date();
+      let dateFrom = null, dateTo = null;
+
+      if (days === '1') {
+        dateFrom = today.toISOString().split('T')[0];
+        dateTo = dateFrom;
+      } else if (days === '7') {
+        const past = new Date();
+        past.setDate(today.getDate() - 7);
+        dateFrom = past.toISOString().split('T')[0];
+        dateTo = today.toISOString().split('T')[0];
+      } else if (days === '30') {
+        const past = new Date();
+        past.setDate(today.getDate() - 30);
+        dateFrom = past.toISOString().split('T')[0];
+        dateTo = today.toISOString().split('T')[0];
+      }
+
+      // Автоматически подставляем даты в календари
+      document.getElementById('dateFrom').value = dateFrom || '';
+      document.getElementById('dateTo').value = dateTo || '';
+      
+      // Загружаем данные
+      loadLogs();
+    });
+  });
+
   function resetFilters() {
     document.getElementById('dateFrom').value = '';
     document.getElementById('dateTo').value = '';
+    document.querySelectorAll('#quickFilters .filter-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector('#quickFilters .filter-tab[data-days="all"]').classList.add('active');
     loadLogs();
   }
 

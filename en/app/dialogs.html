@@ -73,14 +73,24 @@
       </div>
     </header>
 
-    <!-- НОВАЯ ПАНЕЛЬ ФИЛЬТРОВ (EN) -->
+    <!-- FILTER PANEL -->
     <section class="dash-section" style="margin-bottom: 15px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
       <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-        <div style="display:flex; gap:5px; align-items:center;">
-          <input type="date" id="dateFrom" class="form-input" style="padding:8px; width:140px; color-scheme: dark;">
-          <span style="color:var(--text-muted);">—</span>
-          <input type="date" id="dateTo" class="form-input" style="padding:8px; width:140px; color-scheme: dark;">
+        
+        <!-- QUICK FILTER BUTTONS -->
+        <div class="filter-tabs" id="quickFilters" style="margin-right: 10px;">
+          <button class="filter-tab active" data-days="all">All time</button>
+          <button class="filter-tab" data-days="1">Today</button>
+          <button class="filter-tab" data-days="7">7 days</button>
+          <button class="filter-tab" data-days="30">30 days</button>
         </div>
+
+        <div style="display:flex; gap:5px; align-items:center;">
+          <input type="date" id="dateFrom" class="form-input" style="padding:8px; width:130px; color-scheme: dark;">
+          <span style="color:var(--text-muted);">—</span>
+          <input type="date" id="dateTo" class="form-input" style="padding:8px; width:130px; color-scheme: dark;">
+        </div>
+        
         <input type="text" id="searchText" class="form-input" placeholder="Search by name or contact..." style="flex:1; min-width:200px; padding:8px;">
         <button class="btn btn-primary" onclick="loadDialogs()" style="padding:8px 16px;">🔍 Apply</button>
         <button class="btn btn-outline" onclick="resetFilters()" style="padding:8px 16px;">Reset</button>
@@ -89,7 +99,7 @@
 
     <section class="dash-section">
       <div class="filter-tabs">
-        <button class="filter-tab active" data-filter="all">All</button>
+        <button class="filter-tab" data-filter="all">All</button>
         <button class="filter-tab" data-filter="leads">Leads</button>
         <button class="filter-tab" data-filter="active">Active</button>
       </div>
@@ -178,12 +188,12 @@
     const tbody = document.getElementById('dialogsTable');
     tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Loading...</td></tr>';
 
-    // Собираем данные с фильтров
+    // Collect filter data
     const dateFrom = document.getElementById('dateFrom').value;
     const dateTo = document.getElementById('dateTo').value;
     const searchText = document.getElementById('searchText').value;
 
-    // Формируем URL
+    // Build URL params
     const params = new URLSearchParams();
     params.append('filter', currentFilter);
     if (dateFrom) params.append('date_from', dateFrom);
@@ -204,7 +214,7 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="48" height="48"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               <div>No dialogs yet</div>
               <div style="font-size: 12px; margin-top: 6px; color: var(--text-dim);">
-                As soon as clients start messaging the bot, dialogs will appear here
+                Try changing filters or period
               </div>
             </td>
           </tr>
@@ -251,22 +261,57 @@
     }
   }
 
-  // Функция сброса фильтров
-  function resetFilters() {
-    document.getElementById('dateFrom').value = '';
-    document.getElementById('dateTo').value = '';
-    document.getElementById('searchText').value = '';
-    loadDialogs();
-  }
-
-  document.querySelectorAll('.filter-tab').forEach(tab => {
+  // Handle quick filter buttons
+  document.querySelectorAll('#quickFilters .filter-tab').forEach(tab => {
     tab.addEventListener('click', () => {
-      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('#quickFilters .filter-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      const days = tab.dataset.days;
+      const today = new Date();
+      let dateFrom = null, dateTo = null;
+
+      if (days === '1') {
+        dateFrom = today.toISOString().split('T')[0];
+        dateTo = dateFrom;
+      } else if (days === '7') {
+        const past = new Date();
+        past.setDate(today.getDate() - 7);
+        dateFrom = past.toISOString().split('T')[0];
+        dateTo = today.toISOString().split('T')[0];
+      } else if (days === '30') {
+        const past = new Date();
+        past.setDate(today.getDate() - 30);
+        dateFrom = past.toISOString().split('T')[0];
+        dateTo = today.toISOString().split('T')[0];
+      }
+
+      // Set dates automatically
+      document.getElementById('dateFrom').value = dateFrom || '';
+      document.getElementById('dateTo').value = dateTo || '';
+      
+      loadDialogs();
+    });
+  });
+
+  // Handle tabs (Leads/All)
+  document.querySelectorAll('.filter-tab[data-filter]').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.filter-tab[data-filter]').forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
       currentFilter = tab.dataset.filter;
       loadDialogs();
     });
   });
+
+  function resetFilters() {
+    document.getElementById('dateFrom').value = '';
+    document.getElementById('dateTo').value = '';
+    document.getElementById('searchText').value = '';
+    document.querySelectorAll('#quickFilters .filter-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector('#quickFilters .filter-tab[data-days="all"]').classList.add('active');
+    loadDialogs();
+  }
 
   function escapeHtml(s) {
     return String(s || '').replace(/[&<>"']/g, ch => ({
