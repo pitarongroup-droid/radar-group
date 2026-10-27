@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#08080F">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Партнерский кабинет — Radar Group</title>
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"></noscript>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/app/sidebar.css">
+  <link rel="stylesheet" href="/app/dashboard.css">
+</head>
+<body class="page-app-dashboard">
+
+<div class="app-layout">
+  <aside class="sidebar">
+    <a href="/app/partner/dashboard.html" class="sidebar-logo">
+      <img src="/images/logo.webp" alt="Radar Group" width="32" height="32">
+      <span class="sidebar-logo-text">PARTNER</span>
+    </a>
+    <nav class="sidebar-nav">
+      <a href="/app/partner/dashboard.html" class="sidebar-link active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Мои клиенты</span>
+      </a>
+      <!-- Пока другие страницы не нужны, но можно добавить "Выплаты" позже -->
+    </nav>
+    <div class="sidebar-bottom">
+      <button class="sidebar-logout" onclick="logout()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Выйти</span>
+      </button>
+    </div>
+  </aside>
+
+  <main class="app-main">
+    <header class="app-header">
+      <h1 class="app-header-title">Партнерский кабинет</h1>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div class="app-header-user">
+          <div class="app-header-user-avatar">P</div>
+          <span id="partnerName">Партнер</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- РЕФЕРАЛЬНАЯ ССЫЛКА -->
+    <section class="dash-section" style="background: linear-gradient(135deg, rgba(0, 240, 255, 0.1) 0%, rgba(255, 0, 128, 0.05) 100%); border: 1px solid rgba(0, 240, 255, 0.3);">
+      <div class="dash-section-header" style="margin-bottom: 15px;">
+        <h2 class="dash-section-title" style="font-size: 18px;">
+          🔗 Ваша реферальная ссылка
+        </h2>
+      </div>
+      <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;">
+        Отправляйте эту ссылку вашим клиентам. Когда они регистрируются по ней и оплачивают тариф, вы получаете процент от их платежей.
+      </p>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <input type="text" id="refLink" class="form-input" readonly style="flex: 1; min-width: 250px; font-family: monospace; font-size: 14px; background: rgba(0,0,0,0.3);">
+        <button class="btn btn-primary" onclick="copyLink()" id="copyBtn" style="padding: 12px 24px;">📋 Копировать</button>
+      </div>
+    </section>
+
+    <!-- СТАТИСТИКА -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-label">Всего клиентов</div>
+        <div class="stat-card-value" id="statTotalClients">0</div>
+        <div class="stat-card-meta">пришло по ссылке</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">Оплативших</div>
+        <div class="stat-card-value" id="statPaidClients">0</div>
+        <div class="stat-card-meta">принесли выручку</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">Ваш процент</div>
+        <div class="stat-card-value" id="statRate">6%</div>
+        <div class="stat-card-meta">от каждого чека</div>
+      </div>
+      <div class="stat-card" style="border-color: rgba(255, 200, 0, 0.4); background: rgba(255, 200, 0, 0.05);">
+        <div class="stat-card-label" style="color: #FFC800;">Текущий баланс</div>
+        <div class="stat-card-value" id="statBalance" style="color: #FFC800;">0 BYN</div>
+        <div class="stat-card-meta">к выплате</div>
+      </div>
+    </section>
+
+    <!-- ТАБЛИЦА КЛИЕНТОВ -->
+    <section class="dash-section">
+      <div class="dash-section-header">
+        <h2 class="dash-section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          Ваши клиенты
+        </h2>
+        <span style="font-size: 13px; color: var(--text-muted);">Последние 10</span>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Клиент</th>
+            <th>Email</th>
+            <th>Статус</th>
+            <th>Оплачено</th>
+            <th>Дата регистрации</th>
+          </tr>
+        </thead>
+        <tbody id="clientsTable">
+          <tr>
+            <td colspan="5" class="empty-state">Загрузка...</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</div>
+
+<script>
+  // В реальном проекте здесь будет проверка токена и извлечение ID партнера из JWT.
+  // Пока мы берем ID из URL (?partner_id=prt_test), чтобы можно было протестировать.
+  const urlParams = new URLSearchParams(window.location.search);
+  const partnerId = urlParams.get('partner_id') || 'prt_test'; // prt_test - тестовый ID по умолчанию
+
+  function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    document.cookie = 'token=; path=/; max-age=0';
+    window.location.href = '/app/login.html';
+  }
+
+  async function loadPartnerDashboard() {
+    try {
+      const res = await fetch(`/api/partner/dashboard?partner_id=${partnerId}`);
+      const data = await res.json();
+      
+      if (!data.ok) throw new Error(data.error?.ru || 'Ошибка загрузки');
+
+      // 1. Устанавливаем имя и ссылку
+      document.getElementById('partnerName').textContent = data.partner.name;
+      
+      // Формируем красивую ссылку (берем текущий домен)
+      const domain = window.location.origin;
+      const refLink = `${domain}/?ref=${data.partner.ref_code}`;
+      document.getElementById('refLink').value = refLink;
+
+      // 2. Заполняем карточки
+      document.getElementById('statTotalClients').textContent = data.stats.total_clients;
+      document.getElementById('statPaidClients').textContent = data.stats.paid_clients;
+      document.getElementById('statRate').textContent = data.stats.current_rate + '%';
+      document.getElementById('statBalance').textContent = data.stats.balance + ' BYN';
+
+      // 3. Заполняем таблицу
+      const tbody = document.getElementById('clientsTable');
+      if (!data.recent_clients || !data.recent_clients.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="empty-state">
+              <div>Пока нет клиентов</div>
+              <div style="font-size: 12px; margin-top: 6px; color: var(--text-dim);">
+                Отправьте вашу ссылку, чтобы начать зарабатывать
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = data.recent_clients.map(c => {
+        // Форматируем дату
+        let dateObj;
+        if (typeof c.created_at === 'string' && (c.created_at.includes('-') || c.created_at.includes('T'))) {
+          dateObj = new Date(c.created_at);
+        } else {
+          dateObj = new Date(c.created_at * 1000);
+        }
+        const date = isNaN(dateObj.getTime()) 
+          ? '—' 
+          : dateObj.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+        // Статус
+        const statusLabel = {
+          approved: '<span class="badge badge-success">Активен</span>',
+          pending: '<span class="badge badge-warning">На проверке</span>',
+          suspended: '<span class="badge" style="background:rgba(255,0,128,0.1); color:#FF0080;">Блок</span>'
+        }[c.account_status] || c.account_status;
+
+        // Выручка
+        const paid = c.total_paid ? `${c.total_paid} BYN` : '—';
+
+        return `
+          <tr>
+            <td>${escapeHtml(c.name || 'Клиент')}</td>
+            <td>${escapeHtml(c.email || '—')}</td>
+            <td>${statusLabel}</td>
+            <td style="color: var(--cyan); font-weight: 600;">${paid}</td>
+            <td>${date}</td>
+          </tr>
+        `;
+      }).join('');
+    } catch (err) {
+      console.error('Partner load error:', err);
+      document.getElementById('clientsTable').innerHTML = `<tr><td colspan="5" class="empty-state">Ошибка: ${err.message}</td></tr>`;
+    }
+  }
+
+  // Копирование ссылки
+  function copyLink() {
+    const input = document.getElementById('refLink');
+    input.select();
+    input.setSelectionRange(0, 99999); // Для мобильных устройств
+    
+    try {
+      navigator.clipboard.writeText(input.value);
+      const btn = document.getElementById('copyBtn');
+      const originalText = btn.textContent;
+      btn.textContent = '✅ Скопировано!';
+      btn.style.background = 'var(--gradient-cta)';
+      setTimeout(() => {
+        btn.textContent = originalText;
+      }, 2000);
+    } catch (err) {
+      alert('Не удалось скопировать. Выделите текст вручную.');
+    }
+  }
+
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, ch => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[ch]));
+  }
+
+  // Запуск
+  loadPartnerDashboard();
+</script>
+</body>
+</html>
