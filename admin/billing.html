@@ -14,6 +14,36 @@
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/app/dashboard.css">
   <link rel="stylesheet" href="/admin/admin.css">
+  <style>
+    /* --- СТИЛИ ФИЛЬТРОВ --- */
+    .filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter-tab {
+      padding: 8px 16px; background: transparent; border: 1px solid var(--border);
+      border-radius: 100px; color: var(--text-muted); font-family: inherit;
+      font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition);
+    }
+    .filter-tab:hover { color: var(--text); border-color: var(--border-strong); }
+    .filter-tab.active {
+      background: var(--gradient-cta); color: #FFFFFF; border-color: transparent;
+      box-shadow: 0 4px 14px rgba(0, 240, 255, 0.25);
+    }
+
+    /* --- АДАПТИВНЫЕ ФИЛЬТРЫ --- */
+    .filter-panel { margin-bottom: 15px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 10px; border: 1px solid var(--border); }
+    .filter-container { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .filter-date-box { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+    .date-input { padding: 8px; width: 130px; color-scheme: dark; }
+    @media (max-width: 768px) {
+      .filter-container { flex-direction: column; align-items: stretch; }
+      .filter-date-box { justify-content: space-between; margin-bottom: 10px; margin-left: 0 !important; }
+      .date-input { flex: 1; width: auto; min-width: 110px; }
+      .filter-actions { justify-content: space-between; width: 100%; }
+      .filter-actions .btn { flex: 1; padding: 10px; font-size: 13px; }
+      .filter-tabs { width: 100%; display: flex; overflow-x: auto; padding-bottom: 5px; margin-bottom: 5px; -webkit-overflow-scrolling: touch; }
+      .filter-tabs::-webkit-scrollbar { display: none; }
+      .filter-tab { flex-shrink: 0; padding: 8px 14px; font-size: 13px; }
+    }
+  </style>
 </head>
 <body class="page-billing">
 
@@ -32,7 +62,6 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
         <span>Клиенты</span>
       </a>
-      <!-- ДОБАВЛЕНО: Партнеры -->
       <a href="/admin/partners.html" class="admin-sidebar-link">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4.5L18.5 21 12 16.5 5.5 21l2-7.5L2 9h7z"/></svg>
         <span>Партнеры</span>
@@ -59,21 +88,44 @@
       <h1 class="admin-header-title">Финансы</h1>
     </header>
 
+    <!-- НОВАЯ ПАНЕЛЬ ФИЛЬТРОВ -->
+    <section class="filter-panel">
+      <div class="filter-container">
+        
+        <div class="filter-tabs" id="quickFilters">
+          <button class="filter-tab active" data-days="all">Всё время</button>
+          <button class="filter-tab" data-days="1">Сегодня</button>
+          <button class="filter-tab" data-days="7">7 дней</button>
+          <button class="filter-tab" data-days="30">30 дней</button>
+        </div>
+
+        <div class="filter-date-box" style="margin-left: auto;">
+          <input type="date" id="dateFrom" class="form-input date-input">
+          <span style="color:var(--text-muted);">—</span>
+          <input type="date" id="dateTo" class="form-input date-input">
+        </div>
+        
+        <div class="filter-actions">
+          <button class="btn btn-primary" onclick="loadBilling()">🔍 Применить</button>
+        </div>
+      </div>
+    </section>
+
     <section class="stats-grid">
       <div class="stat-card">
         <div class="stat-card-label">Выручка</div>
         <div class="stat-card-value" id="statRevenue">0 BYN</div>
-        <div class="stat-card-meta">за текущий месяц</div>
+        <div class="stat-card-meta meta-period-label">за текущий месяц</div>
       </div>
       <div class="stat-card">
         <div class="stat-card-label">Активных подписок</div>
         <div class="stat-card-value" id="statSubs">0</div>
-        <div class="stat-card-meta">платят регулярно</div>
+        <div class="stat-card-meta meta-period-label">платят регулярно</div>
       </div>
       <div class="stat-card">
         <div class="stat-card-label">Средний чек</div>
         <div class="stat-card-value" id="statAvg">0 BYN</div>
-        <div class="stat-card-meta">в месяц</div>
+        <div class="stat-card-meta meta-period-label">в месяц</div>
       </div>
     </section>
 
@@ -112,8 +164,17 @@
   }
 
   async function loadBilling() {
+    // Собираем данные с фильтров
+    const dateFrom = document.getElementById('dateFrom').value;
+    const dateTo = document.getElementById('dateTo').value;
+    
+    const params = new URLSearchParams();
+    if (dateFrom) params.append('date_from', dateFrom);
+    if (dateTo) params.append('date_to', dateTo);
+
     try {
-      const res = await fetch('/api/admin/billing', {
+      // Передаем параметры в API
+      const res = await fetch('/api/admin/billing?' + params.toString(), {
         headers: { 'Authorization': 'Bearer ' + token }
       });
       const data = await res.json();
@@ -125,7 +186,7 @@
 
       const tbody = document.getElementById('paymentsBody');
       if (!data.payments || !data.payments.length) {
-        tbody.innerHTML = `<tr><td colspan="5" class="empty-state">Пока нет платежей</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="empty-state">Пока нет платежей за выбранный период</td></tr>`;
         return;
       }
 
@@ -148,6 +209,43 @@
       document.getElementById('paymentsBody').innerHTML = `<tr><td colspan="5" class="empty-state">Ошибка: ${err.message}</td></tr>`;
     }
   }
+
+  // Логика кнопок быстрых фильтров
+  document.querySelectorAll('#quickFilters .filter-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('#quickFilters .filter-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      document.getElementById('dateFrom').value = '';
+      document.getElementById('dateTo').value = '';
+
+      const days = tab.dataset.days;
+      const today = new Date();
+      let dateFrom = null, dateTo = null;
+      let periodLabel = 'за всё время';
+
+      if (days === '1') {
+        dateFrom = today.toISOString().split('T')[0];
+        dateTo = dateFrom;
+        periodLabel = 'за сегодня';
+      } else if (days === '7') {
+        const past = new Date();
+        past.setDate(today.getDate() - 7);
+        dateFrom = past.toISOString().split('T')[0];
+        dateTo = today.toISOString().split('T')[0];
+        periodLabel = 'за 7 дней';
+      } else if (days === '30') {
+        const past = new Date();
+        past.setDate(today.getDate() - 30);
+        dateFrom = past.toISOString().split('T')[0];
+        dateTo = today.toISOString().split('T')[0];
+        periodLabel = 'за 30 дней';
+      }
+
+      document.querySelectorAll('.meta-period-label').forEach(el => el.textContent = periodLabel);
+      loadBilling();
+    });
+  });
 
   function escapeHtml(s) {
     return String(s || '').replace(/[&<>"']/g, ch => ({
