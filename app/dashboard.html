@@ -54,6 +54,34 @@
       font-weight: 600;
     }
     .status-banner-text a:hover { text-decoration: underline; }
+    
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .filter-tab {
+      padding: 8px 16px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .filter-tab:hover {
+      color: var(--text);
+      border-color: var(--border-strong);
+    }
+    .filter-tab.active {
+      background: var(--gradient-cta);
+      color: #FFFFFF;
+      border-color: transparent;
+      box-shadow: 0 4px 14px rgba(0, 240, 255, 0.25);
+    }
   </style>
 </head>
 <body class="page-app-dashboard">
@@ -122,27 +150,45 @@
           Ваш аккаунт ожидает подтверждения от менеджера <strong>Radar Group</strong>.
           Настройки и услуги станут доступны после одобрения.
         </p>
-        <p>
-          📧 Свяжитесь с нами: <a href="mailto:info@radar-group.org">info@radar-group.org</a>
-        </p>
+        <p>📧 Свяжитесь с нами: <a href="mailto:info@radar-group.org">info@radar-group.org</a></p>
       </div>
     </div>
+
+    <!-- НОВАЯ ПАНЕЛЬ ФИЛЬТРОВ -->
+    <section class="dash-section" style="margin-bottom: 15px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+        
+        <div class="filter-tabs" id="quickFilters">
+          <button class="filter-tab active" data-days="all">Всё время</button>
+          <button class="filter-tab" data-days="1">Сегодня</button>
+          <button class="filter-tab" data-days="7">7 дней</button>
+          <button class="filter-tab" data-days="30">30 дней</button>
+        </div>
+
+        <div style="display:flex; gap:5px; align-items:center; margin-left: auto;">
+          <input type="date" id="dashDateFrom" class="form-input" style="padding:8px; width:130px; color-scheme: dark;">
+          <span style="color:var(--text-muted);">—</span>
+          <input type="date" id="dashDateTo" class="form-input" style="padding:8px; width:130px; color-scheme: dark;">
+          <button class="btn btn-primary" onclick="applyCustomDates()" style="padding:8px 16px;">🔍 Применить</button>
+        </div>
+      </div>
+    </section>
 
     <section class="stats-grid">
       <div class="stat-card">
         <div class="stat-card-label">Диалогов</div>
         <div class="stat-card-value" id="statDialogs">0</div>
-        <div class="stat-card-meta">за месяц</div>
+        <div class="stat-card-meta meta-period-label">за месяц</div>
       </div>
       <div class="stat-card">
         <div class="stat-card-label">Лидов</div>
         <div class="stat-card-value" id="statLeads">0</div>
-        <div class="stat-card-meta">за месяц</div>
+        <div class="stat-card-meta meta-period-label">за месяц</div>
       </div>
       <div class="stat-card">
         <div class="stat-card-label">Расход API</div>
         <div class="stat-card-value" id="statCost">$0</div>
-        <div class="stat-card-meta">за месяц</div>
+        <div class="stat-card-meta meta-period-label">за месяц</div>
       </div>
       <div class="stat-card">
         <div class="stat-card-label">Конверсия</div>
@@ -212,7 +258,6 @@
         const desc = document.getElementById('bannerDesc');
 
         if (data.account_status === 'pending') {
-          // Желтый баннер для pending
           banner.style.display = 'flex';
           banner.style.background = 'linear-gradient(135deg, rgba(255, 200, 0, 0.1) 0%, rgba(255, 0, 128, 0.05) 100%)';
           banner.style.border = '2px solid rgba(255, 200, 0, 0.4)';
@@ -224,7 +269,6 @@
           title.style.color = '#FFC800';
           desc.innerHTML = 'Ваш аккаунт ожидает подтверждения от менеджера <strong>Radar Group</strong>. Настройки и услуги станут доступны после одобрения.';
         } else if (data.account_status === 'suspended') {
-          // Красный баннер для suspended
           banner.style.display = 'flex';
           banner.style.background = 'linear-gradient(135deg, rgba(255, 0, 128, 0.1) 0%, rgba(255, 0, 128, 0.05) 100%)';
           banner.style.border = '2px solid rgba(255, 0, 128, 0.4)';
@@ -250,9 +294,15 @@
     }
   }
 
-  async function loadDashboard() {
+  // Функция для загрузки данных (принимает даты)
+  async function loadDashboard(dateFrom = null, dateTo = null) {
     try {
-      const res = await fetch('/api/dashboard/stats', {
+      // Формируем URL с датами
+      const params = new URLSearchParams();
+      if (dateFrom) params.append('date_from', dateFrom);
+      if (dateTo) params.append('date_to', dateTo);
+
+      const res = await fetch('/api/dashboard/stats?' + params.toString(), {
         headers: { 'Authorization': 'Bearer ' + token }
       });
       const data = await res.json();
@@ -268,7 +318,7 @@
         tbody.innerHTML = `
           <tr>
             <td colspan="4" class="empty-state">
-              Пока нет лидов. Как только клиенты начнут писать боту — они появятся здесь.
+              Пока нет лидов за выбранный период.
             </td>
           </tr>
         `;
@@ -284,7 +334,6 @@
           } catch (e) {}
         }
 
-        // ИСПРАВЛЕНО: умный парсер дат (сохранен)
         let dateObj;
         if (typeof l.created_at === 'string' && (l.created_at.includes('-') || l.created_at.includes('T'))) {
           dateObj = new Date(l.created_at);
@@ -310,6 +359,64 @@
     }
   }
 
+  // Логика кнопок быстрых фильтров
+  document.querySelectorAll('#quickFilters .filter-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      // Меняем активный класс
+      document.querySelectorAll('#quickFilters .filter-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      // Очищаем календари, чтобы не путать
+      document.getElementById('dashDateFrom').value = '';
+      document.getElementById('dashDateTo').value = '';
+
+      const days = tab.dataset.days;
+      const today = new Date();
+      let dateFrom = null, dateTo = null;
+      let periodLabel = 'за всё время';
+
+      if (days === '1') {
+        dateFrom = today.toISOString().split('T')[0];
+        dateTo = dateFrom;
+        periodLabel = 'за сегодня';
+      } else if (days === '7') {
+        const past = new Date();
+        past.setDate(today.getDate() - 7);
+        dateFrom = past.toISOString().split('T')[0];
+        dateTo = today.toISOString().split('T')[0];
+        periodLabel = 'за 7 дней';
+      } else if (days === '30') {
+        const past = new Date();
+        past.setDate(today.getDate() - 30);
+        dateFrom = past.toISOString().split('T')[0];
+        dateTo = today.toISOString().split('T')[0];
+        periodLabel = 'за 30 дней';
+      }
+
+      // Обновляем текст под карточками
+      document.querySelectorAll('.meta-period-label').forEach(el => el.textContent = periodLabel);
+
+      // Загружаем
+      loadDashboard(dateFrom, dateTo);
+    });
+  });
+
+  // Логика кастомных дат
+  function applyCustomDates() {
+    const from = document.getElementById('dashDateFrom').value;
+    const to = document.getElementById('dashDateTo').value;
+
+    if (!from && !to) return;
+
+    // Снимаем активность с быстрых кнопок
+    document.querySelectorAll('#quickFilters .filter-tab').forEach(t => t.classList.remove('active'));
+
+    // Обновляем текст
+    document.querySelectorAll('.meta-period-label').forEach(el => el.textContent = 'за выбранный период');
+
+    loadDashboard(from, to);
+  }
+
   function escapeHtml(s) {
     return String(s || '').replace(/[&<>"']/g, ch => ({
       '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -319,6 +426,7 @@
   (async function init() {
     const isApproved = await checkAccountStatus();
     if (isApproved) {
+      // При первой загрузке показываем "Всё время" (передаем null)
       loadDashboard();
     } else {
       document.getElementById('leadsTable').innerHTML = `

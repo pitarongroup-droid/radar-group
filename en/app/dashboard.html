@@ -15,48 +15,73 @@
   <link rel="stylesheet" href="/app/sidebar.css">
   <link rel="stylesheet" href="/app/dashboard.css">
   <style>
-    .pending-banner {
+    .status-banner {
       padding: 24px 28px;
-      background: linear-gradient(135deg, rgba(255, 200, 0, 0.1) 0%, rgba(255, 0, 128, 0.05) 100%);
-      border: 2px solid rgba(255, 200, 0, 0.4);
       border-radius: var(--radius);
       margin-bottom: 24px;
       display: flex;
       gap: 18px;
       align-items: flex-start;
+      transition: all 0.3s ease;
     }
-    .pending-banner-icon {
+    .status-banner-icon {
       flex-shrink: 0;
       width: 52px;
       height: 52px;
       border-radius: 14px;
-      background: rgba(255, 200, 0, 0.15);
-      border: 1px solid rgba(255, 200, 0, 0.3);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #FFC800;
       font-size: 26px;
+      transition: all 0.3s ease;
     }
-    .pending-banner-text h2 {
+    .status-banner-text h2 {
       font-size: 18px;
       font-weight: 800;
-      color: #FFC800;
       margin-bottom: 8px;
+      transition: all 0.3s ease;
     }
-    .pending-banner-text p {
+    .status-banner-text p {
       font-size: 14px;
       color: var(--text-muted);
       line-height: 1.55;
       margin-bottom: 6px;
     }
-    .pending-banner-text p strong { color: var(--text); }
-    .pending-banner-text a {
+    .status-banner-text p strong { color: var(--text); }
+    .status-banner-text a {
       color: var(--cyan);
       text-decoration: none;
       font-weight: 600;
     }
-    .pending-banner-text a:hover { text-decoration: underline; }
+    .status-banner-text a:hover { text-decoration: underline; }
+    
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .filter-tab {
+      padding: 8px 16px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .filter-tab:hover {
+      color: var(--text);
+      border-color: var(--border-strong);
+    }
+    .filter-tab.active {
+      background: var(--gradient-cta);
+      color: #FFFFFF;
+      border-color: transparent;
+      box-shadow: 0 4px 14px rgba(0, 240, 255, 0.25);
+    }
   </style>
 </head>
 <body class="page-app-dashboard">
@@ -117,35 +142,53 @@
       </div>
     </header>
 
-    <div class="pending-banner" id="pendingBanner" style="display:none;">
-      <div class="pending-banner-icon">⏳</div>
-      <div class="pending-banner-text">
-        <h2>Account under review</h2>
-        <p>
+    <div class="status-banner" id="statusBanner" style="display:none;">
+      <div class="status-banner-icon" id="bannerIcon">⏳</div>
+      <div class="status-banner-text">
+        <h2 id="bannerTitle">Account under review</h2>
+        <p id="bannerDesc">
           Your account is awaiting confirmation from a <strong>Radar Group</strong> manager.
           Settings and services will be available after approval.
         </p>
-        <p>
-          📧 Contact us: <a href="mailto:info@radar-group.org">info@radar-group.org</a>
-        </p>
+        <p>📧 Contact us: <a href="mailto:info@radar-group.org">info@radar-group.org</a></p>
       </div>
     </div>
+
+    <!-- NEW FILTER PANEL -->
+    <section class="dash-section" style="margin-bottom: 15px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+        
+        <div class="filter-tabs" id="quickFilters">
+          <button class="filter-tab active" data-days="all">All time</button>
+          <button class="filter-tab" data-days="1">Today</button>
+          <button class="filter-tab" data-days="7">7 days</button>
+          <button class="filter-tab" data-days="30">30 days</button>
+        </div>
+
+        <div style="display:flex; gap:5px; align-items:center; margin-left: auto;">
+          <input type="date" id="dashDateFrom" class="form-input" style="padding:8px; width:130px; color-scheme: dark;">
+          <span style="color:var(--text-muted);">—</span>
+          <input type="date" id="dashDateTo" class="form-input" style="padding:8px; width:130px; color-scheme: dark;">
+          <button class="btn btn-primary" onclick="applyCustomDates()" style="padding:8px 16px;">🔍 Apply</button>
+        </div>
+      </div>
+    </section>
 
     <section class="stats-grid">
       <div class="stat-card">
         <div class="stat-card-label">Dialogs</div>
         <div class="stat-card-value" id="statDialogs">0</div>
-        <div class="stat-card-meta">this month</div>
+        <div class="stat-card-meta meta-period-label">per month</div>
       </div>
       <div class="stat-card">
         <div class="stat-card-label">Leads</div>
         <div class="stat-card-value" id="statLeads">0</div>
-        <div class="stat-card-meta">this month</div>
+        <div class="stat-card-meta meta-period-label">per month</div>
       </div>
       <div class="stat-card">
         <div class="stat-card-label">API Cost</div>
         <div class="stat-card-value" id="statCost">$0</div>
-        <div class="stat-card-meta">this month</div>
+        <div class="stat-card-meta meta-period-label">per month</div>
       </div>
       <div class="stat-card">
         <div class="stat-card-label">Conversion</div>
@@ -209,13 +252,39 @@
 
       if (res.status === 403) {
         const data = await res.json();
-        if (data.account_status === 'pending' || data.account_status === 'suspended') {
-          document.getElementById('pendingBanner').style.display = 'flex';
-          document.querySelectorAll('a[href*="widget"], a[href*="bot"], a[href*="integration"]').forEach(el => {
-            el.style.opacity = '0.4';
-            el.style.pointerEvents = 'none';
-          });
+        const banner = document.getElementById('statusBanner');
+        const icon = document.getElementById('bannerIcon');
+        const title = document.getElementById('bannerTitle');
+        const desc = document.getElementById('bannerDesc');
+
+        if (data.account_status === 'pending') {
+          banner.style.display = 'flex';
+          banner.style.background = 'linear-gradient(135deg, rgba(255, 200, 0, 0.1) 0%, rgba(255, 0, 128, 0.05) 100%)';
+          banner.style.border = '2px solid rgba(255, 200, 0, 0.4)';
+          icon.textContent = '⏳';
+          icon.style.background = 'rgba(255, 200, 0, 0.15)';
+          icon.style.border = '1px solid rgba(255, 200, 0, 0.3)';
+          icon.style.color = '#FFC800';
+          title.textContent = 'Account under review';
+          title.style.color = '#FFC800';
+          desc.innerHTML = 'Your account is awaiting confirmation from a <strong>Radar Group</strong> manager. Settings and services will be available after approval.';
+        } else if (data.account_status === 'suspended') {
+          banner.style.display = 'flex';
+          banner.style.background = 'linear-gradient(135deg, rgba(255, 0, 128, 0.1) 0%, rgba(255, 0, 128, 0.05) 100%)';
+          banner.style.border = '2px solid rgba(255, 0, 128, 0.4)';
+          icon.textContent = '⛔';
+          icon.style.background = 'rgba(255, 0, 128, 0.15)';
+          icon.style.border = '1px solid rgba(255, 0, 128, 0.3)';
+          icon.style.color = 'var(--magenta)';
+          title.textContent = 'Account suspended';
+          title.style.color = 'var(--magenta)';
+          desc.innerHTML = 'Access to settings and services is suspended. Please contact your manager for details.';
         }
+
+        document.querySelectorAll('a[href*="widget"], a[href*="bot"], a[href*="integration"]').forEach(el => {
+          el.style.opacity = '0.4';
+          el.style.pointerEvents = 'none';
+        });
         return false;
       }
       return true;
@@ -225,9 +294,13 @@
     }
   }
 
-  async function loadDashboard() {
+  async function loadDashboard(dateFrom = null, dateTo = null) {
     try {
-      const res = await fetch('/api/dashboard/stats', {
+      const params = new URLSearchParams();
+      if (dateFrom) params.append('date_from', dateFrom);
+      if (dateTo) params.append('date_to', dateTo);
+
+      const res = await fetch('/api/dashboard/stats?' + params.toString(), {
         headers: { 'Authorization': 'Bearer ' + token }
       });
       const data = await res.json();
@@ -243,7 +316,7 @@
         tbody.innerHTML = `
           <tr>
             <td colspan="4" class="empty-state">
-              No leads yet. As soon as clients start messaging the bot, they will appear here.
+              No leads for the selected period.
             </td>
           </tr>
         `;
@@ -282,6 +355,53 @@
     } catch (err) {
       console.error('Dashboard load error:', err);
     }
+  }
+
+  document.querySelectorAll('#quickFilters .filter-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('#quickFilters .filter-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      document.getElementById('dashDateFrom').value = '';
+      document.getElementById('dashDateTo').value = '';
+
+      const days = tab.dataset.days;
+      const today = new Date();
+      let dateFrom = null, dateTo = null;
+      let periodLabel = 'all time';
+
+      if (days === '1') {
+        dateFrom = today.toISOString().split('T')[0];
+        dateTo = dateFrom;
+        periodLabel = 'today';
+      } else if (days === '7') {
+        const past = new Date();
+        past.setDate(today.getDate() - 7);
+        dateFrom = past.toISOString().split('T')[0];
+        dateTo = today.toISOString().split('T')[0];
+        periodLabel = 'for 7 days';
+      } else if (days === '30') {
+        const past = new Date();
+        past.setDate(today.getDate() - 30);
+        dateFrom = past.toISOString().split('T')[0];
+        dateTo = today.toISOString().split('T')[0];
+        periodLabel = 'for 30 days';
+      }
+
+      document.querySelectorAll('.meta-period-label').forEach(el => el.textContent = periodLabel);
+      loadDashboard(dateFrom, dateTo);
+    });
+  });
+
+  function applyCustomDates() {
+    const from = document.getElementById('dashDateFrom').value;
+    const to = document.getElementById('dashDateTo').value;
+
+    if (!from && !to) return;
+
+    document.querySelectorAll('#quickFilters .filter-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.meta-period-label').forEach(el => el.textContent = 'for selected period');
+    loadDashboard(from, to);
   }
 
   function escapeHtml(s) {
