@@ -2,7 +2,7 @@
 // /api/admin/clients/:id
 // GET    — карточка клиента + настройки
 // PUT    — обновить данные + доступ + тарифы + авто-reload VPS
-// DELETE — удалить клиента + авто-delete webhook
+// DELETE — удалить клиента + авто-delete webhook + каскадное удаление
 // ============================================
 
 export async function onRequestGet({ params, request, env }) {
@@ -91,7 +91,6 @@ export async function onRequestPut({ params, request, env }) {
     if ('widget_enabled' in b) settingsUpdates.widget_enabled = b.widget_enabled ? 1 : 0;
     if ('bot_enabled' in b) settingsUpdates.bot_enabled = b.bot_enabled ? 1 : 0;
     
-    // ИСПРАВЛЕНО: Добавлено сохранение флага Telegram Business
     if ('business_bot_enabled' in b) settingsUpdates.business_bot_enabled = b.business_bot_enabled ? 1 : 0;
     if ('business_connection_id' in b) settingsUpdates.business_connection_id = b.business_connection_id || null;
 
@@ -142,7 +141,7 @@ export async function onRequestDelete({ params, request, env }) {
       return Response.json({ ok: false, error: { ru: 'Доступ запрещён', en: 'Forbidden' } }, { status: 403 });
     }
 
-    // Удаляем webhook у Telegram, если есть токен
+    // 1. Удаляем webhook у Telegram, если есть токен
     try {
       const s = await env.radar_group_db.prepare(
         `SELECT bot_telegram_token FROM settings WHERE client_id = ?`
@@ -162,15 +161,38 @@ export async function onRequestDelete({ params, request, env }) {
       console.error('Webhook cleanup error:', e);
     }
 
-    // Удаляем связанные данные
+    // 2. Каскадное удаление связанных данных (в правильном порядке)
     await env.radar_group_db.batch([
+      // Удаляем сообщения (сначала находим диалоги клиента)
+      env.radar_group_db.prepare('DELETE FROM messages WHERE dialog_id IN (SELECT id FROM dialogs WHERE client_id = ?)').bind(params.id),
+      
+      // Удаляем сами диалоги
+      env.radar_group_db.prepare('DELETE FROM dialogs WHERE client_id = ?').bind(params.id),
+      
+      // Удаляем платежи
+      env.radar_group_db.prepare('DELETE FROM payments WHERE client_id = ?').bind(params.id),
+      
+      // Удаляем комиссии партнерам (если клиент пришел по ссылке)
+      env.radar_group_db.prepare('DELETE FROM commissions WHERE client_id = ?').bind(params.id),
+      
+      // Удаляем логи событий
+      env.radar_group_db.prepare('DELETE FROM events WHERE client_id = ?').bind(params.id),
+      
+      // Удаляем напоминания и сессии бота (если существуют такие таблицы)
+      env.radar_group_db.prepare('DELETE FROM bot_reminders WHERE client_id = ?').bind(params.id),
+      env.radar_group_db.prepare('DELETE FROM bot_sessions WHERE client_id = ?').bind(params.id),
+      
+      // Удаляем настройки и пользователя
       env.radar_group_db.prepare('DELETE FROM settings WHERE client_id = ?').bind(params.id),
       env.radar_group_db.prepare('DELETE FROM users WHERE client_id = ?').bind(params.id),
+      
+      // И в самом конце удаляем самого клиента
       env.radar_group_db.prepare('DELETE FROM clients WHERE id = ?').bind(params.id)
     ]);
 
     return Response.json({ ok: true });
   } catch (err) {
+    console.error('Delete error:', err);
     return Response.json({ ok: false, error: { ru: err.message, en: err.message } }, { status: 500 });
   }
 }
