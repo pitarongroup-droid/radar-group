@@ -33,6 +33,19 @@
     .objection-title { color: #FF0080; font-weight: 700; margin-top: 15px; font-size: 15px; }
     .objection-answer { color: var(--text); margin-bottom: 10px; padding-left: 15px; border-left: 2px solid var(--cyan); }
     .warning-box { background: rgba(255, 200, 0, 0.1); border: 1px solid rgba(255, 200, 0, 0.3); padding: 15px; border-radius: 8px; color: #FFC800; margin: 15px 0; font-size: 14px; }
+    
+    /* Стили для блога и мотивации */
+    .blog-card { background: linear-gradient(135deg, rgba(0, 240, 255, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%); border: 1px solid rgba(168, 85, 247, 0.3); padding: 25px; border-radius: 12px; margin-bottom: 20px; }
+    .blog-card h3 { color: var(--cyan); font-size: 18px; margin-bottom: 10px; }
+    .blog-card p { color: var(--text); font-size: 14px; margin-bottom: 10px; }
+    .blog-card .quote { font-style: italic; color: var(--text-muted); border-left: 3px solid var(--magenta); padding-left: 15px; margin-top: 15px; }
+
+    /* Стили для сравнения (УТП) */
+    .comparison-table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 14px; }
+    .comparison-table th, .comparison-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    .comparison-table th { background: rgba(255,255,255,0.03); color: var(--text); font-weight: 700; }
+    .comparison-table td.bad { color: #FF0080; }
+    .comparison-table td.good { color: #00F0FF; font-weight: 600; }
   </style>
 </head>
 <body class="page-app-dashboard">
@@ -67,6 +80,15 @@
     </header>
 
     <section class="dash-section">
+      
+      <!-- БЛОГ И МОТИВАЦИЯ -->
+      <div class="blog-card">
+        <h3>💡 Блог: Почему сейчас лучшее время для старта?</h3>
+        <p>Каждый день десятки бизнесов теряют клиентов просто потому, что не успевают ответить в чат. Вы не просто продаете «бота» — вы продаете спасенные деньги и нервы предпринимателей.</p>
+        <p>Ваша задача — стать тем человеком, который вовремя протянет им руку помощи. Чем больше бизнесов вы спасете, тем выше будет ваш пассивный доход.</p>
+        <div class="quote">"Лучшее время посадить дерево было 20 лет назад. Второе лучшее время — сегодня. Начните с одного сообщения прямо сейчас."</div>
+      </div>
+
       <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">
         Изучите эти материалы, чтобы продавать продукт Radar Group максимально эффективно. Если у вас возникнут вопросы, пишите вашему менеджеру.
       </p>
@@ -112,40 +134,67 @@
       <!-- 3. ИНТЕГРАЦИИ -->
       <div class="accordion-item">
         <div class="accordion-header" onclick="toggleAccordion(this)">
-          ⚙️ Какие интеграции мы предлагаем
+          ⚙️ Какие интеграции мы предлагаем (УТП)
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
         <div class="accordion-content">
           <p>ИИ-менеджер может быть внедрен в любую точку, где у бизнеса общаются с клиентами:</p>
-          <ul style="padding-left: 20px; line-height: 1.8;">
+          <ul style="padding-left: 20px; line-height: 1.8; margin-bottom: 20px;">
             <li>💬 <strong>Telegram-бот:</strong> Отдельный бот с уникальным именем, который продает ваш продукт.</li>
             <li>💼 <strong>Telegram Business:</strong> ИИ подключается к личному аккаунту владельца и отвечает от его имени.</li>
             <li>🌐 <strong>Виджет на сайт:</strong> Красивый чат-кружок в правом нижнем углу сайта.</li>
             <li>📊 <strong>CRM и Google Sheets:</strong> Все собранные лиды автоматически улетают в таблицу или в вашу CRM (amoCRM, Bitrix24).</li>
-            <li>📧 <strong>Email и Webhooks:</strong> Уведомления о новых лидах приходят на почту или в Telegram.</li>
           </ul>
+
+          <strong>Сравнение: Обычный менеджер vs ИИ Radar Group</strong>
+          <table class="comparison-table">
+            <thead>
+              <tr><th>Параметр</th><th>Обычный менеджер</th><th>ИИ-менеджер Radar</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Скорость ответа</td><td class="bad">5 - 60 минут</td><td class="good">Мгновенно (1-2 сек)</td></tr>
+              <tr><td>Работа ночью и в выходные</td><td class="bad">Спит / Отдыхает</td><td class="good">Работает 24/7</td></tr>
+              <tr><td>Знание продукта</td><td class="bad">Зависит от опыта</td><td class="good">Идеальное (обучен на ваших данных)</td></tr>
+              <tr><td>Зарплата и налоги</td><td class="bad">Каждый месяц</td><td class="good">Фиксированная подписка</td></tr>
+              <tr><td>Одновременных чатов</td><td class="bad">1-2 максимум</td><td class="good">Неограниченно</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <!-- 4. СКРИПТЫ -->
-      <div class="accordion-item">
+      <!-- 4. МЕТОДЫ ДОБЫВАНИЯ КЛИЕНТОВ -->
+      <div class="accordion-item active"> <!-- Открыт по умолчанию, так как это новинка -->
         <div class="accordion-header" onclick="toggleAccordion(this)">
-          💬 Шаблоны сообщений для холодной рассылки
+          🎯 Скрипт №3: Метод «Проверка на скорость» (Холодный аутрич)
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
         <div class="accordion-content">
-          <p>Отправляйте эти сообщения владельцам бизнеса в Telegram, Instagram или WhatsApp.</p>
+          <p>Этот метод отлично работает, когда вы пишете владельцу бизнеса в его же рабочий чат (Telegram, WhatsApp, Instagram Direct). Мы покажем ему его главную боль в реальном времени.</p>
           
-          <strong>Скрипт №1 (В лоб):</strong>
+          <p><strong>Шаг 1:</strong> Найдите Telegram-аккаунт компании или напишите на номер WhatsApp, указанный на их сайте. Отправьте короткое сообщение:</p>
           <div class="script-box">
-            Привет! Заметил, что вы продаете [название услуги]. У вас есть менеджер, который отвечает клиентам ночью и в выходные? Если нет, мы можем внедрить ИИ-менеджера, который будет продавать за вас 24/7 и не будет брать зарплату. Скинуть короткое демо?
+            Здравствуйте!
+            <button class="copy-btn" onclick="copyText(this)">Копировать</button>
+          </div>
+          <p><em>Ждем ответа. Обычно менеджеры отвечают через 5 минут, а то и через час. Это дает нам фору.</em></p>
+
+          <p><strong>Шаг 2:</strong> Как только они вам ответят (даже если просто «Здравствуйте, чем помочь?»), отправляем второе сообщение:</p>
+          <div class="script-box">
+            Спасибо за ответ! Я как раз изучаю рынок и разослал тестовые заявки топовым компаниям из вашей сферы. И заметил одну тенденцию: к сожалению, везде приходится ждать ответа по 10-40 минут. Клиенты в наше время не готовы столько ждать.
+            <br><br>
+            Я помогаю бизнесу решить это с помощью ИИ-менеджеров. Они отвечают за 2 секунды, работают 24/7 и знают ваш продукт лучше любого новичка. У вас такая же ситуация с задержками ответов?
             <button class="copy-btn" onclick="copyText(this)">Копировать</button>
           </div>
 
-          <strong>Скрипт №2 (Через боль):</strong>
+          <p><strong>Шаг 3:</strong> Если клиент говорит «Да, бывает», вы переходите к презентации:</p>
           <div class="script-box">
-            Здравствуйте! Часто ли у вас теряются клиенты, потому что не успеваете отвечать в личку? Мы делаем ИИ-менеджеров, которые отвечают за 3 секунды, знают весь ваш ассортимент и закрывают на оплату. Работает автономно. Хотите посмотреть, как это будет выглядеть для вашего бизнеса?
+            Тогда вам точно стоит посмотреть, как это работает. У нас есть 3 решения: Telegram-бот, ИИ на сайте (виджет) и Telegram Business (когда ИИ отвечает прямо с вашего личного аккаунта). Вот пример (даете ссылку на демо или свой виджет).
+            <br><br>
+            А самое приятное — лиды не теряются, а сразу падают вам в CRM или в таблицу. Можем созвониться на 15 минут и я покажу, как это будет выглядеть для вашего бизнеса?
             <button class="copy-btn" onclick="copyText(this)">Копировать</button>
+          </div>
+          <div class="warning-box" style="margin-top: 15px; background: rgba(0,240,255,0.1); border-color: rgba(0,240,255,0.3); color: var(--cyan);">
+            💡 <strong>Почему это работает:</strong> Вы не навязываетесь. Вы показываете проблему, которую человек только что испытал на себе (он же ждал ответа). Это вызывает доверие.
           </div>
         </div>
       </div>
@@ -172,7 +221,6 @@
           <div class="objection-answer">
             Ответ: "Вам не придется ничего настраивать. Мы берем всё на себя. Мы изучаем ваш бизнес, обучаем ИИ и даем вам готовый результат. От вас нужно только 30 минут на созвон."
           </div>
-
         </div>
       </div>
 
@@ -199,6 +247,7 @@
 
   function copyText(btn) {
     const box = btn.parentElement;
+    // Убираем текст кнопки "Копировать" из итогового текста
     const textToCopy = box.innerText.replace('Копировать', '').trim();
     
     navigator.clipboard.writeText(textToCopy).then(() => {
