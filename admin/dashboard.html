@@ -88,7 +88,7 @@
       </div>
     </header>
 
-    <!-- НОВАЯ ПАНЕЛЬ ФИЛЬТРОВ -->
+    <!-- ПАНЕЛЬ ФИЛЬТРОВ -->
     <section class="dash-section" style="margin-bottom: 15px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
       <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
         
@@ -215,7 +215,7 @@
         return;
       }
 
-      // Отрисовка таблицы (сохранена полностью)
+      // Отрисовка таблицы
       tbody.innerHTML = data.recent_clients.map(c => {
         const statusClass = 'status-' + (c.status || 'active');
         const statusLabel = {
@@ -242,7 +242,8 @@
             <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
             <td>${c.dialogs_count || 0}</td>
             <td>${c.leads_count || 0}</td>
-            <td>—</td>
+            <!-- ИЗМЕНЕНИЕ: Теперь выводится выручка клиента -->
+            <td>${Math.round(c.total_revenue || 0)} BYN</td>
           </tr>
         `;
       }).join('');
