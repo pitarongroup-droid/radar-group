@@ -15,32 +15,32 @@
   <link rel="stylesheet" href="/app/dashboard.css">
   <link rel="stylesheet" href="/admin/admin.css">
   <style>
-    .filter-tabs {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
+    .filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
     .filter-tab {
-      padding: 8px 16px;
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 100px;
-      color: var(--text-muted);
-      font-family: inherit;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: var(--transition);
+      padding: 8px 16px; background: transparent; border: 1px solid var(--border);
+      border-radius: 100px; color: var(--text-muted); font-family: inherit;
+      font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition);
     }
-    .filter-tab:hover {
-      color: var(--text);
-      border-color: var(--border-strong);
-    }
+    .filter-tab:hover { color: var(--text); border-color: var(--border-strong); }
     .filter-tab.active {
-      background: var(--gradient-cta);
-      color: #FFFFFF;
-      border-color: transparent;
+      background: var(--gradient-cta); color: #FFFFFF; border-color: transparent;
       box-shadow: 0 4px 14px rgba(0, 240, 255, 0.25);
+    }
+
+    /* --- АДАПТИВНЫЕ ФИЛЬТРЫ --- */
+    .filter-panel { margin-bottom: 15px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 10px; border: 1px solid var(--border); }
+    .filter-container { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .filter-date-box { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+    .date-input { padding: 8px; width: 130px; color-scheme: dark; }
+    @media (max-width: 768px) {
+      .filter-container { flex-direction: column; align-items: stretch; }
+      .filter-date-box { justify-content: space-between; margin-bottom: 10px; }
+      .date-input { flex: 1; width: auto; min-width: 110px; }
+      .filter-actions { justify-content: space-between; width: 100%; margin-left: 0 !important; }
+      .filter-actions .btn { flex: 1; padding: 10px; font-size: 13px; }
+      .filter-tabs { width: 100%; display: flex; overflow-x: auto; padding-bottom: 5px; margin-bottom: 5px; -webkit-overflow-scrolling: touch; }
+      .filter-tabs::-webkit-scrollbar { display: none; }
+      .filter-tab { flex-shrink: 0; padding: 8px 14px; font-size: 13px; }
     }
   </style>
 </head>
@@ -61,7 +61,6 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
         <span>Клиенты</span>
       </a>
-      <!-- ДОБАВЛЕНО: Партнеры -->
       <a href="/admin/partners.html" class="admin-sidebar-link">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4.5L18.5 21 12 16.5 5.5 21l2-7.5L2 9h7z"/></svg>
         <span>Партнеры</span>
@@ -89,25 +88,26 @@
     </header>
 
     <!-- ОБНОВЛЕННАЯ ПАНЕЛЬ ФИЛЬТРОВ -->
-    <section class="dash-section" style="margin-bottom: 15px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
-      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+    <section class="filter-panel">
+      <div class="filter-container">
         
-        <!-- НОВЫЕ КНОПКИ БЫСТРОГО ВЫБОРА -->
-        <div class="filter-tabs" id="quickFilters" style="margin-right: 10px;">
+        <div class="filter-tabs" id="quickFilters">
           <button class="filter-tab active" data-days="all">Всё время</button>
           <button class="filter-tab" data-days="1">Сегодня</button>
           <button class="filter-tab" data-days="7">7 дней</button>
           <button class="filter-tab" data-days="30">30 дней</button>
         </div>
 
-        <div style="display:flex; gap:5px; align-items:center;">
-          <input type="date" id="dateFrom" class="form-input" style="padding:8px; width:130px; color-scheme: dark;">
+        <div class="filter-date-box">
+          <input type="date" id="dateFrom" class="form-input date-input">
           <span style="color:var(--text-muted);">—</span>
-          <input type="date" id="dateTo" class="form-input" style="padding:8px; width:130px; color-scheme: dark;">
+          <input type="date" id="dateTo" class="form-input date-input">
         </div>
         
-        <button class="btn btn-primary" onclick="loadLogs()" style="padding:8px 16px;">🔍 Применить</button>
-        <button class="btn btn-outline" onclick="resetFilters()" style="padding:8px 16px;">Сбросить</button>
+        <div class="filter-actions" style="margin-left: auto;">
+          <button class="btn btn-primary" onclick="loadLogs()">🔍 Применить</button>
+          <button class="btn btn-outline" onclick="resetFilters()">Сбросить</button>
+        </div>
       </div>
     </section>
 
@@ -147,7 +147,6 @@
     const tbody = document.getElementById('logsBody');
     tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Загрузка...</td></tr>';
 
-    // Собираем данные с фильтров
     const dateFrom = document.getElementById('dateFrom').value;
     const dateTo = document.getElementById('dateTo').value;
     
@@ -207,7 +206,6 @@
     }
   }
 
-  // Обработка быстрых кнопок
   document.querySelectorAll('#quickFilters .filter-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('#quickFilters .filter-tab').forEach(t => t.classList.remove('active'));
@@ -232,11 +230,9 @@
         dateTo = today.toISOString().split('T')[0];
       }
 
-      // Автоматически подставляем даты в календари
       document.getElementById('dateFrom').value = dateFrom || '';
       document.getElementById('dateTo').value = dateTo || '';
       
-      // Загружаем данные
       loadLogs();
     });
   });

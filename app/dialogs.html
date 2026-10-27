@@ -14,6 +14,36 @@
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/app/sidebar.css">
   <link rel="stylesheet" href="/app/dashboard.css">
+  <style>
+    .filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter-tab {
+      padding: 8px 16px; background: transparent; border: 1px solid var(--border);
+      border-radius: 100px; color: var(--text-muted); font-family: inherit;
+      font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition);
+    }
+    .filter-tab:hover { color: var(--text); border-color: var(--border-strong); }
+    .filter-tab.active {
+      background: var(--gradient-cta); color: #FFFFFF; border-color: transparent;
+      box-shadow: 0 4px 14px rgba(0, 240, 255, 0.25);
+    }
+
+    /* --- АДАПТИВНЫЕ ФИЛЬТРЫ --- */
+    .filter-panel { margin-bottom: 15px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 10px; border: 1px solid var(--border); }
+    .filter-container { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .filter-date-box { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+    .date-input { padding: 8px; width: 130px; color-scheme: dark; }
+    @media (max-width: 768px) {
+      .filter-container { flex-direction: column; align-items: stretch; }
+      .filter-date-box { justify-content: space-between; margin-bottom: 10px; }
+      .date-input { flex: 1; width: auto; min-width: 110px; }
+      .filter-actions { justify-content: space-between; width: 100%; }
+      .filter-actions .btn { flex: 1; padding: 10px; font-size: 13px; }
+      .filter-tabs { width: 100%; display: flex; overflow-x: auto; padding-bottom: 5px; margin-bottom: 5px; -webkit-overflow-scrolling: touch; }
+      .filter-tabs::-webkit-scrollbar { display: none; }
+      .filter-tab { flex-shrink: 0; padding: 8px 14px; font-size: 13px; }
+      .filter-search { width: 100%; margin-bottom: 10px; min-width: 100% !important; }
+    }
+  </style>
 </head>
 <body class="page-dialogs">
 
@@ -74,30 +104,32 @@
     </header>
 
     <!-- ПАНЕЛЬ ФИЛЬТРОВ -->
-    <section class="dash-section" style="margin-bottom: 15px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
-      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+    <section class="filter-panel">
+      <div class="filter-container">
         
-        <!-- НОВЫЕ КНОПКИ БЫСТРОГО ВЫБОРА -->
-        <div class="filter-tabs" id="quickFilters" style="margin-right: 10px;">
+        <div class="filter-tabs" id="quickFilters">
           <button class="filter-tab active" data-days="all">Всё время</button>
           <button class="filter-tab" data-days="1">Сегодня</button>
           <button class="filter-tab" data-days="7">7 дней</button>
           <button class="filter-tab" data-days="30">30 дней</button>
         </div>
 
-        <div style="display:flex; gap:5px; align-items:center;">
-          <input type="date" id="dateFrom" class="form-input" style="padding:8px; width:130px; color-scheme: dark;">
+        <div class="filter-date-box">
+          <input type="date" id="dateFrom" class="form-input date-input">
           <span style="color:var(--text-muted);">—</span>
-          <input type="date" id="dateTo" class="form-input" style="padding:8px; width:130px; color-scheme: dark;">
+          <input type="date" id="dateTo" class="form-input date-input">
         </div>
         
-        <input type="text" id="searchText" class="form-input" placeholder="Поиск по имени или контакту..." style="flex:1; min-width:200px; padding:8px;">
-        <button class="btn btn-primary" onclick="loadDialogs()" style="padding:8px 16px;">🔍 Применить</button>
-        <button class="btn btn-outline" onclick="resetFilters()" style="padding:8px 16px;">Сбросить</button>
+        <input type="text" id="searchText" class="form-input filter-search" placeholder="Поиск по имени или контакту..." style="flex:1; min-width: 200px; padding: 8px;">
+        
+        <div class="filter-actions">
+          <button class="btn btn-primary" onclick="loadDialogs()">🔍 Применить</button>
+          <button class="btn btn-outline" onclick="resetFilters()">Сбросить</button>
+        </div>
       </div>
     </section>
 
-    <section class="dash-section">
+    <section class="dash-section" style="padding: 0; background: transparent; border: none;">
       <div class="filter-tabs">
         <button class="filter-tab" data-filter="all">Все</button>
         <button class="filter-tab" data-filter="leads">Лиды</button>
@@ -133,36 +165,6 @@
   </main>
 </div>
 
-<style>
-  .filter-tabs {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-  .filter-tab {
-    padding: 8px 16px;
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: 100px;
-    color: var(--text-muted);
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
-  }
-  .filter-tab:hover {
-    color: var(--text);
-    border-color: var(--border-strong);
-  }
-  .filter-tab.active {
-    background: var(--gradient-cta);
-    color: #FFFFFF;
-    border-color: transparent;
-    box-shadow: 0 4px 14px rgba(0, 240, 255, 0.25);
-  }
-</style>
-
 <script>
   const token = localStorage.getItem('token');
   if (!token) window.location.href = '/app/login.html';
@@ -188,12 +190,10 @@
     const tbody = document.getElementById('dialogsTable');
     tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Загрузка...</td></tr>';
 
-    // Собираем данные с фильтров
     const dateFrom = document.getElementById('dateFrom').value;
     const dateTo = document.getElementById('dateTo').value;
     const searchText = document.getElementById('searchText').value;
 
-    // Формируем URL
     const params = new URLSearchParams();
     params.append('filter', currentFilter);
     if (dateFrom) params.append('date_from', dateFrom);
@@ -261,7 +261,6 @@
     }
   }
 
-  // Обработка быстрых кнопок
   document.querySelectorAll('#quickFilters .filter-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('#quickFilters .filter-tab').forEach(t => t.classList.remove('active'));
@@ -286,16 +285,13 @@
         dateTo = today.toISOString().split('T')[0];
       }
 
-      // Автоматически подставляем даты в календари
       document.getElementById('dateFrom').value = dateFrom || '';
       document.getElementById('dateTo').value = dateTo || '';
       
-      // Загружаем данные
       loadDialogs();
     });
   });
 
-  // Обработка табов (Лиды/Все)
   document.querySelectorAll('.filter-tab[data-filter]').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.filter-tab[data-filter]').forEach(t => t.classList.remove('active'));

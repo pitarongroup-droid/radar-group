@@ -15,32 +15,32 @@
   <link rel="stylesheet" href="/app/dashboard.css">
   <link rel="stylesheet" href="/admin/admin.css">
   <style>
-    .filter-tabs {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
+    .filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
     .filter-tab {
-      padding: 8px 16px;
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 100px;
-      color: var(--text-muted);
-      font-family: inherit;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: var(--transition);
+      padding: 8px 16px; background: transparent; border: 1px solid var(--border);
+      border-radius: 100px; color: var(--text-muted); font-family: inherit;
+      font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition);
     }
-    .filter-tab:hover {
-      color: var(--text);
-      border-color: var(--border-strong);
-    }
+    .filter-tab:hover { color: var(--text); border-color: var(--border-strong); }
     .filter-tab.active {
-      background: var(--gradient-cta);
-      color: #FFFFFF;
-      border-color: transparent;
+      background: var(--gradient-cta); color: #FFFFFF; border-color: transparent;
       box-shadow: 0 4px 14px rgba(0, 240, 255, 0.25);
+    }
+
+    /* --- АДАПТИВНЫЕ ФИЛЬТРЫ --- */
+    .filter-panel { margin-bottom: 15px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 10px; border: 1px solid var(--border); }
+    .filter-container { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .filter-date-box { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+    .date-input { padding: 8px; width: 130px; color-scheme: dark; }
+    @media (max-width: 768px) {
+      .filter-container { flex-direction: column; align-items: stretch; }
+      .filter-date-box { justify-content: space-between; margin-bottom: 10px; margin-left: 0 !important; }
+      .date-input { flex: 1; width: auto; min-width: 110px; }
+      .filter-actions { justify-content: space-between; width: 100%; }
+      .filter-actions .btn { flex: 1; padding: 10px; font-size: 13px; }
+      .filter-tabs { width: 100%; display: flex; overflow-x: auto; padding-bottom: 5px; margin-bottom: 5px; -webkit-overflow-scrolling: touch; }
+      .filter-tabs::-webkit-scrollbar { display: none; }
+      .filter-tab { flex-shrink: 0; padding: 8px 14px; font-size: 13px; }
     }
   </style>
 </head>
@@ -62,7 +62,6 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         <span>Клиенты</span>
       </a>
-      <!-- ДОБАВЛЕНО: Партнеры -->
       <a href="/admin/partners.html" class="admin-sidebar-link">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4.5L18.5 21 12 16.5 5.5 21l2-7.5L2 9h7z"/></svg>
         <span>Партнеры</span>
@@ -94,9 +93,8 @@
     </header>
 
     <!-- ПАНЕЛЬ ФИЛЬТРОВ -->
-    <section class="dash-section" style="margin-bottom: 15px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
-      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-        
+    <section class="filter-panel">
+      <div class="filter-container">
         <div class="filter-tabs" id="quickFilters">
           <button class="filter-tab active" data-days="all">Всё время</button>
           <button class="filter-tab" data-days="1">Сегодня</button>
@@ -104,11 +102,14 @@
           <button class="filter-tab" data-days="30">30 дней</button>
         </div>
 
-        <div style="display:flex; gap:5px; align-items:center; margin-left: auto;">
-          <input type="date" id="dashDateFrom" class="form-input" style="padding:8px; width:130px; color-scheme: dark;">
+        <div class="filter-date-box" style="margin-left: auto;">
+          <input type="date" id="dashDateFrom" class="form-input date-input">
           <span style="color:var(--text-muted);">—</span>
-          <input type="date" id="dashDateTo" class="form-input" style="padding:8px; width:130px; color-scheme: dark;">
-          <button class="btn btn-primary" onclick="applyCustomDates()" style="padding:8px 16px;">🔍 Применить</button>
+          <input type="date" id="dashDateTo" class="form-input date-input">
+        </div>
+        
+        <div class="filter-actions">
+          <button class="btn btn-primary" onclick="applyCustomDates()">🔍 Применить</button>
         </div>
       </div>
     </section>
@@ -185,10 +186,8 @@
     window.location.href = '/app/login.html';
   }
 
-  // Функция для загрузки данных (принимает даты)
   async function loadDashboard(dateFrom = null, dateTo = null) {
     try {
-      // Формируем URL с датами
       const params = new URLSearchParams();
       if (dateFrom) params.append('date_from', dateFrom);
       if (dateTo) params.append('date_to', dateTo);
@@ -199,7 +198,6 @@
       const data = await res.json();
       if (!data.ok) throw new Error(data.error?.ru || 'Ошибка');
 
-      // Заполняем карточки
       document.getElementById('statClients').textContent = data.stats.clients;
       document.getElementById('statDialogs').textContent = data.stats.dialogs;
       document.getElementById('statLeads').textContent = data.stats.leads;
@@ -220,7 +218,6 @@
         return;
       }
 
-      // Отрисовка таблицы
       tbody.innerHTML = data.recent_clients.map(c => {
         const statusClass = 'status-' + (c.status || 'active');
         const statusLabel = {
@@ -247,7 +244,6 @@
             <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
             <td>${c.dialogs_count || 0}</td>
             <td>${c.leads_count || 0}</td>
-            <!-- ИЗМЕНЕНИЕ: Теперь выводится выручка клиента -->
             <td>${Math.round(c.total_revenue || 0)} BYN</td>
           </tr>
         `;
@@ -257,14 +253,11 @@
     }
   }
 
-  // Логика кнопок быстрых фильтров
   document.querySelectorAll('#quickFilters .filter-tab').forEach(tab => {
     tab.addEventListener('click', () => {
-      // Меняем активный класс
       document.querySelectorAll('#quickFilters .filter-tab').forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
 
-      // Очищаем календари
       document.getElementById('dashDateFrom').value = '';
       document.getElementById('dashDateTo').value = '';
 
@@ -291,27 +284,19 @@
         periodLabel = 'за 30 дней';
       }
 
-      // Обновляем текст под карточками
       document.querySelectorAll('.meta-period-label').forEach(el => el.textContent = periodLabel);
-
-      // Загружаем
       loadDashboard(dateFrom, dateTo);
     });
   });
 
-  // Логика кастомных дат
   function applyCustomDates() {
     const from = document.getElementById('dashDateFrom').value;
     const to = document.getElementById('dashDateTo').value;
 
     if (!from && !to) return;
 
-    // Снимаем активность с быстрых кнопок
     document.querySelectorAll('#quickFilters .filter-tab').forEach(t => t.classList.remove('active'));
-
-    // Обновляем текст
     document.querySelectorAll('.meta-period-label').forEach(el => el.textContent = 'за выбранный период');
-
     loadDashboard(from, to);
   }
 
@@ -321,7 +306,6 @@
     }[ch]));
   }
 
-  // Инициализация при загрузке
   loadDashboard();
 </script>
 
