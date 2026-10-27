@@ -25,6 +25,7 @@
     .accordion-header svg { transition: transform 0.3s; }
     
     /* Стили для скриптов */
+    .script-title { display: block; font-size: 15px; font-weight: 700; color: var(--text); margin-top: 20px; margin-bottom: 5px; }
     .script-box { background: #12121A; border-left: 3px solid var(--cyan); padding: 15px; border-radius: 0 8px 8px 0; font-family: monospace; font-size: 13px; color: #E2E8F0; margin: 10px 0; position: relative; padding-right: 80px; }
     .copy-btn { position: absolute; top: 10px; right: 10px; background: rgba(0, 240, 255, 0.1); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.3); padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; transition: 0.2s; font-family: var(--font); }
     .copy-btn:hover { background: var(--cyan); color: #000; }
@@ -162,23 +163,38 @@
         </div>
       </div>
 
-      <!-- 4. МЕТОДЫ ДОБЫВАНИЯ КЛИЕНТОВ -->
-      <div class="accordion-item active"> <!-- Открыт по умолчанию, так как это новинка -->
+      <!-- 4. СКРИПТЫ ПРОДАЖ (ВСЕ 3 ШТУКИ) -->
+      <div class="accordion-item active">
         <div class="accordion-header" onclick="toggleAccordion(this)">
-          🎯 Скрипт №3: Метод «Проверка на скорость» (Холодный аутрич)
+          💬 Скрипты продаж (Шаблоны сообщений)
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
         <div class="accordion-content">
-          <p>Этот метод отлично работает, когда вы пишете владельцу бизнеса в его же рабочий чат (Telegram, WhatsApp, Instagram Direct). Мы покажем ему его главную боль в реальном времени.</p>
+          <p>Отправляйте эти сообщения владельцам бизнеса. Выбирайте тот, который больше подходит под ситуацию.</p>
           
-          <p><strong>Шаг 1:</strong> Найдите Telegram-аккаунт компании или напишите на номер WhatsApp, указанный на их сайте. Отправьте короткое сообщение:</p>
+          <!-- СКРИПТ 1 -->
+          <span class="script-title">Скрипт №1: «В лоб» (Быстрый старт)</span>
+          <div class="script-box">
+            Привет! Заметил, что вы продаете [название услуги]. У вас есть менеджер, который отвечает клиентам ночью и в выходные? Если нет, мы можем внедрить ИИ-менеджера, который будет продавать за вас 24/7 и не будет брать зарплату. Скинуть короткое демо?
+            <button class="copy-btn" onclick="copyText(this)">Копировать</button>
+          </div>
+
+          <!-- СКРИПТ 2 -->
+          <span class="script-title">Скрипт №2: «Через боль» (Эмоциональный)</span>
+          <div class="script-box">
+            Здравствуйте! Часто ли у вас теряются клиенты, потому что не успеваете отвечать в личку? Мы делаем ИИ-менеджеров, которые отвечают за 3 секунды, знают весь ваш ассортимент и закрывают на оплату. Работает автономно. Хотите посмотреть, как это будет выглядеть для вашего бизнеса?
+            <button class="copy-btn" onclick="copyText(this)">Копировать</button>
+          </div>
+
+          <!-- СКРИПТ 3 -->
+          <span class="script-title">Скрипт №3: «Проверка на скорость» (В рабочем чате)</span>
+          <p style="font-size: 13px; margin-top: 5px;">Пишем в Telegram/WhatsApp компании. Отправляем <b>Шаг 1</b>:</p>
           <div class="script-box">
             Здравствуйте!
             <button class="copy-btn" onclick="copyText(this)">Копировать</button>
           </div>
-          <p><em>Ждем ответа. Обычно менеджеры отвечают через 5 минут, а то и через час. Это дает нам фору.</em></p>
-
-          <p><strong>Шаг 2:</strong> Как только они вам ответят (даже если просто «Здравствуйте, чем помочь?»), отправляем второе сообщение:</p>
+          
+          <p style="font-size: 13px;">Ждем ответа (5-40 минут), чтобы клиент сам ощутил боль. Отправляем <b>Шаг 2</b>:</p>
           <div class="script-box">
             Спасибо за ответ! Я как раз изучаю рынок и разослал тестовые заявки топовым компаниям из вашей сферы. И заметил одну тенденцию: к сожалению, везде приходится ждать ответа по 10-40 минут. Клиенты в наше время не готовы столько ждать.
             <br><br>
@@ -186,9 +202,9 @@
             <button class="copy-btn" onclick="copyText(this)">Копировать</button>
           </div>
 
-          <p><strong>Шаг 3:</strong> Если клиент говорит «Да, бывает», вы переходите к презентации:</p>
+          <p style="font-size: 13px;">Если он соглашается, отправляем <b>Шаг 3</b>:</p>
           <div class="script-box">
-            Тогда вам точно стоит посмотреть, как это работает. У нас есть 3 решения: Telegram-бот, ИИ на сайте (виджет) и Telegram Business (когда ИИ отвечает прямо с вашего личного аккаунта). Вот пример (даете ссылку на демо или свой виджет).
+            Тогда вам точно стоит посмотреть, как это работает. У нас есть 3 решения: Telegram-бот, ИИ на сайте (виджет) и Telegram Business (когда ИИ отвечает прямо с вашего личного аккаунта). Вот пример (даете ссылку на демо).
             <br><br>
             А самое приятное — лиды не теряются, а сразу падают вам в CRM или в таблицу. Можем созвониться на 15 минут и я покажу, как это будет выглядеть для вашего бизнеса?
             <button class="copy-btn" onclick="copyText(this)">Копировать</button>
