@@ -18,6 +18,18 @@
   
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/app/app.css">
+
+  <!-- СКРИПТ ДЛЯ ЗАХВАТА РЕФ-КОДА -->
+  <script>
+    (function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const ref = urlParams.get('ref');
+      if (ref) {
+        // Сохраняем куку на 30 дней
+        document.cookie = `affiliate_ref=${ref}; path=/; max-age=${60*60*24*30}; SameSite=Lax`;
+      }
+    })();
+  </script>
 </head>
 <body class="app-body">
 
@@ -79,6 +91,13 @@
   </div>
 
   <script>
+    // Вспомогательная функция для чтения куки
+    function getCookie(name) {
+      const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+      if (match) return match[2];
+      return null;
+    }
+
     document.getElementById('registerForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       
@@ -90,6 +109,9 @@
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
       const agree = e.target.querySelector('[name="agree"]').checked;
+      
+      // Читаем реф-код из куки
+      const ref_code = getCookie('affiliate_ref');
       
       const lang = window.location.pathname.startsWith('/en/') ? 'en' : 'ru';
       
@@ -124,18 +146,20 @@
         const res = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, company, email, password })
+          // ДОБАВЛЕНО: отправляем ref_code на сервер
+          body: JSON.stringify({ name, company, email, password, ref_code })
         });
         
         const data = await res.json();
         
         if (data.ok && data.token) {
-          // ✅ Сохраняем токен И данные пользователя
           localStorage.setItem('token', data.token);
           localStorage.setItem('user', JSON.stringify(data.user));
           document.cookie = `token=${data.token}; path=/; max-age=${60*60*24*30}; SameSite=Lax`;
           
-          // ✅ Языко-зависимый редирект
+          // Удаляем реф-куку после успешной регистрации, чтобы не мешала
+          document.cookie = 'affiliate_ref=; path=/; max-age=0';
+          
           const appRoot = lang === 'en' ? '/en/app' : '/app';
           
           status.className = 'form-status success';

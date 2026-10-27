@@ -7,7 +7,8 @@ export async function onRequestPost(context) {
   const { request, env } = context;
 
   try {
-    const { name, company, email, password } = await request.json();
+    // ДОБАВЛЕНО: читаем ref_code из запроса
+    const { name, company, email, password, ref_code } = await request.json();
 
     if (!name || name.length < 2) {
       return error('Укажите ваше имя', 'Please enter your name');
@@ -27,6 +28,18 @@ export async function onRequestPost(context) {
       return error('Email уже зарегистрирован', 'Email already registered');
     }
 
+    // ДОБАВЛЕНО: Ищем партнера по реф-коду
+    let referredBy = null;
+    if (ref_code) {
+      const partner = await env.radar_group_db.prepare(
+        'SELECT id FROM partners WHERE ref_code = ?'
+      ).bind(ref_code).first();
+      
+      if (partner) {
+        referredBy = partner.id;
+      }
+    }
+
     const clientId = 'cli_' + crypto.randomUUID().slice(0, 8);
     const userId = 'usr_' + crypto.randomUUID().slice(0, 8);
     const apiKey = 'rg_live_' + generateKey(32);
@@ -34,12 +47,12 @@ export async function onRequestPost(context) {
     const passwordHash = await hashPassword(password);
 
     await env.radar_group_db.batch([
-      // ⚠️ account_status = 'pending' — клиент заблокирован до одобрения
+      // ИЗМЕНЕНО: Добавлена колонка referred_by
       env.radar_group_db.prepare(
         `INSERT INTO clients 
-         (id, name, email, company, api_key, account_status) 
-         VALUES (?, ?, ?, ?, ?, 'pending')`
-      ).bind(clientId, name, email.toLowerCase(), company || null, apiKey),
+         (id, name, email, company, api_key, account_status, referred_by) 
+         VALUES (?, ?, ?, ?, ?, 'pending', ?)`
+      ).bind(clientId, name, email.toLowerCase(), company || null, apiKey, referredBy),
 
       env.radar_group_db.prepare(
         `INSERT INTO users 
@@ -47,7 +60,6 @@ export async function onRequestPost(context) {
          VALUES (?, ?, ?, ?, ?)`
       ).bind(userId, clientId, email.toLowerCase(), passwordHash, 'client'),
 
-      // ⚠️ widget_enabled = 0, bot_enabled = 0 — ничего не включено
       env.radar_group_db.prepare(
         `INSERT INTO settings 
          (client_id, widget_enabled, bot_enabled) 
@@ -65,7 +77,6 @@ export async function onRequestPost(context) {
       if (adminTgToken && adminChatId) {
         const ip = request.headers.get('cf-connecting-ip') || 'неизвестен';
         
-        // Экранируем данные от сбоев HTML
         const safeName = escapeHtml(name);
         const safeCompany = escapeHtml(company || '—');
         const safeEmail = escapeHtml(email);
@@ -76,6 +87,7 @@ export async function onRequestPost(context) {
           `🏢 <b>Компания:</b> ${safeCompany}\n` +
           `📧 <b>Email:</b> ${safeEmail}\n` +
           `🆔 <b>ID:</b> <code>${clientId}</code>\n` +
+          (referredBy ? `🤝 <b>Пришел от партнера:</b> <code>${referredBy}</code>\n` : '') +
           `🌐 <b>IP:</b> ${ip}\n` +
           `🕐 ${new Date().toLocaleString('ru-RU')}`;
 
@@ -90,7 +102,6 @@ export async function onRequestPost(context) {
         });
       }
     } catch (tgErr) {
-      // Если упадет телеграм, регистрация все равно пройдет
       console.error('Failed to send registration notification:', tgErr);
     }
 

@@ -47,6 +47,15 @@
 
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="robot.css">
+  <script>
+  (function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const ref = urlParams.get('ref');
+    if (ref) {
+      document.cookie = `affiliate_ref=${ref}; path=/; max-age=${60*60*24*30}; SameSite=Lax`;
+    }
+  })();
+</script>
 </head>
 <body>
 
