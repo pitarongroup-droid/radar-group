@@ -26,11 +26,17 @@ export async function onRequestGet({ request, env }) {
     const url = new URL(request.url);
     const filter = url.searchParams.get('filter') || 'all';
     const limit = Math.min(parseInt(url.searchParams.get('limit') || '50'), 200);
+    
+    // НОВЫЕ ПАРАМЕТРЫ (для фильтров)
+    const dateFrom = url.searchParams.get('date_from');
+    const dateTo = url.searchParams.get('date_to');
+    const search = url.searchParams.get('search');
 
     let query = `SELECT id, channel, user_name, user_contact, status, is_lead, lead_data, created_at
                  FROM dialogs WHERE client_id = ?`;
     const params = [payload.clientId];
 
+    // 1. Существующая логика табов
     if (filter === 'leads') {
       query += ` AND is_lead = 1`;
     } else if (filter === 'active') {
@@ -39,11 +45,30 @@ export async function onRequestGet({ request, env }) {
       query += ` AND status = 'closed'`;
     }
 
+    // 2. НОВЫЙ ФИЛЬТР ПО ДАТЕ (С / По)
+    if (dateFrom) {
+      const fromTimestamp = Math.floor(new Date(dateFrom).getTime() / 1000);
+      query += ` AND created_at >= ?`;
+      params.push(fromTimestamp);
+    }
+    if (dateTo) {
+      const toTimestamp = Math.floor(new Date(dateTo + 'T23:59:59').getTime() / 1000);
+      query += ` AND created_at <= ?`;
+      params.push(toTimestamp);
+    }
+
+    // 3. НОВЫЙ ТЕКСТОВЫЙ ПОИСК
+    if (search) {
+      query += ` AND (user_name LIKE ? OR user_contact LIKE ?)`;
+      params.push(`%${search}%`, `%${search}%`);
+    }
+
     query += ` ORDER BY created_at DESC LIMIT ?`;
     params.push(limit);
 
     const { results } = await env.radar_group_db.prepare(query).bind(...params).all();
 
+    // Сохранен подсчет сообщений
     const dialogs = await Promise.all((results || []).map(async (d) => {
       const msgCount = await env.radar_group_db.prepare(
         `SELECT COUNT(*) as c FROM messages WHERE dialog_id = ?`

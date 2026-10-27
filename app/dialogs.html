@@ -74,6 +74,20 @@
       </div>
     </header>
 
+    <!-- НОВАЯ ПАНЕЛЬ ФИЛЬТРОВ -->
+    <section class="dash-section" style="margin-bottom: 15px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+        <div style="display:flex; gap:5px; align-items:center;">
+          <input type="date" id="dateFrom" class="form-input" style="padding:8px; width:140px; color-scheme: dark;">
+          <span style="color:var(--text-muted);">—</span>
+          <input type="date" id="dateTo" class="form-input" style="padding:8px; width:140px; color-scheme: dark;">
+        </div>
+        <input type="text" id="searchText" class="form-input" placeholder="Поиск по имени или контакту..." style="flex:1; min-width:200px; padding:8px;">
+        <button class="btn btn-primary" onclick="loadDialogs()" style="padding:8px 16px;">🔍 Применить</button>
+        <button class="btn btn-outline" onclick="resetFilters()" style="padding:8px 16px;">Сбросить</button>
+      </div>
+    </section>
+
     <section class="dash-section">
       <div class="filter-tabs">
         <button class="filter-tab active" data-filter="all">Все</button>
@@ -165,8 +179,20 @@
     const tbody = document.getElementById('dialogsTable');
     tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Загрузка...</td></tr>';
 
+    // Собираем данные с фильтров
+    const dateFrom = document.getElementById('dateFrom').value;
+    const dateTo = document.getElementById('dateTo').value;
+    const searchText = document.getElementById('searchText').value;
+
+    // Формируем URL
+    const params = new URLSearchParams();
+    params.append('filter', currentFilter);
+    if (dateFrom) params.append('date_from', dateFrom);
+    if (dateTo) params.append('date_to', dateTo);
+    if (searchText) params.append('search', searchText);
+
     try {
-      const res = await fetch('/api/dialogs?filter=' + currentFilter, {
+      const res = await fetch('/api/dialogs?' + params.toString(), {
         headers: { 'Authorization': 'Bearer ' + token }
       });
       const data = await res.json();
@@ -224,6 +250,14 @@
       console.error('Dialogs error:', err);
       tbody.innerHTML = `<tr><td colspan="5" class="empty-state">Ошибка: ${escapeHtml(err.message)}</td></tr>`;
     }
+  }
+
+  // Функция сброса фильтров
+  function resetFilters() {
+    document.getElementById('dateFrom').value = '';
+    document.getElementById('dateTo').value = '';
+    document.getElementById('searchText').value = '';
+    loadDialogs();
   }
 
   document.querySelectorAll('.filter-tab').forEach(tab => {

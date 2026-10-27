@@ -54,6 +54,19 @@
       <h1 class="admin-header-title">Логи</h1>
     </header>
 
+    <!-- НОВАЯ ПАНЕЛЬ ФИЛЬТРОВ -->
+    <section class="dash-section" style="margin-bottom: 15px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+        <div style="display:flex; gap:5px; align-items:center;">
+          <input type="date" id="dateFrom" class="form-input" style="padding:8px; width:140px; color-scheme: dark;">
+          <span style="color:var(--text-muted);">—</span>
+          <input type="date" id="dateTo" class="form-input" style="padding:8px; width:140px; color-scheme: dark;">
+        </div>
+        <button class="btn btn-primary" onclick="loadLogs()" style="padding:8px 16px;">🔍 Применить</button>
+        <button class="btn btn-outline" onclick="resetFilters()" style="padding:8px 16px;">Сбросить</button>
+      </div>
+    </section>
+
     <section class="dash-section">
       <table class="clients-table">
         <thead>
@@ -88,8 +101,20 @@
 
   async function loadLogs() {
     const tbody = document.getElementById('logsBody');
+    tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Загрузка...</td></tr>';
+
+    // Собираем данные с фильтров
+    const dateFrom = document.getElementById('dateFrom').value;
+    const dateTo = document.getElementById('dateTo').value;
+    
+    const params = new URLSearchParams();
+    params.append('limit', '100');
+    if (dateFrom) params.append('date_from', dateFrom);
+    if (dateTo) params.append('date_to', dateTo);
+
     try {
-      const res = await fetch('/api/admin/logs?limit=100');
+      // Передаем параметры в API
+      const res = await fetch('/api/admin/logs?' + params.toString());
       const data = await res.json();
       if (!data.ok) throw new Error(data.error?.ru || 'Ошибка');
 
@@ -97,9 +122,9 @@
         tbody.innerHTML = `
           <tr>
             <td colspan="4" class="empty-state">
-              <div>Пока нет логов</div>
+              <div>Нет логов за выбранный период</div>
               <div style="font-size:12px; margin-top:6px; color:var(--text-dim);">
-                Логи появятся, когда начнут работать виджет или бот
+                Попробуйте изменить даты или сбросить фильтры
               </div>
             </td>
           </tr>
@@ -137,6 +162,13 @@
         </tr>
       `;
     }
+  }
+
+  // Функция сброса фильтров
+  function resetFilters() {
+    document.getElementById('dateFrom').value = '';
+    document.getElementById('dateTo').value = '';
+    loadLogs();
   }
 
   function escapeHtml(s) {
