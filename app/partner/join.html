@@ -42,12 +42,6 @@
           <input class="form-input" type="password" id="password" name="password" placeholder="Минимум 8 символов" required minlength="8" autocomplete="new-password">
         </div>
 
-        <div class="form-row">
-          <label class="form-label" for="ref_code">Ваш уникальный реф-код *</label>
-          <input class="form-input" type="text" id="ref_code" name="ref_code" placeholder="ivan_partner" required pattern="^[a-zA-Z0-9_-]+$">
-          <div class="form-hint">Только латиница, цифры, дефис или _. Ссылка будет выглядеть так: site.com/?ref=<b>ваш_код</b></div>
-        </div>
-
         <button type="submit" class="btn btn-primary form-submit">
           Зарегистрироваться
         </button>
@@ -74,17 +68,10 @@
       const name = document.getElementById('name').value.trim();
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
-      const ref_code = document.getElementById('ref_code').value.trim().toLowerCase();
       
-      if (!name || !email || !password || !ref_code) {
+      if (!name || !email || !password) {
         status.className = 'form-status error';
         status.textContent = 'Заполните все поля';
-        return;
-      }
-
-      if (!/^[a-zA-Z0-9_-]+$/.test(ref_code)) {
-        status.className = 'form-status error';
-        status.textContent = 'Реф-код может содержать только английские буквы, цифры, дефис и подчеркивание';
         return;
       }
 
@@ -97,13 +84,12 @@
         const res = await fetch('/api/auth/partner-register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, password, ref_code })
+          body: JSON.stringify({ name, email, password })
         });
 
         const data = await res.json();
 
         if (data.ok && data.token) {
-          // Сохраняем токен партнера
           localStorage.setItem('partner_token', data.token);
           localStorage.setItem('partner_user', JSON.stringify(data.user));
           
@@ -120,7 +106,6 @@
       } catch (err) {
         status.className = 'form-status error';
         status.textContent = 'Ошибка сети. Попробуйте позже.';
-        console.error('Partner register error:', err);
       } finally {
         btn.disabled = false;
         btn.textContent = 'Зарегистрироваться';

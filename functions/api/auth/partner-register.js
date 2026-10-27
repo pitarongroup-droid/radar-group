@@ -4,7 +4,7 @@
 
 export async function onRequestPost({ request, env }) {
   try {
-    const { name, email, password, ref_code } = await request.json();
+    const { name, email, password } = await request.json();
 
     // 1. Валидация
     if (!name || name.length < 2) {
@@ -16,29 +16,50 @@ export async function onRequestPost({ request, env }) {
     if (!password || password.length < 8) {
       return Response.json({ ok: false, error: { ru: 'Пароль минимум 8 символов' } }, { status: 400 });
     }
-    if (!ref_code || !/^[a-zA-Z0-9_-]+$/.test(ref_code)) {
-      return Response.json({ ok: false, error: { ru: 'Реф-код должен содержать только латиницу, цифры, дефис или нижнее подчеркивание' } }, { status: 400 });
-    }
 
-    // 2. Проверяем, не занят ли email или реф-код
+    // 2. Проверяем, не занят ли email
     const existing = await env.radar_group_db.prepare(
-      'SELECT id FROM partners WHERE email = ? OR ref_code = ?'
-    ).bind(email.toLowerCase(), ref_code.toLowerCase()).first();
+      'SELECT id FROM partners WHERE email = ?'
+    ).bind(email.toLowerCase()).first();
 
     if (existing) {
-      return Response.json({ ok: false, error: { ru: 'Партнер с таким Email или реф-кодом уже существует' } }, { status: 400 });
+      return Response.json({ ok: false, error: { ru: 'Партнер с таким Email уже существует' } }, { status: 400 });
     }
 
-    // 3. Создаем партнера
+    // 3. АВТОГЕНЕРАЦИЯ СЛУЧАЙНОГО РЕФ-КОДА
+    let refCode = '';
+    let isUnique = false;
+    let attempts = 0;
+
+    while (!isUnique && attempts < 10) {
+      // Генерируем случайную строку: префикс prt_ + 6 символов (буквы и цифры)
+      const randomStr = Math.random().toString(36).substring(2, 8);
+      refCode = `prt_${randomStr}`;
+
+      const codeCheck = await env.radar_group_db.prepare(
+        'SELECT id FROM partners WHERE ref_code = ?'
+      ).bind(refCode).first();
+      
+      if (!codeCheck) {
+        isUnique = true;
+      }
+      attempts++;
+    }
+
+    if (!isUnique) {
+      return Response.json({ ok: false, error: { ru: 'Не удалось сгенерировать уникальный код. Попробуйте еще раз.' } }, { status: 500 });
+    }
+
+    // 4. Создаем партнера
     const partnerId = 'prt_' + crypto.randomUUID().slice(0, 8);
     const passwordHash = await hashPassword(password);
 
     await env.radar_group_db.prepare(
       `INSERT INTO partners (id, name, email, ref_code, password_hash)
        VALUES (?, ?, ?, ?, ?)`
-    ).bind(partnerId, name, email.toLowerCase(), ref_code.toLowerCase(), passwordHash).run();
+    ).bind(partnerId, name, email.toLowerCase(), refCode, passwordHash).run();
 
-    // 4. Сразу создаем токен, чтобы партнеру не пришлось логиниться заново
+    // 5. Создаем токен для входа
     const token = await createJWT({
       partnerId: partnerId,
       role: 'partner',
@@ -48,7 +69,7 @@ export async function onRequestPost({ request, env }) {
     return Response.json({
       ok: true,
       token,
-      user: { id: partnerId, name: name, email: email.toLowerCase(), role: 'partner', ref_code: ref_code.toLowerCase() }
+      user: { id: partnerId, name: name, email: email.toLowerCase(), role: 'partner', ref_code: refCode }
     });
 
   } catch (err) {
@@ -58,7 +79,7 @@ export async function onRequestPost({ request, env }) {
 }
 
 // ============================================
-// Вспомогательные функции (хеширование и JWT)
+// Вспомогательные функции
 // ============================================
 
 async function hashPassword(password) {
