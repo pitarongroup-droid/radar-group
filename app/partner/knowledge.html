@@ -47,6 +47,10 @@
     .comparison-table th { background: rgba(255,255,255,0.03); color: var(--text); font-weight: 700; }
     .comparison-table td.bad { color: #FF0080; }
     .comparison-table td.good { color: #00F0FF; font-weight: 600; }
+
+    /* Стили для генератора КП */
+    .kp-generator { background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); padding: 20px; border-radius: 10px; margin-top: 15px; }
+    .kp-generator .form-row { margin-bottom: 15px; }
   </style>
 </head>
 <body class="page-app-dashboard">
@@ -119,13 +123,13 @@
       <!-- 2. ТЕСТОВЫЙ ПЕРИОД -->
       <div class="accordion-item">
         <div class="accordion-header" onclick="toggleAccordion(this)">
-          🎁 Как работают 2 тестовых дня
+          🎁 Как работает тестовый период
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
         <div class="accordion-content">
-          <p>Мы хотим, чтобы клиенты покупали осознанно. Поэтому у нас есть тестовый период.</p>
+          <p>Мы хотим, чтобы клиенты покупали осознанно. Поэтому у нас есть тестовый период (обычно 3 дня).</p>
           <ul style="padding-left: 20px; line-height: 1.8;">
-            <li><strong>Как включить:</strong> Вы приводите клиента, он регистрируется. Вы пишете вашему менеджеру (или в поддержку) с просьбой включить тестовый период на 2 дня.</li>
+            <li><strong>Как включить:</strong> Вы приводите клиента, он регистрируется. Вы пишете вашему менеджеру (или в поддержку) с просьбой включить тестовый период.</li>
             <li><strong>Что получает клиент:</strong> Полный доступ к настройкам виджета/бота, возможность протестировать промпты и посмотреть, как ИИ отвечает на реальные сообщения.</li>
             <li><strong>Ограничения:</strong> Тестовый период не оплачивается. Если клиент решает продолжить, менеджер выставляет счет, и после оплаты клиент переходит на полноценный тариф.</li>
           </ul>
@@ -163,8 +167,8 @@
         </div>
       </div>
 
-      <!-- 4. СКРИПТЫ ПРОДАЖ (ВСЕ 3 ШТУКИ) -->
-      <div class="accordion-item active">
+      <!-- 4. СКРИПТЫ ПРОДАЖ -->
+      <div class="accordion-item">
         <div class="accordion-header" onclick="toggleAccordion(this)">
           💬 Скрипты продаж (Шаблоны сообщений)
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
@@ -172,21 +176,18 @@
         <div class="accordion-content">
           <p>Отправляйте эти сообщения владельцам бизнеса. Выбирайте тот, который больше подходит под ситуацию.</p>
           
-          <!-- СКРИПТ 1 -->
           <span class="script-title">Скрипт №1: «В лоб» (Быстрый старт)</span>
           <div class="script-box">
             Привет! Заметил, что вы продаете [название услуги]. У вас есть менеджер, который отвечает клиентам ночью и в выходные? Если нет, мы можем внедрить ИИ-менеджера, который будет продавать за вас 24/7 и не будет брать зарплату. Скинуть короткое демо?
             <button class="copy-btn" onclick="copyText(this)">Копировать</button>
           </div>
 
-          <!-- СКРИПТ 2 -->
           <span class="script-title">Скрипт №2: «Через боль» (Эмоциональный)</span>
           <div class="script-box">
             Здравствуйте! Часто ли у вас теряются клиенты, потому что не успеваете отвечать в личку? Мы делаем ИИ-менеджеров, которые отвечают за 3 секунды, знают весь ваш ассортимент и закрывают на оплату. Работает автономно. Хотите посмотреть, как это будет выглядеть для вашего бизнеса?
             <button class="copy-btn" onclick="copyText(this)">Копировать</button>
           </div>
 
-          <!-- СКРИПТ 3 -->
           <span class="script-title">Скрипт №3: «Проверка на скорость» (В рабочем чате)</span>
           <p style="font-size: 13px; margin-top: 5px;">Пишем в Telegram/WhatsApp компании. Отправляем <b>Шаг 1</b>:</p>
           <div class="script-box">
@@ -240,6 +241,50 @@
         </div>
       </div>
 
+      <!-- 6. ГЕНЕРАТОР КП -->
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          🧰 Генератор персональных КП (Создать ссылку)
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="accordion-content">
+          <p>Создайте красивую персональную страницу с коммерческим предложением для вашего клиента. В ссылку автоматически подставится его имя, ниша, цена и ваш реферальный код.</p>
+          
+          <div class="kp-generator">
+            <div class="form-row">
+              <label class="form-label">Выберите услугу</label>
+              <select id="kpService" class="form-select" onchange="updateKpLink()">
+                <option value="kp-trial">Бесплатный тест (3 дня)</option>
+                <option value="kp-widget">ИИ-Виджет на сайт</option>
+                <option value="kp-bot">ИИ-Бот в Telegram</option>
+                <option value="kp-business">ИИ в личных сообщениях (Business)</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label class="form-label">Имя клиента / Компании</label>
+              <input type="text" id="kpName" class="form-input" placeholder="Иван" oninput="updateKpLink()">
+            </div>
+            <div class="form-row">
+              <label class="form-label">Ниша клиента</label>
+              <input type="text" id="kpNiche" class="form-input" placeholder="Автосервис" oninput="updateKpLink()">
+            </div>
+            <div class="form-row">
+              <label class="form-label">Цена (BYN)</label>
+              <input type="text" id="kpPrice" class="form-input" placeholder="200" value="200" oninput="updateKpLink()">
+            </div>
+            
+            <div class="form-row" style="margin-top: 20px;">
+              <label class="form-label" style="color: var(--cyan);">Готовая ссылка для клиента</label>
+              <div style="display:flex; gap:10px;">
+                <input type="text" id="kpResult" class="form-input" readonly style="flex:1; background: rgba(0,0,0,0.5); color: var(--cyan); font-family: monospace;">
+                <button class="btn btn-primary" onclick="copyKpLink()" style="padding: 10px 20px;">📋 Копировать</button>
+              </div>
+              <div class="form-hint" style="margin-top:5px;">💡 В ссылку автоматически добавлен ваш реф-код. Клиент, перешедший по ней, будет навсегда закреплен за вами.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </section>
   </main>
 </div>
@@ -263,14 +308,53 @@
 
   function copyText(btn) {
     const box = btn.parentElement;
-    // Убираем текст кнопки "Копировать" из итогового текста
     const textToCopy = box.innerText.replace('Копировать', '').trim();
-    
     navigator.clipboard.writeText(textToCopy).then(() => {
       btn.textContent = '✅ Скопировано';
       setTimeout(() => btn.textContent = 'Копировать', 2000);
     });
   }
+
+  // === ЛОГИКА ГЕНЕРАТОРА КП ===
+  function getPartnerRef() {
+    const user = JSON.parse(localStorage.getItem('partner_user') || '{}');
+    return user.ref_code || '';
+  }
+
+  function updateKpLink() {
+    const service = document.getElementById('kpService').value;
+    const name = document.getElementById('kpName').value.trim();
+    const niche = document.getElementById('kpNiche').value.trim();
+    const price = document.getElementById('kpPrice').value.trim();
+    const ref = getPartnerRef();
+
+    const base = window.location.origin;
+    
+    let link = `${base}/${service}.html?`;
+    if (name) link += `name=${encodeURIComponent(name)}&`;
+    if (niche) link += `niche=${encodeURIComponent(niche)}&`;
+    if (price) link += `price=${encodeURIComponent(price)}&`;
+    if (ref) link += `ref=${encodeURIComponent(ref)}&`;
+    
+    link = link.replace(/&$/, '');
+    document.getElementById('kpResult').value = link;
+  }
+
+  function copyKpLink() {
+    const input = document.getElementById('kpResult');
+    if (!input.value) return;
+    input.select();
+    input.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(input.value).then(() => {
+      const btn = event.target;
+      const original = btn.textContent;
+      btn.textContent = '✅ Скопировано';
+      setTimeout(() => btn.textContent = original, 2000);
+    });
+  }
+
+  // Инициализация при загрузке
+  updateKpLink();
 </script>
 </body>
 </html>
