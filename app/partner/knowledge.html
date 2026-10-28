@@ -280,9 +280,7 @@
                 <button class="btn btn-primary" onclick="copyKpLink()" style="padding: 10px 20px; width: auto;">📋 Копировать</button>
               </div>
               <div class="form-hint" style="margin-top:5px;">
-                💡 В ссылку автоматически добавлен ваш реф-код.<br>
-                <!-- ДОБАВЛЕН ID И ПЕРЕДАЧА THIS -->
-                <button class="btn btn-outline" id="shortenBtn" onclick="shortenKpLink(this)" style="margin-top: 10px; padding: 6px 12px; font-size: 12px; width: auto;">🔗 Сократить ссылку</button>
+                💡 В ссылку автоматически добавлен ваш реф-код. Клиент, перешедший по ней, будет навсегда закреплен за вами.
               </div>
             </div>
           </div>
@@ -355,38 +353,6 @@
       btn.textContent = '✅ Скопировано';
       setTimeout(() => btn.textContent = original, 2000);
     });
-  }
-
-  // === ФУНКЦИЯ СОКРАЩЕНИЯ ССЫЛКИ (is.gd) ===
-  async function shortenKpLink(btn) {
-    const input = document.getElementById('kpResult');
-    const longUrl = input.value;
-    
-    if (!longUrl) return;
-
-    const originalText = btn.innerHTML;
-    btn.innerHTML = '⏳ Сокращаем...';
-    btn.disabled = true;
-
-    try {
-      // Используем is.gd (поддерживает CORS и не требует ключей)
-      const response = await fetch(`https://is.gd/create.php?format=simple&url=${encodeURIComponent(longUrl)}`);
-      if (!response.ok) throw new Error('Ошибка сети');
-      
-      const shortUrl = await response.text();
-      if (shortUrl.startsWith('http')) {
-        input.value = shortUrl.trim();
-        btn.innerHTML = '✅ Готово!';
-      } else {
-        throw new Error('Неверный ответ');
-      }
-    } catch (err) {
-      console.error('Shorten error:', err);
-      btn.innerHTML = '❌ Ошибка';
-    } finally {
-      btn.disabled = false;
-      setTimeout(() => btn.innerHTML = originalText, 3000);
-    }
   }
 
   // Инициализация при загрузке
