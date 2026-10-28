@@ -35,8 +35,12 @@
     .footer { text-align: center; border-top: 1px solid var(--border); padding-top: 20px; margin-top: 40px; font-size: 14px; color: var(--text-muted); }
     .footer a { color: var(--cyan); text-decoration: none; }
     
-    /* СТИЛИ МАКЕТА ЧАТА */
-    .chat-widget { position: fixed; bottom: 24px; right: 24px; width: 350px; max-width: calc(100vw - 48px); height: 480px; background: #12121A; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; display: flex; flex-direction: column; z-index: 9999; box-shadow: 0 10px 40px rgba(0,0,0,0.5); overflow: hidden; }
+    /* СТИЛИ ЧАТА */
+    .chat-launcher { position: fixed; bottom: 24px; right: 24px; width: 60px; height: 60px; border-radius: 50%; background: var(--gradient); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 20px rgba(0, 240, 255, 0.3); z-index: 9998; transition: transform 0.2s; }
+    .chat-launcher:hover { transform: scale(1.05); }
+    .chat-launcher svg { width: 30px; height: 30px; color: #fff; }
+    .chat-widget { position: fixed; bottom: 24px; right: 24px; width: 350px; max-width: calc(100vw - 48px); height: 480px; background: #12121A; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; display: flex; flex-direction: column; z-index: 9999; box-shadow: 0 10px 40px rgba(0,0,0,0.5); overflow: hidden; opacity: 0; pointer-events: none; transform: translateY(20px); transition: all 0.3s ease; }
+    .chat-widget.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
     .chat-header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); }
     .chat-header-info { display: flex; align-items: center; gap: 12px; }
     .chat-avatar { width: 36px; height: 36px; border-radius: 50%; background: rgba(0, 240, 255, 0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -57,7 +61,7 @@
     .chat-note { text-align: center; font-size: 10px; color: #8A8A9E; padding: 0 0 10px; }
     .chat-note a { color: #00F0FF; text-decoration: none; }
     
-    @media (max-width: 600px) { .features { grid-template-columns: 1fr; } .hero h1 { font-size: 28px; } .price { font-size: 36px; } .offer-box { padding: 25px 15px; } .chat-widget { display: none; } }
+    @media (max-width: 600px) { .features { grid-template-columns: 1fr; } .hero h1 { font-size: 28px; } .price { font-size: 36px; } .offer-box { padding: 25px 15px; } }
   </style>
 </head>
 <body>
@@ -85,13 +89,17 @@
   <footer class="footer"><p>© 2026 Radar Group. <a href="https://t.me/my_ai_TGAgency_bot">Написать нам</a></p></footer>
 </div>
 
-<div class="chat-widget">
+<button class="chat-launcher" id="chatLauncher" aria-label="Открыть чат">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M8 10h.01"/><path d="M16 10h.01"/><path d="M12 16a4 4 0 0 0 4-4"/></svg>
+</button>
+
+<div class="chat-widget" id="chatWidget">
   <div class="chat-header">
     <div class="chat-header-info">
       <div class="chat-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M8 10h.01"/><path d="M16 10h.01"/><path d="M12 16a4 4 0 0 0 4-4"/></svg></div>
       <div class="chat-header-text"><div class="chat-header-title">ИИ-менеджер</div><div class="chat-header-status">Онлайн</div></div>
     </div>
-    <button class="chat-close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    <button class="chat-close" id="chatClose" aria-label="Закрыть чат"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
   </div>
   <div class="chat-body">
     <div class="chat-message bot">Здравствуйте! Я ИИ-менеджер Radar Group. Готов ответить на ваши вопросы о продукте и тарифах. Нажмите сюда, чтобы протестировать меня в Telegram 👇</div>
@@ -106,6 +114,20 @@
 </div>
 
 <script>
+  const chatLauncher = document.getElementById('chatLauncher');
+  const chatWidget = document.getElementById('chatWidget');
+  const chatClose = document.getElementById('chatClose');
+  
+  chatLauncher.addEventListener('click', () => {
+    chatLauncher.style.display = 'none';
+    chatWidget.classList.add('open');
+  });
+
+  chatClose.addEventListener('click', () => {
+    chatWidget.classList.remove('open');
+    setTimeout(() => { chatLauncher.style.display = 'flex'; }, 300);
+  });
+
   const params = new URLSearchParams(window.location.search);
   if (params.get('name')) document.getElementById('greetName').textContent = params.get('name');
   if (params.get('niche')) document.getElementById('greetNiche').textContent = params.get('niche');
