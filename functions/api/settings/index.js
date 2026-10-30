@@ -53,7 +53,6 @@ export async function onRequestGet(context) {
     const user = await getUserFromToken(request, env);
     if (!user) return error('Не авторизован', 'Unauthorized', 401);
 
-    // ИСПРАВЛЕНО: Добавлен api_key в запрос к базе
     const client = await env.radar_group_db.prepare(
       'SELECT account_status, api_key FROM clients WHERE id = ?'
     ).bind(user.clientId).first();
@@ -77,7 +76,6 @@ export async function onRequestGet(context) {
 
     if (!settings) return error('Настройки не найдены', 'Settings not found', 404);
 
-    // ИСПРАВЛЕНО: Возвращаем api_key вместе с настройками
     return Response.json({ ok: true, settings, api_key: client.api_key });
 
   } catch (err) {
@@ -137,28 +135,29 @@ export async function onRequestPut(context) {
       return error('Нет данных для сохранения', 'No data to save', 400);
     }
 
+    // ✅ ИСПРАВЛЕНО: 10 символов вместо 200
     if (filtered.prompt_ru !== undefined && filtered.prompt_ru) {
       const len = String(filtered.prompt_ru).length;
-      if (len < 200 || len > 4000) {
-        return error('Промпт: 200–4000 символов', 'Prompt: 200–4000 chars', 400);
+      if (len < 10 || len > 4000) {
+        return error('Промпт: 10–4000 символов', 'Prompt: 10–4000 chars', 400);
       }
     }
     if (filtered.prompt_en !== undefined && filtered.prompt_en) {
       const len = String(filtered.prompt_en).length;
-      if (len < 200 || len > 4000) {
-        return error('Prompt EN: 200–4000 chars', 'Prompt EN: 200–4000 chars', 400);
+      if (len < 10 || len > 4000) {
+        return error('Prompt EN: 10–4000 chars', 'Prompt EN: 10–4000 chars', 400);
       }
     }
     if (filtered.bot_prompt_ru !== undefined && filtered.bot_prompt_ru) {
       const len = String(filtered.bot_prompt_ru).length;
-      if (len < 200 || len > 8000) {
-        return error('Промпт бота: 200–8000 символов', 'Bot prompt: 200–8000 chars', 400);
+      if (len < 10 || len > 8000) {
+        return error('Промпт бота: 10–8000 символов', 'Bot prompt: 10–8000 chars', 400);
       }
     }
     if (filtered.bot_prompt_en !== undefined && filtered.bot_prompt_en) {
       const len = String(filtered.bot_prompt_en).length;
-      if (len < 200 || len > 8000) {
-        return error('Bot prompt EN: 200–8000 chars', 'Bot prompt EN: 200–8000 chars', 400);
+      if (len < 10 || len > 8000) {
+        return error('Bot prompt EN: 10–8000 chars', 'Bot prompt EN: 10–8000 chars', 400);
       }
     }
 

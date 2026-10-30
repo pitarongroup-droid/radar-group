@@ -228,7 +228,6 @@
                 </label>
               </div>
             </div>
-            <!-- ДОБАВЛЕНЫ ПОЛЯ ДЛЯ ТЕЛЕГРАМА -->
             <div class="channel-body" id="telegramWrapper">
               <input class="form-input" type="text" id="widgetTelegramToken" placeholder="Bot Token (виджет)">
               <input class="form-input" type="text" id="widgetTelegramAdminId" placeholder="Admin ID (виджет)">
@@ -329,12 +328,21 @@
 
         <div class="settings-form">
           <div class="form-row">
-            <label class="form-label">Промпт RU</label>
-            <textarea class="form-textarea" id="widgetPromptRu" style="min-height:160px;" maxlength="4000"></textarea>
+            <label class="form-label">Основной промпт (Инструкции для ИИ)</label>
+            <textarea class="form-textarea" id="widgetPromptRu" style="min-height:200px;" maxlength="4000" placeholder="1. О КОМПАНИИ:&#10;Мы — [Название компании]. Занимаемся [Ниша].&#10;&#10;2. НАШИ УСЛУГИ И ЦЕНЫ:&#10;— [Услуга 1] — [Цена]&#10;— [Услуга 2] — [Цена]&#10;&#10;3. ТОН И СКРИПТЫ:&#10;Общайся вежливо. Наше преимущество — [УТП].&#10;Если клиент говорит «дорого», предложи рассрочку."></textarea>
             <div class="counter-row"><span id="counterWidgetPrompt">0</span> / 4000</div>
           </div>
-          <div class="form-row"><label class="form-label">Ниша</label><input class="form-input" type="text" id="widgetIndustry" maxlength="100"></div>
-          <div class="form-row"><label class="form-label">Услуги и цены</label><textarea class="form-textarea" id="widgetServices" style="min-height:100px;" maxlength="2000"></textarea></div>
+          
+          <!-- СКРЫТЫЕ ПОЛЯ ВИДЖЕТА -->
+          <div class="form-row" style="display:none;">
+            <label class="form-label">Ниша</label>
+            <input class="form-input" type="text" id="widgetIndustry" maxlength="100">
+          </div>
+          <div class="form-row" style="display:none;">
+            <label class="form-label">Услуги и цены</label>
+            <textarea class="form-textarea" id="widgetServices" style="min-height:100px;" maxlength="2000"></textarea>
+          </div>
+
           <div class="form-row">
             <label class="form-label">AI-провайдер</label>
             <select class="form-select" id="aiProvider">
@@ -371,12 +379,21 @@
             <div class="form-hint">Этот текст бот напишет первым, когда клиент нажмет /start</div>
           </div>
           <div class="form-row">
-            <label class="form-label">Промпт бота (RU)</label>
-            <textarea class="form-textarea" id="botPromptRu" style="min-height:200px;" maxlength="8000"></textarea>
+            <label class="form-label">Основной промпт бота</label>
+            <textarea class="form-textarea" id="botPromptRu" style="min-height:200px;" maxlength="8000" placeholder="1. О КОМПАНИИ:&#10;Мы — [Название компании]. Занимаемся [Ниша].&#10;&#10;2. НАШИ УСЛУГИ И ЦЕНЫ:&#10;— [Услуга 1] — [Цена]&#10;— [Услуга 2] — [Цена]&#10;&#10;3. ТОН И СКРИПТЫ:&#10;Общайся вежливо. Наше преимущество — [УТП].&#10;Если клиент говорит «дорого», предложи рассрочку."></textarea>
             <div class="counter-row"><span id="counterBotPrompt">0</span> / 8000</div>
           </div>
-          <div class="form-row"><label class="form-label">Ниша бота</label><input class="form-input" type="text" id="botIndustry" maxlength="100"></div>
-          <div class="form-row"><label class="form-label">Услуги бота</label><textarea class="form-textarea" id="botServices" style="min-height:100px;" maxlength="2000"></textarea></div>
+
+          <!-- СКРЫТЫЕ ПОЛЯ БОТА -->
+          <div class="form-row" style="display:none;">
+            <label class="form-label">Ниша бота</label>
+            <input class="form-input" type="text" id="botIndustry" maxlength="100">
+          </div>
+          <div class="form-row" style="display:none;">
+            <label class="form-label">Услуги бота</label>
+            <textarea class="form-textarea" id="botServices" style="min-height:100px;" maxlength="2000"></textarea>
+          </div>
+
           <div class="form-row">
             <label class="form-label">AI-провайдер для бота</label>
             <select class="form-select" id="botAiProvider">
@@ -450,7 +467,6 @@ function showError(msg) {
   document.getElementById('errorText').textContent = msg;
 }
 
-// ФУНКЦИЯ ДЛЯ СКРЫТИЯ/ПОКАЗА ПОЛЕЙ ВВОДА
 function toggleChannelInputs() {
   const pairs = [
     { toggle: 'allowTelegram', wrapper: 'telegramWrapper' },
@@ -468,7 +484,6 @@ function toggleChannelInputs() {
   });
 }
 
-// Вешаем слушатели на чекбоксы при загрузке
 ['allowTelegram', 'allowSheets', 'allowWebhook', 'allowEmail'].forEach(id => {
   const el = document.getElementById(id);
   if (el) {
@@ -515,19 +530,16 @@ function renderClient() {
   setVal('clientPlan', c.plan || 'basic');
   setTxt('clientApiKey', c.api_key || '—');
 
-  // Админские разрешения
   setChk('allowTelegram', s.admin_allow_telegram === 1);
   setChk('allowSheets', s.admin_allow_sheets === 1);
   setChk('allowWebhook', s.admin_allow_webhook === 1);
   setChk('allowEmail', s.admin_allow_email === 1);
 
-  // Статусы клиента
   setTxt('statusTelegram', s.channel_telegram_enabled === 1 ? 'Клиент: вкл' : 'Клиент: выкл');
   setTxt('statusSheets', s.channel_sheets_enabled === 1 ? 'Клиент: вкл' : 'Клиент: выкл');
   setTxt('statusWebhook', s.channel_webhook_enabled === 1 ? 'Клиент: вкл' : 'Клиент: выкл');
   setTxt('statusEmail', s.channel_email_enabled === 1 ? 'Клиент: вкл' : 'Клиент: выкл');
 
-  // Поля виджета
   setVal('widgetTelegramToken', s.telegram_token || '');
   setVal('widgetTelegramAdminId', s.telegram_admin_id || '');
   setVal('sheetsUrl', s.sheets_url || '');
@@ -535,7 +547,6 @@ function renderClient() {
   setVal('webhookSecret', s.webhook_secret || '');
   setVal('notificationEmail', s.notification_email || '');
 
-  // Поля бота (VPS)
   setVal('botTelegramToken', s.bot_telegram_token || '');
   setVal('botTelegramAdminId', s.bot_telegram_admin_id || '');
   setChk('botRemindersEnabled', s.bot_reminders_enabled === 1);
@@ -654,6 +665,7 @@ async function saveAll() {
       bot_reminders_enabled: document.getElementById('botRemindersEnabled').checked ? 1 : 0,
       bot_work_hours: document.getElementById('botWorkHours').value,
       bot_max_daily: parseInt(document.getElementById('botMaxDaily').value) || 1000,
+      
       prompt_ru: document.getElementById('widgetPromptRu').value,
       industry: document.getElementById('widgetIndustry').value.trim(),
       services: document.getElementById('widgetServices').value.trim(),
@@ -663,6 +675,7 @@ async function saveAll() {
       widget_title_ru: document.getElementById('widgetTitleRu').value.trim(),
       widget_welcome_ru: document.getElementById('widgetWelcomeRu').value.trim(),
       widget_color: document.getElementById('widgetColor').value,
+      
       bot_prompt_ru: document.getElementById('botPromptRu').value,
       bot_greeting_ru: document.getElementById('botGreetingRu').value,
       bot_industry: document.getElementById('botIndustry').value.trim(),

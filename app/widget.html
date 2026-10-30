@@ -108,11 +108,11 @@
         <div class="settings-form">
 
           <div class="form-row">
-            <label class="form-label">Промпт RU</label>
-            <textarea class="form-textarea" id="promptRu" style="min-height:200px;" maxlength="4000"
-              placeholder="Ты — менеджер компании...&#10;&#10;Твоя задача — ..."></textarea>
+            <label class="form-label">Основной промпт (Инструкции для ИИ)</label>
+            <textarea class="form-textarea" id="promptRu" style="min-height:300px;" maxlength="4000"
+              placeholder="1. О КОМПАНИИ:&#10;Мы — [Название компании]. Занимаемся [Ниша: например, стоматология].&#10;&#10;2. НАШИ УСЛУГИ И ЦЕНЫ:&#10;— [Услуга 1] — [Цена]&#10;— [Услуга 2] — [Цена]&#10;&#10;3. ТОН И СКРИПТЫ:&#10;Общайся вежливо. Наше главное преимущество — [УТП, например: лечение без боли].&#10;Если клиент говорит «дорого», предложи рассрочку.&#10;Всегда предлагай записаться на консультацию."></textarea>
             <div class="form-hint">
-              💡 <strong>Что это:</strong> инструкция для ИИ — как общаться с клиентами.
+              💡 <strong>Заполните по шаблону выше.</strong> ИИ строго запрещено выдумывать цены — он будет брать их только отсюда.
               <details class="hint-details">
                 <summary>📖 Что вписать</summary>
                 <ol>
@@ -122,24 +122,25 @@
                   <li>Что должен сделать ИИ</li>
                 </ol>
                 <p style="padding: 0 12px 10px; font-size:11px; color:var(--text-dim);">
-                  📏 Длина: 200–4000 символов.
+                  📏 Длина: 10–4000 символов.
                 </p>
               </details>
               <div class="counter-row"><span id="counterRu">0</span> / 4000</div>
             </div>
           </div>
 
-          <div class="form-row">
+          <!-- СКРЫТЫЕ ПОЛЯ (Оставлены для совместимости со скриптом) -->
+          <div class="form-row" style="display:none;">
             <label class="form-label">Ниша</label>
             <input class="form-input" type="text" id="industry" maxlength="100" placeholder="Автосервис / Салон / Клиника">
-            <div class="form-hint">💡 Используется для авто-промпта, если свой не заполнен.</div>
           </div>
 
-          <div class="form-row">
+          <div class="form-row" style="display:none;">
             <label class="form-label">Услуги и цены</label>
             <textarea class="form-textarea" id="services" style="min-height:100px;" maxlength="2000"
               placeholder="Замена масла — от 40$&#10;Стрижка — 25$&#10;..."></textarea>
           </div>
+          <!-- КОНЕЦ СКРЫТЫХ ПОЛЕЙ -->
 
           <div class="form-row">
             <label class="form-label">AI-провайдер</label>
@@ -409,28 +410,24 @@ async function loadSettings() {
     document.getElementById('widgetColor').value = s.widget_color || '#00F0FF';
     document.getElementById('widgetColorText').value = s.widget_color || '#00F0FF';
 
-    // ⚠️ ИСПРАВЛЕННАЯ ЛОГИКА ПРОВЕРКИ ПРАВ АДМИНИСТРАТОРА
     const configChannel = (chId, headerId, bodyId, allowField, enabledField, labelName) => {
       const ch = document.getElementById(chId);
       const header = document.getElementById(headerId);
       const body = document.getElementById(bodyId);
 
       if (s[allowField] !== 1) {
-        // Если админ запретил
         ch.checked = false;
         ch.disabled = true;
-        body.style.display = 'none'; // Скрываем поля ввода
+        body.style.display = 'none'; 
         header.style.opacity = '0.5';
         header.style.cursor = 'not-allowed';
         
-        // Безопасно меняем только текст лейбла, НЕ удаляя чекбокс
         const labelSpan = header.querySelector('.channel-label');
         if (labelSpan) {
             labelSpan.innerHTML = `${labelName} <span style="color:var(--magenta); font-size:11px;">(Недоступно на вашем тарифе)</span>`;
             labelSpan.style.color = 'var(--text-dim)';
         }
       } else {
-        // Если разрешено
         ch.checked = s[enabledField] === 1;
       }
     };
@@ -443,11 +440,8 @@ async function loadSettings() {
     document.getElementById('telegramToken').value = s.telegram_token || '';
     document.getElementById('telegramAdminId').value = s.telegram_admin_id || '';
     document.getElementById('sheetsUrl').value = s.sheets_url || '';
-    
-    // ⚠️ ДОБАВЛЕНО: Загрузка Webhook данных, которых не было!
     document.getElementById('webhookUrl').value = s.webhook_url || '';
     document.getElementById('webhookSecret').value = s.webhook_secret || '';
-    
     document.getElementById('notificationEmail').value = s.notification_email || '';
 
   } catch (err) {
@@ -462,9 +456,10 @@ async function saveWidget() {
   status.textContent = 'Сохраняем...';
 
   const promptLen = promptRu.value.length;
-  if (promptLen > 0 && promptLen < 200) {
+  // ✅ ИСПРАВЛЕНО: 10 символов вместо 200
+  if (promptLen > 0 && promptLen < 10) {
     status.className = 'form-status error';
-    status.textContent = '⚠️ Минимум 200 символов. Сейчас: ' + promptLen;
+    status.textContent = '⚠️ Минимум 10 символов. Сейчас: ' + promptLen;
     return;
   }
 
@@ -480,7 +475,6 @@ async function saveWidget() {
       widget_welcome_ru: document.getElementById('widgetWelcomeRu').value.trim(),
       widget_color: document.getElementById('widgetColor').value,
       
-      // ⚠️ ИСПРАВЛЕНО: Используем опциональную цепочку (?.checked), чтобы избежать падения
       channel_telegram_enabled: document.getElementById('chTelegram')?.checked ? 1 : 0,
       channel_sheets_enabled: document.getElementById('chSheets')?.checked ? 1 : 0,
       channel_webhook_enabled: document.getElementById('chWebhook')?.checked ? 1 : 0,
@@ -490,7 +484,6 @@ async function saveWidget() {
       telegram_admin_id: document.getElementById('telegramAdminId').value.trim() || null,
       sheets_url: document.getElementById('sheetsUrl').value.trim(),
       
-      // ⚠️ ДОБАВЛЕНО: Отправка Webhook данных на бэкенд
       webhook_url: document.getElementById('webhookUrl').value.trim(),
       webhook_secret: document.getElementById('webhookSecret').value.trim(),
       
