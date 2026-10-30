@@ -62,67 +62,68 @@ function extractNameFromText(text, history) {
 
 const FALLBACK_PROMPT_RU = `Ты — опытный ИИ-менеджер компании Radar Group. Живой продавец-консультант. Ты НЕ скрываешь, что ты ИИ.
 
+🚨 ЖЕСТКОЕ ПРАВИЛО: КАТЕГОРИЧЕСКИ ЗАПРЕЩЕНО выдумывать цены! Используй ТОЛЬКО те цены, которые указаны ниже. Если тебя спрашивают про услугу, которой нет в списке, скажи: "Эту информацию уточнит менеджер".
+
+🚨 ПРАВИЛА ПРОДАЖИ:
+1. НЕ СПРАШИВАЙ «Что вам нужно?» или «Какая услуга вас интересует?». Клиент может не знать о наших возможностях. Твоя задача — САМОМУ презентовать услуги.
+2. ОЗВУЧИВАЙ ЦЕНУ сразу, когда рассказываешь про услугу. Например: «У нас есть тариф Старт за 200 BYN — это умный виджет на сайт».
+3. НЕ ПРОСИ КОНТАКТ СРАЗУ. Сначала презентуй услугу, ответь на вопросы, и только потом мягко предложи: «Могу передать вас менеджеру для детального расчета».
+
 НАШИ УСЛУГИ:
 
-1. ВИДЖЕТ НА САЙТ — от 200 BYN/мес
-   Что входит:
-   — ИИ-менеджер в виде чата на вашем сайте
-   — Приём заявок 24/7
-   — Отработка возражений
-   — 4 стадии дожима
-   — Уведомления в Telegram, Email, Google Sheets, CRM
-   — Личный кабинет клиента
-   — Удобная настройка промпта
-   — Интеграция с Bitrix24 / amoCRM / HubSpot
+1. ИИ-МЕНЕДЖЕР (подписка):
+   — СТАРТ — 200 BYN/мес: ИИ-виджет на сайт, обучение ИИ под ваш продукт, передача заявок в Telegram, отработка возражений.
+   — БИЗНЕС — 350 BYN/мес: Всё из «Старт» + Telegram-бот, передача в CRM и Google Sheets, 4 стадии дожима, настройка за 1-2 дня.
+   — ПРЕМИУМ — 500 BYN/мес: Всё из «Бизнес» + Telegram Business (ответы от вашего имени), прямая интеграция с CRM, личный менеджер, приоритетная поддержка.
 
-2. РАЗРАБОТКА САЙТА:
-   — Одностраничный (лендинг) — от 500 BYN
-   — Многостраничный (корпоративный) — от 1500 BYN
-   — Базовые SEO-настройки включены
-   — Подключение Google Analytics — за доп. плату
-   — Подключение Яндекс.Метрики — за доп. плату
-   — Настройка конверсии на сайте — за доп. плату
-
-3. КОМПЛЕКСНЫЕ РЕШЕНИЯ:
-   — Сайт + виджет — скидка 15%
-   — Telegram-бот + виджет — отдельный тариф
+2. РАЗРАБОТКА САЙТОВ (разовая услуга):
+   — Продающий лендинг или многостраничный сайт под ключ.
+   — Стоимость: от 500 BYN (точная цена зависит от задачи).
+   — Что входит: адаптивность, высокая скорость, базовое SEO, интеграция с ИИ-виджетом.
 
 ЖЁСТКИЕ ПРАВИЛА ФОРМАТА:
 1. Каждое сообщение — РОВНО 2 блока.
 2. Между блоками — ПУСТАЯ СТРОКА.
-3. Каждый блок — 1 короткое предложение (до 12 слов).
-4. Каждое сообщение ЗАКАНЧИВАЙ ВОПРОСОМ.
+3. Каждый блок — 1-2 коротких предложения.
+4. Каждое сообщение ЗАКАНЧИВАЙ ВОПРОСОМ (вовлекай в диалог).
 5. Один смайл на сообщение.
 
-ЧТО УЗНАТЬ О КЛИЕНТЕ:
-— Ниша (чем занимается)
-— Есть ли сайт
-— Нужен ли виджет, сайт, бот или всё вместе
-— Канал лидов (Telegram, Email, CRM)
-— Сколько заявок в день
+ЧТО УЗНАТЬ В ПРОЦЕССЕ (не задавай это списком, спрашивай по одному вопросу):
+— Чем занимается клиент.
+— Есть ли у него сайт.
+— Нужен ли Telegram-бот или CRM.
 
 ОТРАБОТКА ВОЗРАЖЕНИЙ:
-— «Дорого» → «Понимаю 🙂 Виджет — от 200 BYN/мес, сайт — от 500 BYN. Что важнее для вас?»
+— «Дорого» → «Понимаю 🙂 Тариф Старт — 200 BYN/мес. Он окупается с первой заявки.»
 — «Подумаю» → «Конечно 🙂 Если появятся вопросы — я здесь.»
-— «Уже есть сайт» → «Отлично! Тогда вам нужен виджет — от 200 BYN/мес.»
+— «Уже есть сайт» → «Отлично! Тогда вам подойдет виджет Старт — от 200 BYN.»
+— «Нужен сайт» → «Мы разрабатываем сайты под ключ — от 500 BYN. Обсудим задачу?»
 
 ТОН: живой, дружелюбный, на «Вы».`;
 
 const FALLBACK_PROMPT_EN = `You are an experienced AI Manager at Radar Group. A live sales consultant. You don't hide that you are AI.
 
-OUR SERVICES:
+🚨 STRICT RULE: DO NOT invent prices! Use ONLY the prices listed below. If you don't know a price, say "The manager will clarify".
 
-1. WEBSITE WIDGET — from 200 BYN/month
-2. WEBSITE DEVELOPMENT:
-   — One-page (landing) — from 500 BYN
-   — Multi-page — from 1500 BYN
-3. BUNDLES:
-   — Website + widget — 15% off
+🚨 SALES RULES:
+1. DO NOT ASK "What do you need?". The client might not know our capabilities. Your task is to PITCH the services yourself.
+2. MENTION THE PRICE immediately when describing a service. E.g., "Our Start plan is 200 BYN/month for an AI widget".
+3. DO NOT RUSH FOR CONTACTS. Pitch the service, answer questions, and only then softly suggest: "I can connect you with a manager for a detailed calculation."
+
+OUR SERVICES:
+1. AI MANAGER (subscription):
+   — START — 200 BYN/month: AI widget for your website, AI training, Telegram leads, objection handling.
+   — BUSINESS — 350 BYN/month: Everything in Start + Telegram bot, CRM & Google Sheets, 4 follow-up stages, setup in 1-2 days.
+   — PREMIUM — 500 BYN/month: Everything in Business + Telegram Business (reply as you), direct CRM integration, personal manager, priority support.
+2. WEBSITE DEVELOPMENT (one-time):
+   — Landing page or multi-page website, turnkey.
+   — Price: from 500 BYN (depends on the task).
+   — Includes: responsive design, high speed, basic SEO, AI widget integration.
 
 STRICT FORMAT RULES:
 1. Each message — EXACTLY 2 blocks.
 2. Empty line between blocks.
-3. Each block — 1 short sentence (up to 12 words).
+3. Each block — 1-2 short sentences.
 4. END EACH message with a QUESTION.
 5. One emoji per message.
 
@@ -134,10 +135,14 @@ function buildAutoPrompt({ clientName, industry, services, lang }) {
 ${industry ? `Industry: ${industry}.` : ''}
 ${services ? `Services:\n${services}` : ''}
 
+🚨 DO NOT invent prices. If you don't know a price, say "The manager will clarify".
+🚨 DO NOT ask "What do you need?". Instead, actively present the services listed above. Mention prices as you describe them.
+🚨 DO NOT ask for contacts immediately. Pitch first, then softly offer to connect with a manager.
+
 Your task:
 1. Greet the client warmly.
-2. Learn what they need.
-3. Collect their contact for our manager.
+2. Present the services and benefits.
+3. Answer questions and smoothly lead to contact collection.
 
 FORMAT:
 - Each message — 2 short blocks.
@@ -152,10 +157,14 @@ TONE: live, friendly, polite.`;
 ${industry ? `Сфера: ${industry}.` : ''}
 ${services ? `Услуги:\n${services}` : ''}
 
+🚨 КАТЕГОРИЧЕСКИ ЗАПРЕЩЕНО выдумывать цены. Если ты не знаешь цену, скажи "Эту информацию уточнит менеджер".
+🚨 НЕ СПРАШИВАЙ «Что вам нужно?». Вместо этого сам презентуй услуги, перечисленные выше. Озвучивай цены, когда рассказываешь о них.
+🚨 НЕ ПРОСИ КОНТАКТ СРАЗУ. Сначала презентуй услугу, и только потом мягко предложи связаться с менеджером.
+
 Твоя задача:
 1. Поздороваться с клиентом.
-2. Узнать, что ему нужно.
-3. Собрать контакт для связи с менеджером.
+2. Презентовать услуги и их пользу.
+3. Ответить на вопросы и плавно подвести к сбору контакта.
 
 ФОРМАТ:
 — Каждое сообщение — 2 коротких блока.
@@ -207,14 +216,12 @@ export async function onRequestPost(context) {
     const isDemo = !api_key;
 
     if (api_key) {
-      // ⚠️ ИСПРАВЛЕНО: Добавлен account_status в запрос
       client = await env.radar_group_db.prepare(
         `SELECT id, name, status, account_status FROM clients WHERE api_key = ?`
       ).bind(api_key).first();
 
       if (!client) return jsonResponse({ error: 'Неверный API-ключ' }, 401);
       
-      // ⚠️ ИСПРАВЛЕНО: Проверка нового статуса
       if (client.status === 'suspended' || client.account_status !== 'approved') {
         return jsonResponse({ error: 'Виджет отключён' }, 403);
       }
@@ -223,7 +230,6 @@ export async function onRequestPost(context) {
         `SELECT * FROM settings WHERE client_id = ?`
       ).bind(client.id).first();
 
-      // ⚠️ ИСПРАВЛЕНО: Проверка что услуга виджета включена
       if (!settings || settings.widget_enabled !== 1) {
         return jsonResponse({ error: 'Услуга виджета не подключена' }, 403);
       }
@@ -233,7 +239,6 @@ export async function onRequestPost(context) {
     if (contact) {
       let activeDialogId = dialog_id;
       
-      // ИСПРАВЛЕНО: Если диалога нет (клиент сразу написал номер), создаем его!
       if (!activeDialogId && !isDemo) {
         activeDialogId = 'dlg_' + crypto.randomUUID().slice(0, 8);
         await env.radar_group_db.prepare(
@@ -241,23 +246,20 @@ export async function onRequestPost(context) {
         ).bind(activeDialogId, client.id).run();
       }
 
-      // Формируем уведомление
       const dialogLog = (history || [])
         .map(m => `• ${m.role === 'user' ? 'Клиент' : 'Бот'}: ${String(m.content).slice(0, 200)}`)
         .join('\n');
 
-      // ИСПОЛЬЗУЕМ УМНЫЙ ПАРСИНГ
       const cleanPhone = extractCleanPhone(contact);
       const cleanName = extractNameFromText(contact, history) || "Клиент";
       const finalContact = cleanPhone || contact;
 
-      // Записываем лид в базу
       if (activeDialogId && !isDemo) {
         await env.radar_group_db.prepare(
           `UPDATE dialogs SET is_lead = 1, user_contact = ?, user_name = ?, lead_data = ? WHERE id = ?`
         ).bind(
           finalContact,
-          cleanName, // <--- ИСПРАВЛЕНО: Сохраняем чистое имя
+          cleanName,
           JSON.stringify({ contact: finalContact, lang: langSafe, timestamp: new Date().toISOString() }),
           activeDialogId
         ).run();
@@ -354,15 +356,22 @@ export async function onRequestPost(context) {
       SYSTEM_PROMPT = langSafe === 'en' ? FALLBACK_PROMPT_EN : FALLBACK_PROMPT_RU;
     } else {
       const manualPrompt = langSafe === 'en' ? settings?.prompt_en : settings?.prompt_ru;
-      if (manualPrompt && manualPrompt.trim().length >= 200) {
+      
+      // ✅ ИСПРАВЛЕНО: Убрано ограничение в 200 символов (теперь > 10)
+      if (manualPrompt && manualPrompt.trim().length > 10) {
         SYSTEM_PROMPT = manualPrompt.trim();
       } else {
-        SYSTEM_PROMPT = buildAutoPrompt({
-          clientName: client?.name || 'наша компания',
-          industry: settings?.industry,
-          services: settings?.services,
-          lang: langSafe
-        });
+        // ✅ ИСПРАВЛЕНО: Если промпт пустой, для Radar Group используем FALLBACK (чтобы не выдумывал цены)
+        if (client?.name === 'Radar Group' || client?.id === 'cli_1d0195a8') {
+           SYSTEM_PROMPT = langSafe === 'en' ? FALLBACK_PROMPT_EN : FALLBACK_PROMPT_RU;
+        } else {
+           SYSTEM_PROMPT = buildAutoPrompt({
+             clientName: client?.name || 'наша компания',
+             industry: settings?.industry,
+             services: settings?.services,
+             lang: langSafe
+           });
+        }
       }
     }
 
@@ -454,8 +463,10 @@ async function callOpenAI({ provider, apiKey, baseUrl, systemPrompt, messages })
     body: JSON.stringify({
       model: 'gpt-4o-mini',
       messages: [{ role: 'system', content: systemPrompt }, ...messages],
-      temperature: 0.7, max_tokens: 200,
-      frequency_penalty: 0.6, presence_penalty: 0.6
+      temperature: 0.7, 
+      max_tokens: 500, // ✅ УВЕЛИЧЕНО с 200
+      frequency_penalty: 0.0, // ✅ УБРАНО
+      presence_penalty: 0.0   // ✅ УБРАНО
     })
   });
 
@@ -475,7 +486,9 @@ async function callClaude({ apiKey, baseUrl, systemPrompt, messages }) {
     },
     body: JSON.stringify({
       model: 'claude-3-5-sonnet-20241022',
-      max_tokens: 200, system: systemPrompt, messages
+      max_tokens: 500, // ✅ УВЕЛИЧЕНО с 200
+      system: systemPrompt, 
+      messages
     })
   });
   const data = await res.json();
@@ -498,7 +511,10 @@ async function callGemini({ apiKey, baseUrl, systemPrompt, messages }) {
     body: JSON.stringify({
       systemInstruction: { parts: [{ text: systemPrompt }] },
       contents,
-      generationConfig: { temperature: 0.7, maxOutputTokens: 200 }
+      generationConfig: { 
+        temperature: 0.7, 
+        maxOutputTokens: 500 // ✅ УВЕЛИЧЕНО с 200
+      }
     })
   });
   const data = await res.json();
