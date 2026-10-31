@@ -49,14 +49,14 @@ async function processInstagramMessage(senderId, messageText, env) {
     
     const CLIENT_ID = 'cli_1d0195a8'; // ID клиента Radar Group
 
-    // 1. ЛОВИМ НОМЕР ТЕЛЕФОНА ИЗ ТЕКСТА
+    // Ловим номер телефона
     const phoneRegex = /(\+?\d[\d\s\-\(\)]{8,18}\d)/;
     const phoneMatch = messageText.match(phoneRegex);
     const isPhone = !!phoneMatch;
 
-    // 2. ПОЛУЧАЕМ НАСТРОЙКИ
+    // Получаем настройки (включая провайдера!)
     const data = await env.radar_group_db.prepare(
-      `SELECT s.prompt_ru, s.ai_api_key, s.use_radar_ai_key_widget, 
+      `SELECT s.prompt_ru, s.ai_api_key, s.ai_provider, s.ai_base_url, s.use_radar_ai_key_widget, 
               s.channel_telegram_enabled, s.admin_allow_telegram, 
               s.telegram_token, s.telegram_admin_id
        FROM settings s WHERE s.client_id = ?`
@@ -64,12 +64,10 @@ async function processInstagramMessage(senderId, messageText, env) {
 
     const apiKey = data?.ai_api_key || (data?.use_radar_ai_key_widget === 1 ? env.OPENAI_API_KEY : null);
     
-    // 3. ЕСЛИ ЭТО НОМЕР ТЕЛЕФОНА -> СОХРАНЯЕМ ЛИД И УВЕДОМЛЯЕМ
+    // Если это телефон — сохраняем лид
     if (isPhone) {
       const cleanPhone = phoneMatch[0];
-      
-      // Создаем или обновляем диалог
-      let dialogId = 'ig_' + senderId; // Используем ID из Instagram
+      let dialogId = 'ig_' + senderId;
       const existing = await env.radar_group_db.prepare(`SELECT id FROM dialogs WHERE id = ?`).bind(dialogId).first();
       
       if (!existing) {
@@ -78,12 +76,10 @@ async function processInstagramMessage(senderId, messageText, env) {
         ).bind(dialogId, CLIENT_ID).run();
       }
       
-      // Сохраняем лид
       await env.radar_group_db.prepare(
         `UPDATE dialogs SET is_lead = 1, user_contact = ?, user_name = ?, lead_data = ? WHERE id = ?`
       ).bind(cleanPhone, 'Instagram Клиент', JSON.stringify({ contact: cleanPhone, source: 'instagram' }), dialogId).run();
 
-      // Отправляем в Telegram менеджеру
       if (data?.channel_telegram_enabled === 1 && data?.admin_allow_telegram === 1 && data?.telegram_token && data?.telegram_admin_id) {
         const leadText = `🔥 НОВЫЙ ЛИД (Instagram)\n\n📞 Контакт: ${cleanPhone}\n💬 Сообщение: ${messageText}`;
         try {
@@ -95,14 +91,12 @@ async function processInstagramMessage(senderId, messageText, env) {
         } catch (e) {}
       }
 
-      // Отвечаем клиенту в Instagram, что заявка принята
       await sendInstagramMessage(senderId, 'Отлично! Я записал ваш номер. Менеджер свяжется с вами в ближайшее время. 🙂', ACCESS_TOKEN, env);
       return;
     }
 
-    // 4. ЕСЛИ ЭТО НЕ НОМЕР -> ОТВЕЧАЕТ ИИ
     if (!apiKey) {
-      await logToDB(env, 'error', 'Не найден OpenAI ключ');
+      await logToDB(env, 'error', 'Не найден API ключ');
       return;
     }
 
@@ -116,7 +110,18 @@ async function processInstagramMessage(senderId, messageText, env) {
 ИНФОРМАЦИЯ:
 ${data?.prompt_ru || 'Продаем ИИ-менеджеров для бизнеса.'}`;
 
-    const aiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+    // ✅ ИСПРАВЛЕНО: ТЕПЕРЬ БЕРЕМ ПРОВАЙДЕРА И URL ИЗ БАЗЫ
+    const provider = data?.ai_provider || 'proxyapi';
+    const baseUrl = data?.ai_base_url || null;
+    
+    let url = baseUrl;
+    if (!url) {
+      if (provider === 'openai') url = 'https://api.openai.com/v1/chat/completions';
+      else if (provider === 'deepseek') url = 'https://api.deepseek.com/v1/chat/completions';
+      else url = 'https://api.proxyapi.ru/v1/chat/completions'; // По умолчанию ProxyAPI
+    }
+
+    const aiResponse = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
       body: JSON.stringify({
@@ -149,6 +154,8 @@ async function sendInstagramMessage(recipientId, text, accessToken, env) {
   });
   if (!res.ok) {
     await logToDB(env, 'error', 'Instagram API Error: ' + JSON.stringify(await res.json()));
+  } else {
+    await logToDB(env, 'info', 'Успешный ответ в Instagram!');
   }
 }
 
