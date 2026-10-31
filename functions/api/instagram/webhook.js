@@ -53,7 +53,7 @@ export async function onRequestPost({ request, env, waitUntil }) {
 async function processInstagramMessage(senderId, messageText, env) {
   try {
     // 👇👇👇 ВСТАВЬ СЮДА ТОКЕН (IGAA...) 👇👇👇
-    const ACCESS_TOKEN = 'EAAVvbGMNdXIBSyjZBU7IgupuJdhXwgymUJ0fWEmYvGKwOFyZBzTTQV5CxW6NUAJ9ZCGN3C5XIaHtscZAzIv27c29oo9Y7VIx5exjOcYryiJ7GMbe2eAaHyUMeZBhhZAz9sUqu8UWs7Y25QYKDZBe5UfuxXfgwTSnyIUfZAwPYKlqc3JTY72gyFHd1a7qwxOSn1ZCYkYZCTLExH94j2qbfLzJtRQZCb5g5LEouMmNDuhx84hcUEm6BesmNsRywZDZD'; 
+    const ACCESS_TOKEN = 'EAAVvbGMNdXIBSznY0QEYCIq0tAPxnFD8Vn72CFFwvIZAR90mu3RBxEzQaZCX8ZBATpzGo2yz0ZCEifaPZC8DgDMstt8cxQTQoyq1VW622PCAjA54RVUxfdXcRFvFTeMfKOy6kK4X56e7AEHcdpQLO7spUbhOkFVPKpZBMYFxexrTHhOZARbVX7FOocurbHqPiQrx1RPvKNzOQklBtfhyljZCUEeAvt7QLP7JH0YJ2RK3xS1lLdNvo7uyMQZDZD'; 
     
     const CLIENT_ID = 'cli_1d0195a8'; // ID клиента Radar Group
 
