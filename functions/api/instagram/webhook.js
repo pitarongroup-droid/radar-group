@@ -19,7 +19,6 @@ export async function onRequestPost({ request, env, waitUntil }) {
     const body = await request.json();
     console.log('📩 Получен запрос от Instagram:', JSON.stringify(body));
 
-    // Instagram может присылать object = 'instagram' или 'page'
     if (body.object === 'instagram' || body.object === 'page') {
       for (const entry of body.entry) {
         const messagingEvents = entry.messaging;
@@ -31,8 +30,6 @@ export async function onRequestPost({ request, env, waitUntil }) {
               const messageText = event.message.text;
 
               console.log(`💬 Сообщение от ${senderId}: ${messageText}`);
-
-              // Обработку ИИ отправляем в waitUntil
               waitUntil(processInstagramMessage(senderId, messageText, env));
             }
           }
@@ -43,6 +40,7 @@ export async function onRequestPost({ request, env, waitUntil }) {
 
   } catch (err) {
     console.error('❌ Ошибка в onRequestPost:', err);
+    await logToDB(env, 'error', 'Webhook POST error: ' + err.message);
     return new Response('Error', { status: 500 });
   }
 }
@@ -52,12 +50,11 @@ export async function onRequestPost({ request, env, waitUntil }) {
 // ============================================
 async function processInstagramMessage(senderId, messageText, env) {
   try {
-    // 👇👇👇 ВСТАВЬ СЮДА ТОКЕН (IGAA...) 👇👇👇
+    // Твой токен (начинается с EAA)
     const ACCESS_TOKEN = 'EAAVvbGMNdXIBSznY0QEYCIq0tAPxnFD8Vn72CFFwvIZAR90mu3RBxEzQaZCX8ZBATpzGo2yz0ZCEifaPZC8DgDMstt8cxQTQoyq1VW622PCAjA54RVUxfdXcRFvFTeMfKOy6kK4X56e7AEHcdpQLO7spUbhOkFVPKpZBMYFxexrTHhOZARbVX7FOocurbHqPiQrx1RPvKNzOQklBtfhyljZCUEeAvt7QLP7JH0YJ2RK3xS1lLdNvo7uyMQZDZD'; 
     
     const CLIENT_ID = 'cli_1d0195a8'; // ID клиента Radar Group
 
-    console.log('1️⃣ Начинаем обработку. Проверяем настройки в БД...');
     const data = await env.radar_group_db.prepare(
       `SELECT s.prompt_ru, s.ai_api_key, s.use_radar_ai_key_widget 
        FROM settings s WHERE s.client_id = ?`
@@ -65,14 +62,10 @@ async function processInstagramMessage(senderId, messageText, env) {
 
     const apiKey = data?.ai_api_key || (data?.use_radar_ai_key_widget === 1 ? env.OPENAI_API_KEY : null);
     if (!apiKey) {
-      console.error('❌ Ошибка: не найден API-ключ OpenAI в базе!');
-      await sendInstagramMessage(senderId, 'Извините, ошибка настройки ИИ.', ACCESS_TOKEN);
+      await logToDB(env, 'error', 'Не найден OpenAI ключ для клиента ' + CLIENT_ID);
       return;
     }
 
-    console.log('2️⃣ Ключ найден. Отправляем запрос в OpenAI...');
-    
-    // Полный промпт для Instagram (адаптированный под переписку)
     const systemPrompt = `Ты — опытный ИИ-менеджер компании Radar Group в Instagram.
 Мы продаем ИИ-менеджеров для бизнеса:
 — СТАРТ (200 BYN/мес): виджет на сайт
@@ -83,7 +76,7 @@ async function processInstagramMessage(senderId, messageText, env) {
 ПРАВИЛА ОБЩЕНИЯ:
 1. Отвечай коротко, дружелюбно, как в личных сообщениях.
 2. Задавай только ОДИН вопрос за раз.
-3. Когда клиент готов оставить заявку, вежливо попроси его написать номер телефона прямо в чат (например: "Отлично! Напишите ваш номер телефона, и менеджер свяжется с вами").
+3. Когда клиент готов оставить заявку, вежливо попроси его написать номер телефона прямо в чат.
 4. НЕ выдумывай цены и контакты.
 
 === ИНФОРМАЦИЯ О КОМПАНИИ ===
@@ -108,24 +101,22 @@ ${data?.prompt_ru || 'Продаем ИИ-менеджеров для бизне
 
     const aiData = await aiResponse.json();
     if (!aiResponse.ok) {
-      console.error('❌ Ошибка OpenAI:', JSON.stringify(aiData));
+      await logToDB(env, 'error', 'OpenAI Error: ' + JSON.stringify(aiData));
       return;
     }
 
     const replyText = aiData.choices?.[0]?.message?.content || 'Секунду, я передам информацию менеджеру.';
-    console.log('3️⃣ Ответ от ИИ получен:', replyText);
-
-    console.log('4️⃣ Отправляем ответ в Instagram...');
-    await sendInstagramMessage(senderId, replyText, ACCESS_TOKEN);
+    
+    await sendInstagramMessage(senderId, replyText, ACCESS_TOKEN, env);
 
   } catch (err) {
-    console.error('❌ Ошибка в процессе обработки:', err);
+    await logToDB(env, 'error', 'Process Error: ' + err.message);
   }
 }
 
-async function sendInstagramMessage(recipientId, text, accessToken) {
-  // ✅ ОБНОВЛЕНО до v25.0
-  const url = `https://graph.instagram.com/v25.0/me/messages?access_token=${accessToken}`;
+async function sendInstagramMessage(recipientId, text, accessToken, env) {
+  // ✅ КРИТИЧЕСКИ ВАЖНО: Используем graph.facebook.com для токенов EAA
+  const url = `https://graph.facebook.com/v25.0/me/messages?access_token=${accessToken}`;
 
   const payload = {
     recipient: { id: recipientId },
@@ -141,8 +132,20 @@ async function sendInstagramMessage(recipientId, text, accessToken) {
   const resData = await res.json();
   
   if (!res.ok) {
-    console.error('❌ Ошибка отправки в Instagram:', JSON.stringify(resData));
+    // Если ошибка — пишем в базу
+    await logToDB(env, 'error', 'Instagram API Error: ' + JSON.stringify(resData));
   } else {
-    console.log('✅ Сообщение успешно отправлено в Instagram!');
+    await logToDB(env, 'info', 'Успешный ответ в Instagram для ' + recipientId);
+  }
+}
+
+// Функция для записи логов в базу данных D1
+async function logToDB(env, level, message) {
+  try {
+    await env.radar_group_db.prepare(
+      `INSERT INTO logs (id, level, message, created_at) VALUES (?, ?, ?, unixepoch())`
+    ).bind('log_' + crypto.randomUUID().slice(0, 8), level, message).run();
+  } catch (e) {
+    console.error('DB Log error:', e);
   }
 }
