@@ -45,7 +45,7 @@ export async function onRequestPost({ request, env, waitUntil }) {
 async function processInstagramMessage(senderId, messageText, env) {
   try {
     // Твой токен
-    const ACCESS_TOKEN = 'EAAVvbGMNdXIBSznY0QEYCIq0tAPxnFD8Vn72CFFwvIZAR90mu3RBxEzQaZCX8ZBATpzGo2yz0ZCEifaPZC8DgDMstt8cxQTQoyq1VW622PCAjA54RVUxfdXcRFvFTeMfKOy6kK4X56e7AEHcdpQLO7spUbhOkFVPKpZBMYFxexrTHhOZARbVX7FOocurbHqPiQrx1RPvKNzOQklBtfhyljZCUEeAvt7QLP7JH0YJ2RK3xS1lLdNvo7uyMQZDZD'; 
+    const ACCESS_TOKEN = 'EAAVvbGMNdXIBSzP7ZB6vSEGHrgbdFbXT04J6AteAorFUwJeNaDcBC28QbqTfZAGrI0bVNNRZAsZBu7e6wcJE63FfgtFaG05He8OFOQ17bLPsCxZCfGGdMGuo3WZBzb1hUiQyEMbF3ZBZA4XNNaHmewKU7jbamiib3enqZAOU23l77WnkzQtNZBydkJ6RXV3zFLn0FiXvJPk0IWIZCqnPsrdB1nOnJlIpUwaOS6QbjZCjYspBOCmFvPUSgTFZAMtgon2YOZBdcTZBSjM4uZAFqR8EJcIHjxTqvrkD'; 
     
     const CLIENT_ID = 'cli_1d0195a8'; // ID клиента Radar Group
 
